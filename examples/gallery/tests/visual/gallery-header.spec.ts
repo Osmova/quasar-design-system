@@ -1,7 +1,14 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { applyTheme, CANONICAL_VARIANTS, waitForThemePaint } from './helpers'
 
 const labels = ['Fluent', 'Ink', 'One', 'Term', 'Shadcn']
+
+async function expectThemeMenuClosed(page: Page) {
+  // Count the DOM node, including hidden leave-transition content, before reopening.
+  await expect(page.locator('#gallery-theme-menu')).toHaveCount(0)
+  await expect(page.locator('.gallery-theme')).toHaveAttribute('aria-expanded', 'false')
+  await expect(page.locator('.gallery-theme')).toBeFocused()
+}
 
 test('native Theme menu supports keyboard selection, dismissal and isolated state', async ({ page }) => {
   await page.goto('/#tokens?variant=shadcn&keep=header')
@@ -26,6 +33,7 @@ test('native Theme menu supports keyboard selection, dismissal and isolated stat
   await expect(dark).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(menu).toBeHidden()
+  await expectThemeMenuClosed(page)
   await expect(page.getByRole('button', { name: 'Theme: Dark', exact: true })).toBeFocused()
   await expect(page.locator('body')).toHaveAttribute('data-qds-mode', 'dark')
   await expect(page.locator('body')).toHaveAttribute('data-qds-variant', 'shadcn')
@@ -35,6 +43,7 @@ test('native Theme menu supports keyboard selection, dismissal and isolated stat
     await page.locator('.gallery-theme').click()
     await menu.getByRole('menuitemradio', { name: mode, exact: true }).click()
     await expect(page.locator('.gallery-theme')).toHaveAttribute('aria-label', `Theme: ${mode}`)
+    await expectThemeMenuClosed(page)
     expect(page.url()).toBe(url)
   }
   await page.locator('.gallery-theme').focus()
@@ -48,6 +57,7 @@ test('native Theme menu supports keyboard selection, dismissal and isolated stat
   await expect(system).toBeFocused()
   await page.keyboard.press('Escape')
   await expect(menu).toBeHidden()
+  await expectThemeMenuClosed(page)
   await expect(page.locator('.gallery-theme')).toBeFocused()
   await expect(page.locator('.gallery-theme')).toHaveAttribute('aria-expanded', 'false')
 
@@ -136,6 +146,7 @@ for (const variant of CANONICAL_VARIANTS) {
       await page.locator('.gallery-theme').click()
       await expect(page.getByRole('menuitemradio', { name: mode[0].toUpperCase() + mode.slice(1), exact: true })).toHaveAttribute('aria-checked', 'true')
       await page.keyboard.press('Escape')
+      await expectThemeMenuClosed(page)
     })
   }
 }
