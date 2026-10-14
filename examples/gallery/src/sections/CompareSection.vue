@@ -166,7 +166,7 @@ function openFluentDialog() {
     <section class="compare__row" data-compare="tabs">
       <h2 class="compare__title">Tabs</h2>
       <div class="compare__cell compare__cell--fluent">
-        <fluent-tablist activeid="overview">
+        <fluent-tablist activeid="overview" class="compare__tabs compare__tabs--fluent">
           <fluent-tab id="overview">Overview</fluent-tab>
           <fluent-tab id="activity">Activity</fluent-tab>
           <fluent-tab id="settings">Settings</fluent-tab>
@@ -174,12 +174,14 @@ function openFluentDialog() {
         </fluent-tablist>
       </div>
       <div class="compare__cell compare__cell--qds">
-        <q-tabs v-model="tab" no-caps align="left" inline-label>
-          <q-tab name="overview" label="Overview" />
-          <q-tab name="activity" label="Activity" />
-          <q-tab name="settings" label="Settings" />
-          <q-tab name="disabled" label="Disabled" disable />
-        </q-tabs>
+        <div class="compare__tab-scroll" tabindex="0" role="region" aria-label="QDS comparison tabs, scroll horizontally for more">
+          <q-tabs v-model="tab" no-caps align="left" inline-label>
+            <q-tab name="overview" label="Overview" />
+            <q-tab name="activity" label="Activity" />
+            <q-tab name="settings" label="Settings" />
+            <q-tab name="disabled" label="Disabled" disable />
+          </q-tabs>
+        </div>
       </div>
     </section>
 
@@ -381,6 +383,27 @@ function openFluentDialog() {
 
 .compare__slider {
   width: 12rem;
+}
+
+/* Bound the demo tracks, not the library's native tab sizing/scroll grammar. */
+.compare__tabs {
+  width: 100%;
+  min-width: 0;
+}
+
+.compare__tabs--fluent {
+  flex-wrap: wrap;
+}
+
+.compare__tab-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.compare__tab-scroll > .q-tabs {
+  width: max-content;
+  min-width: 100%;
 }
 
 .compare__actions {
