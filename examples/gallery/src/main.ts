@@ -11,6 +11,8 @@ import './gallery.css'
 import '@osmova/quasar-design-system/fonts/inter.css'
 import '@osmova/quasar-design-system/fonts/open-sans.css'
 import '@osmova/quasar-design-system/fonts/selawik.css'
+// Gallery title only; self-hosted Latin 400, licensed OFL-1.1 by Fontsource.
+import '@fontsource/playwrite-fr-moderne/latin-400.css'
 
 import {
   configureDesignSystem,
@@ -18,6 +20,9 @@ import {
 } from '@osmova/quasar-design-system'
 
 import App from './App.vue'
+import { parseGalleryHash } from './gallery-url'
+
+const initialVariant = parseGalleryHash(window.location.hash).variant ?? 'fluent'
 
 const app = createApp(App)
 
@@ -38,7 +43,7 @@ app.use(Quasar, {
 // of mode/variant between matrix cells).
 const ds = configureDesignSystem(app, {
   mode: 'system',
-  variant: 'fluent',
+  variant: initialVariant,
   persist: false,
 })
 

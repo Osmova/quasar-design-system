@@ -32,13 +32,12 @@ import PluginsSection from './sections/PluginsSection.vue'
 import ScenesSection from './sections/ScenesSection.vue'
 import VariantsSection from './sections/VariantsSection.vue'
 import WindowSection from './sections/WindowSection.vue'
+import { galleryHash, parseGalleryHash, type GalleryTab } from './gallery-url'
 
 const ds = useDesignSystem()
 
-type GalleryTab = 'tokens' | 'typography' | 'compare' | 'components' | 'forms' | 'apps' | 'catalog' | 'variants' | 'scenes' | 'plugins' | 'window' | 'icons' | 'fonts'
-
-const tabs: GalleryTab[] = ['tokens', 'typography', 'compare', 'components', 'forms', 'apps', 'catalog', 'variants', 'scenes', 'plugins', 'window', 'icons', 'fonts']
-const tab = ref<GalleryTab>(tabFromHash())
+const tab = ref<GalleryTab>(parseGalleryHash(typeof window === 'undefined' ? '' : window.location.hash).tab)
+let applyingUrl = false
 
 const modes: DesignSystemMode[] = ['light', 'dark', 'system']
 const variants = Object.values(DESIGN_SYSTEM_VARIANTS)
@@ -55,12 +54,23 @@ const variantIcons: Record<string, Component> = {
   shadcn: PhSquaresFour,
 }
 
-const modeOptions = modes.map((mode) => ({
-  value: mode,
-  slot: `mode-${mode}`,
-  class: 'gallery-switcher__button',
-  attrs: { 'aria-label': `${mode} mode` },
-}))
+const themeMenuOpen = ref(false)
+const modeLabels = { light: 'Light', dark: 'Dark', system: 'System' } as const
+
+// QMenu owns autofocus, Escape and refocus; its arbitrary content has no arrow navigation.
+function onThemeMenuKeydown(event: KeyboardEvent) {
+  if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
+  const items = Array.from((event.currentTarget as HTMLElement).querySelectorAll<HTMLElement>('[role="menuitemradio"]'))
+  const current = items.indexOf(document.activeElement as HTMLElement)
+  const index = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1
+    : (current + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length
+  event.preventDefault()
+  items[index]?.focus()
+}
+
+function revealFocusedVariant(event: FocusEvent) {
+  (event.target as HTMLElement).closest('button')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+}
 const variantOptions = variants.map((variant) => ({
   value: variant.name,
   slot: `variant-${variant.name}`,
@@ -80,17 +90,25 @@ function onBaseColor(color: ShadcnBaseColor) {
   ds.setShadcnBaseColor(color)
 }
 
-function tabFromHash(): GalleryTab {
-  if (typeof window === 'undefined') {
-    return 'tokens'
+function syncUrl() {
+  if (typeof window === 'undefined' || applyingUrl) return
+  const nextHash = galleryHash(tab.value, ds.variant.value, window.location.hash)
+  if (window.location.hash !== nextHash) {
+    window.history.replaceState(window.history.state, '', `${window.location.pathname}${window.location.search}${nextHash}`)
   }
-
-  const value = window.location.hash.replace(/^#\/?/, '')
-  return tabs.includes(value as GalleryTab) ? value as GalleryTab : 'tokens'
 }
 
 function onHashChange() {
-  tab.value = tabFromHash()
+  const next = parseGalleryHash(window.location.hash)
+  applyingUrl = true
+  try {
+    tab.value = next.tab
+    // Page-only/invalid in-session links retain the ongoing selection.
+    if (next.variant) ds.setVariant(next.variant)
+  } finally {
+    applyingUrl = false
+  }
+  syncUrl()
 }
 
 function revealActiveGalleryTab() {
@@ -106,50 +124,27 @@ function revealActiveGalleryTab() {
 
 onMounted(() => {
   window.addEventListener('hashchange', onHashChange)
+  window.addEventListener('popstate', onHashChange)
   revealActiveGalleryTab()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('hashchange', onHashChange)
+  window.removeEventListener('popstate', onHashChange)
 })
 
-watch(tab, (value) => {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  const nextHash = value === 'tokens' ? '' : `#${value}`
-  const next = `${window.location.pathname}${window.location.search}${nextHash}`
-  if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== next) {
-    window.history.replaceState(null, '', next)
-  }
-
-  revealActiveGalleryTab()
-})
+// Synchronous guards keep URL-driven updates atomic and avoid queued feedback.
+watch([tab, ds.variant], syncUrl, { flush: 'sync' })
+watch(tab, revealActiveGalleryTab)
 </script>
 
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header class="gallery-header">
       <q-toolbar>
-        <q-toolbar-title class="gallery-title qds-display">Quasar Design System</q-toolbar-title>
+        <q-toolbar-title class="gallery-title">Quasar Design System</q-toolbar-title>
 
         <div class="gallery-controls">
-          <q-btn-toggle
-            :model-value="ds.mode.value"
-            no-caps
-            aria-label="Mode"
-            role="group"
-            class="gallery-switcher"
-            :options="modeOptions"
-            @update:model-value="onMode"
-          >
-            <template v-for="mode in modes" :key="mode" #[`mode-${mode}`]>
-              <component :is="modeIcons[mode]" :size="16" weight="duotone" />
-              <span class="gallery-switcher__label">{{ mode }}</span>
-            </template>
-          </q-btn-toggle>
-
           <q-btn-toggle
             :model-value="ds.variant.value"
             no-caps
@@ -158,6 +153,7 @@ watch(tab, (value) => {
             class="gallery-switcher"
             :options="variantOptions"
             @update:model-value="onVariant"
+            @focusin="revealFocusedVariant"
           >
             <template v-for="variant in variants" :key="variant.name" #[`variant-${variant.name}`]>
               <component :is="variantIcons[variant.name] ?? PhPalette" :size="16" weight="duotone" />
@@ -181,6 +177,45 @@ watch(tab, (value) => {
             @update:model-value="onBaseColor"
           />
         </div>
+        <q-btn
+          flat
+          round
+          class="gallery-theme"
+          :aria-label="`Theme: ${modeLabels[ds.mode.value]}`"
+          aria-haspopup="menu"
+          :aria-expanded="themeMenuOpen"
+          aria-controls="gallery-theme-menu"
+        >
+          <component :is="modeIcons[ds.mode.value]" :size="20" weight="duotone" aria-hidden="true" />
+          <q-menu
+            id="gallery-theme-menu"
+            v-model="themeMenuOpen"
+            role="menu"
+            aria-label="Theme"
+            anchor="bottom right"
+            self="top right"
+            @keydown="onThemeMenuKeydown"
+          >
+            <q-list>
+              <q-item
+                v-for="mode in modes"
+                :key="mode"
+                v-close-popup
+                clickable
+                :autofocus="ds.mode.value === mode"
+                role="menuitemradio"
+                :aria-checked="ds.mode.value === mode"
+                :active="ds.mode.value === mode"
+                @click="onMode(mode)"
+              >
+                <q-item-section avatar>
+                  <component :is="modeIcons[mode]" :size="18" weight="duotone" aria-hidden="true" />
+                </q-item-section>
+                <q-item-section>{{ modeLabels[mode] }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
 
       <q-tabs
@@ -241,21 +276,25 @@ watch(tab, (value) => {
 }
 
 .gallery-header :deep(.q-toolbar) {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: var(--qds-space-xs);
   padding-block: var(--qds-space-xs);
 }
 
-.gallery-title {
-  flex: 1 1 12rem;
-  min-width: 10rem;
+.gallery-header .gallery-title {
+  min-width: 0;
+  padding: 0.35rem 0;
   overflow: visible;
-  font-size: clamp(1rem, 3.6vw, 1.35rem);
+  white-space: normal;
+  font-family: 'Playwrite FR Moderne', cursive;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.8;
 }
 
 .gallery-controls {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 0.25rem;
@@ -263,14 +302,15 @@ watch(tab, (value) => {
 }
 
 .gallery-switcher {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
 }
 
 .gallery-palette {
-  flex: 0 1 10rem;
+  flex: 0 0 9rem;
   min-width: 8rem;
   max-width: 100%;
 }
@@ -310,25 +350,24 @@ watch(tab, (value) => {
   padding: 0;
 }
 
-@media (max-width: 720px) {
-  .gallery-title {
-    flex-basis: 100%;
+@media (max-width: 1100px) {
+  .gallery-header :deep(.q-toolbar) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .gallery-header .gallery-title {
+    font-size: 22px;
+  }
+
+  .gallery-theme {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .gallery-controls {
-    flex: 1 1 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-content: flex-start;
-  }
-
-  .gallery-switcher {
-    flex: 0 1 auto;
-    min-width: 0;
-  }
-}
-
-@media (max-width: 420px) {
-  .gallery-switcher__label {
-    display: none;
   }
 }
 </style>
