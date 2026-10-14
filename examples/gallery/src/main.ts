@@ -1,13 +1,8 @@
 import { createApp } from 'vue'
 import { BottomSheet, Dialog, Loading, LoadingBar, Notify, Quasar } from 'quasar'
 
-// 1. Quasar's own CSS FIRST.
-import 'quasar/src/css/index.sass'
-import '@quasar/quasar-ui-qwindow/index.css'
-
-// 2. Design-system CSS AFTER Quasar (import-after-Quasar — overrides are unlayered).
-import '@bastvi/quasar-design-system/css'
-import '@bastvi/quasar-design-system/css/extensions/qwindow'
+// Keep native → QDS → extension ordering indivisible across MPA shared chunks.
+import './adoption-default.scss'
 
 // 3. Gallery-only demo helpers (NOT part of the published design-system package).
 import './gallery.css'

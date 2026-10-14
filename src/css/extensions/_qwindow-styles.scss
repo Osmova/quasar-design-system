@@ -1,4 +1,7 @@
 @use '../materials';
+@use '../importance';
+
+$shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
 
 @mixin styles {
   // This optional extension intentionally targets only the QWindow BEM contract.
@@ -17,11 +20,11 @@
     @include materials.backdrop(blur(var(--qds-glass-blur)) saturate(var(--qds-glass-saturate)));
   }
   .qds-ui .qds-window--active { border-color: color-mix(in srgb, var(--qds-color-primary) 42%, transparent); }
-  .qds-ui .qds-window.qds-window--disabled { opacity: var(--qds-disabled-opacity) !important; }
+  .qds-ui .qds-window.qds-window--disabled { @include importance.declarations { opacity: var(--qds-disabled-opacity) !important; } }
   .qds-ui .qds-window--maximized,
   .qds-ui .qds-window--fullscreen { border-radius: 0; }
   .qds-ui .qds-window__titlebar.qds-window__titlebar { min-height: calc(var(--qds-compact-action-size) + (var(--qds-space-xs) * 2)); padding: 0; color: var(--qds-text-strong); background: var(--qds-surface-1); border-color: var(--qds-separator-color); }
-  .qds-ui .qds-window.qds-window--dense .qds-window__titlebar { min-height: calc(var(--qds-compact-action-size) + (var(--qds-space-xs) * 2)) !important; }
+  .qds-ui .qds-window.qds-window--dense .qds-window__titlebar { @include importance.declarations { min-height: calc(var(--qds-compact-action-size) + (var(--qds-space-xs) * 2)) !important; } }
   .qds-ui .qds-window__chrome { display: flex; align-items: center; justify-content: space-between; width: 100%; min-width: 0; gap: var(--qds-space-sm); padding-inline: var(--qds-space-sm); }
   .qds-ui .qds-window__title { min-width: 0; overflow: hidden; font-family: var(--qds-font-family-display); font-size: var(--qds-control-font-size-sm); font-weight: var(--qds-font-weight-semibold); letter-spacing: var(--qds-control-letter-spacing); text-overflow: ellipsis; white-space: nowrap; }
   .qds-ui .qds-window__actions { display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--qds-space-xs); }
@@ -30,8 +33,8 @@
   .qds-ui .qds-window__action.q-btn.q-btn.q-btn--flat:hover,
   .qds-ui .qds-window__action.q-btn.q-btn.q-btn--flat:focus-visible { color: var(--qds-text-strong); background: var(--qds-state-hover); }
   .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:hover,
-  .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:focus-visible { color: var(--qds-color-negative) !important; background: var(--qds-surface-negative-soft); }
-  .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-color-negative) !important; outline-offset: -2px; }
+  .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:focus-visible { @include importance.declarations { color: var(--qds-window-close-fg, var(--qds-color-negative)) !important; } background: var(--qds-window-close-bg, var(--qds-surface-negative-soft)); }
+  .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:focus-visible { @include importance.declarations { outline: var(--qds-focus-ring-width) solid var(--_qds-window-close-ring, var(--qds-window-close-ring, var(--qds-color-negative))) !important; } outline-offset: -2px; }
   .qds-ui .qds-window__body { width: 100%; min-height: 100%; overflow: auto; padding: var(--qds-space-md); color: var(--qds-text); background: var(--qds-surface-0); }
   .qds-ui .qds-window--minimized .qds-window__body,
   .qds-ui .qds-window--headless .qds-window__titlebar { display: none; }
@@ -58,4 +61,29 @@
   .qds-ui .qds-variant-one .qds-window__titlebar { background: var(--qds-surface-brand-soft); }
   .qds-ui.qds-variant-term .qds-window,
   .qds-ui .qds-variant-term .qds-window { border-color: color-mix(in srgb, var(--qds-color-primary) 24%, var(--qds-border)); }
+  :is(.qds-variant-one,.qds-variant-term):is(.qds-ui,.qds-ui *) .qds-window { --qds-window-close-ring: var(--qds-fg-negative); }
+
+  #{$shadcn} {
+    .qds-window { color: var(--qds-fg-default); background: var(--qds-bg-card); border-color: var(--qds-stroke-default); box-shadow: var(--qds-shadow-lg); }
+    .qds-window--floating { @include materials.solid(var(--qds-bg-flyout)); }
+    .qds-window--active { border-color: var(--qds-stroke-focus); }
+    .qds-window--embedded { background: var(--qds-bg-card); box-shadow: none; }
+    .qds-window__titlebar { color: var(--qds-fg-strong); background: var(--qds-bg-card); border-block-end: var(--qds-border-width-control) solid var(--qds-stroke-divider); }
+    .qds-window__title { font-family: var(--qds-font-family); font-size: var(--qds-control-font-size-sm); }
+    .qds-window__icon { color: var(--qds-fg-muted); font-size: var(--qds-control-icon-size-sm); }
+    .qds-window__action.q-btn--flat { color: var(--qds-fg-muted); background: transparent; border-radius: var(--qds-radius-control); }
+    .qds-window .qds-window__action.q-btn--flat:not(.qds-window__action--close):active { color: var(--qds-fg-strong); background: var(--qds-state-pressed); }
+    .qds-window__action.q-btn--flat .q-focus-helper { display: none; }
+    .qds-window__action.q-btn--flat:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: calc(-1 * var(--qds-focus-ring-width)); }
+    .qds-window__action--close.q-btn--flat { --qds-window-close-fg: var(--qds-text-on-negative); --qds-window-close-bg: var(--qds-color-negative-hover); --qds-window-close-ring: var(--qds-text-on-negative); }
+    .qds-window__action--close:focus-visible { box-shadow: 0 0 0 var(--qds-focus-ring-width) var(--qds-stroke-focus); }
+    .qds-window__action--close.q-btn--flat:active { --qds-window-close-bg: var(--qds-color-negative-pressed); }
+    .qds-window .qds-window__action--close.q-btn--flat:active { color: var(--qds-text-on-negative); background: var(--qds-color-negative-pressed); }
+    .qds-window__body { color: var(--qds-fg-default); background: var(--qds-bg-card); }
+    :is(.qds-window--maximized, .qds-window--fullscreen) { border-radius: 0; box-shadow: none; }
+    .qds-window--minimized { box-shadow: var(--qds-shadow-sm); }
+    .qds-window--headless { border-color: var(--qds-stroke-default); }
+    .qds-window--dense .qds-window__chrome { gap: var(--qds-space-xs); }
+  }
+  @media (forced-colors: active) { :is(.qds-variant-shadcn,.qds-variant-term,.qds-variant-one):is(.qds-ui,.qds-ui *) .qds-window__action--close { --_qds-window-close-ring: Highlight; } }
 }

@@ -1,3 +1,7 @@
+@use '../importance';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
+$shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive, .text-negative, .text-warning, .text-info)';
+
 @mixin styles {
   .qds-ui .q-checkbox,
   .qds-ui .q-radio,
@@ -107,11 +111,12 @@
     .qds-ui .q-checkbox__inner--indet.text-#{$role},
     .qds-ui .q-radio__inner--truthy.text-#{$role},
     .qds-ui .q-toggle__inner--truthy.text-#{$role},
+    #{$shadcn} .q-toggle__inner--indet.text-#{$role},
     .qds-ui .q-slider__track.text-#{$role},
     .qds-ui .q-slider__selection.text-#{$role},
     .qds-ui .q-slider__thumb.text-#{$role} {
       --qds-selection-on: var(--qds-text-on-#{$role});
-      color: var(--qds-color-#{$role}) !important;
+      @include importance.declarations { color: var(--qds-selection-fill, var(--qds-color-#{$role})) !important; }
     }
   }
 
@@ -324,4 +329,34 @@
   .qds-ui .qds-variant-term .q-slider:not(.disabled) .q-slider__thumb { border-color: var(--qds-selection-on, var(--qds-text-on-primary)); }
   .qds-ui.qds-variant-term .q-slider:not(.disabled) .q-slider__selection,
   .qds-ui .qds-variant-term .q-slider:not(.disabled) .q-slider__selection { outline: var(--qds-border-width-control) solid var(--qds-selection-on, var(--qds-text-on-primary)); }
+
+  #{$shadcn} {
+    :is(.q-checkbox, .q-radio) :is(.q-checkbox__inner--falsy, .q-radio__inner--falsy) { color: var(--qds-control-stroke-strong); }
+    .q-checkbox .q-checkbox__bg { border-radius: var(--qds-radius-xs); }
+    :is(.q-checkbox__bg, .q-radio__bg) { border-color: var(--qds-control-stroke-strong); }
+    .q-radio .q-radio__inner--truthy .q-radio__check { transform: none; }
+    .q-toggle .q-toggle__track { border-color: var(--qds-control-stroke-strong); background: var(--qds-control-fill-hover); }
+    .q-toggle .q-toggle__thumb::after { background: var(--qds-bg-canvas); box-shadow: var(--qds-shadow-sm); }
+    .q-toggle .q-toggle__inner--indet { color: var(--qds-color-primary); }
+    .q-toggle .q-toggle__inner--indet .q-toggle__track { background: currentColor; border-color: currentColor; }
+    .q-toggle .q-toggle__inner--indet .q-toggle__thumb::after { background: var(--qds-selection-on, var(--qds-text-on-primary)); }
+    .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__track { border-color: var(--qds-control-stroke-strong); }
+    :is(.q-checkbox, .q-radio, .q-toggle):not(.disabled):active :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet, .q-radio__inner--truthy, .q-toggle__inner--truthy, .q-toggle__inner--indet):where(:not([class*='text-'])) { color: var(--qds-color-primary-pressed); }
+    .q-toggle:not(.disabled):hover .q-toggle__inner--indet:where(:not([class*='text-'])) { color: var(--qds-color-primary-hover); }
+    :is(.q-checkbox, .q-radio, .q-toggle):focus-visible :is(.q-checkbox__inner, .q-radio__inner, .q-toggle__inner) { box-shadow: var(--qds-field-focus-halo); outline-width: var(--qds-border-width-control); }
+    .q-slider .q-slider__thumb { border-color: var(--qds-control-stroke-strong); background: var(--qds-bg-canvas); box-shadow: var(--qds-shadow-sm); }
+    .q-slider .q-slider__thumb-shape path { fill: var(--qds-bg-canvas); stroke: currentColor; stroke-width: var(--qds-border-width-control); }
+    .q-slider .q-slider__marker-labels { color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); }
+    .q-slider .q-slider__markers { color: var(--qds-control-stroke-strong); }
+    .q-slider .q-slider__inner { background: var(--qds-control-stroke-strong); }
+    .q-slider .q-slider__thumb.q-slider--focus { box-shadow: var(--qds-field-focus-halo); }
+    .q-slider .q-slider__track-container:focus-visible { outline: var(--qds-border-width-control) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); }
+    .q-radio .q-radio__inner--truthy#{$shadcn-roles} .q-radio__check { fill: var(--_qds-text); }
+    .q-checkbox:not(.disabled):hover :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet)#{$shadcn-roles},
+    .q-radio:not(.disabled):hover .q-radio__inner--truthy#{$shadcn-roles},
+    .q-toggle:not(.disabled):hover :is(.q-toggle__inner--truthy, .q-toggle__inner--indet)#{$shadcn-roles} { --qds-selection-fill: var(--_qds-text-hover); }
+    .q-checkbox:not(.disabled):active :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet)#{$shadcn-roles},
+    .q-radio:not(.disabled):active .q-radio__inner--truthy#{$shadcn-roles},
+    .q-toggle:not(.disabled):active :is(.q-toggle__inner--truthy, .q-toggle__inner--indet)#{$shadcn-roles} { --qds-selection-fill: var(--_qds-text-pressed); }
+  }
 }

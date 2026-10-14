@@ -11,9 +11,11 @@ import {
 import {
   DESIGN_SYSTEM_VARIANTS,
   isDesignSystemVariantName,
+  isShadcnBaseColor,
   type DesignSystemVariant,
   type DesignSystemVariantName,
   type QuasarDesignTheme,
+  type ShadcnBaseColor,
 } from '../themes/index.js'
 
 export type DesignSystemMode = 'light' | 'dark' | 'system'
@@ -23,6 +25,7 @@ export interface DesignSystemOptions {
   enabled?: boolean
   mode?: DesignSystemMode
   variant?: DesignSystemVariantName
+  shadcnBaseColor?: ShadcnBaseColor
   syncWithSystem?: boolean
   persist?: boolean
   storageKey?: string
@@ -60,6 +63,7 @@ export interface DesignSystemState {
   isDark: boolean
   prefersDark: boolean
   variant: DesignSystemVariantName
+  shadcnBaseColor: ShadcnBaseColor
   syncWithSystem: boolean
   persist: boolean
   storageKey: string
@@ -72,6 +76,7 @@ export interface DesignSystemController {
   resolvedMode: ComputedRef<DesignSystemResolvedMode>
   isDark: ComputedRef<boolean>
   variant: ComputedRef<DesignSystemVariantName>
+  shadcnBaseColor: ComputedRef<ShadcnBaseColor>
   initialize: () => void
   destroy: () => void
   setMode: (mode: DesignSystemMode) => DesignSystemMode
@@ -80,6 +85,7 @@ export interface DesignSystemController {
   setSystem: () => DesignSystemMode
   toggleMode: () => DesignSystemMode
   setVariant: (variant: DesignSystemVariantName) => DesignSystemVariantName
+  setShadcnBaseColor: (color: ShadcnBaseColor) => ShadcnBaseColor
 }
 
 interface QuasarDarkLike {
@@ -103,6 +109,7 @@ export const DEFAULT_DESIGN_SYSTEM_OPTIONS: Required<
   enabled: true,
   mode: 'system',
   variant: 'fluent',
+  shadcnBaseColor: 'neutral',
   syncWithSystem: true,
   persist: true,
   storageKey: 'bastvi.quasar-design-system.theme',
@@ -162,7 +169,7 @@ export function createDesignSystemController(
   options: DesignSystemOptions = {},
   q?: QuasarLike,
 ): DesignSystemController {
-  const target = options.target ?? getDefaultTarget()
+  const target = options.target === undefined ? getDefaultTarget() : options.target
 
   const variantRegistry: Record<string, DesignSystemVariant> = { ...DESIGN_SYSTEM_VARIANTS }
   if (options.themes) {
@@ -180,6 +187,7 @@ export function createDesignSystemController(
     isDark: false,
     prefersDark: false,
     variant: normalizeVariant(options.variant),
+    shadcnBaseColor: normalizeShadcnBaseColor(options.shadcnBaseColor),
     syncWithSystem: options.syncWithSystem ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.syncWithSystem,
     persist: options.persist ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.persist,
     storageKey: options.storageKey ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.storageKey,
@@ -205,6 +213,11 @@ export function createDesignSystemController(
     target.dataset.qdsMode = state.mode
     target.dataset.qdsResolved = state.resolvedMode
     target.dataset.qdsVariant = state.variant
+    if (state.variant === 'shadcn') {
+      target.dataset.qdsShadcnBaseColor = state.shadcnBaseColor
+    } else {
+      delete target.dataset.qdsShadcnBaseColor
+    }
     target.classList.toggle('qds-theme-light', !state.isDark)
     target.classList.toggle('qds-theme-dark', state.isDark)
     target.classList.toggle(DESIGN_SYSTEM_SCOPE_CLASS, state.enabled)
@@ -227,8 +240,15 @@ export function createDesignSystemController(
       const stored = JSON.parse(window.localStorage.getItem(state.storageKey) || '{}') as Partial<DesignSystemState>
       state.mode = normalizeMode(stored.mode ?? state.mode)
       state.variant = normalizeVariant(stored.variant ?? state.variant)
+      if (Object.prototype.hasOwnProperty.call(stored, 'shadcnBaseColor')) {
+        state.shadcnBaseColor = normalizeShadcnBaseColor(stored.shadcnBaseColor)
+      }
     } catch {
-      window.localStorage.removeItem(state.storageKey)
+      try {
+        window.localStorage.removeItem(state.storageKey)
+      } catch {
+        // Storage can be unavailable even when a window exists.
+      }
     }
   }
 
@@ -237,7 +257,13 @@ export function createDesignSystemController(
       return
     }
 
-    window.localStorage.setItem(state.storageKey, JSON.stringify({ mode: state.mode, variant: state.variant }))
+    try {
+      window.localStorage.setItem(state.storageKey, JSON.stringify({
+        mode: state.mode, variant: state.variant, shadcnBaseColor: state.shadcnBaseColor,
+      }))
+    } catch {
+      // Persistence is best effort; theme switching must still work.
+    }
   }
 
   const attachSystemListener = () => {
@@ -309,6 +335,7 @@ export function createDesignSystemController(
       delete target.dataset.qdsMode
       delete target.dataset.qdsResolved
       delete target.dataset.qdsVariant
+      delete target.dataset.qdsShadcnBaseColor
     }
     state.initialized = false
   }
@@ -319,6 +346,7 @@ export function createDesignSystemController(
     resolvedMode: computed(() => state.resolvedMode),
     isDark: computed(() => state.isDark),
     variant: computed(() => state.variant),
+    shadcnBaseColor: computed(() => state.shadcnBaseColor),
     initialize,
     destroy,
     setMode,
@@ -327,11 +355,21 @@ export function createDesignSystemController(
     setSystem: () => setMode('system'),
     toggleMode: () => setMode(THEME_MODES[(THEME_MODES.indexOf(state.mode) + 1) % THEME_MODES.length]),
     setVariant,
+    setShadcnBaseColor: (color) => {
+      state.shadcnBaseColor = normalizeShadcnBaseColor(color)
+      saveState()
+      applyState()
+      return state.shadcnBaseColor
+    },
   }
 }
 
 function normalizeMode(value: unknown): DesignSystemMode {
   return value === 'light' || value === 'dark' || value === 'system' ? value : DEFAULT_DESIGN_SYSTEM_OPTIONS.mode
+}
+
+function normalizeShadcnBaseColor(value: unknown): ShadcnBaseColor {
+  return isShadcnBaseColor(value) ? value : 'neutral'
 }
 
 function normalizeVariant(value: unknown): DesignSystemVariantName {

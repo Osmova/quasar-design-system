@@ -153,6 +153,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Shadcn QWindow close-action focus uses the system Highlight color in forced-colors mode without
+  adding important declarations or changing the other variants' window surfaces.
+- One and Term QWindow close-action focus rings use contrasting role foregrounds on library-controlled
+  surfaces while preserving their resting and hover paint.
+
 - QBtn `no-caps` is respected in variants that uppercase controls (Term).
 - Quasar `text-weight-*` / `text-bold` utilities win over the QDS type scale on headings and `text-*` steps again,
   and `text-lowercase` / `text-capitalize` win over the uppercase overline.
@@ -164,6 +169,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   palette grey.
 - Joined QBtnGroup / split-button segments draw their focus ring inside their own edge (in the on-fill ink on role
   fills), so it no longer squares off against the next segment or overlaps nearby rows.
+
+## [0.8.0-rc.3] — 2026-10-14
+
+### Added
+
+- **Shadcn variant**: opaque New York-inspired native Quasar styling with Neutral (default), Gray, Zinc,
+  Stone, and Slate palettes; `shadcnBaseColor`, `setShadcnBaseColor()`, `SHADCN_BASE_COLORS`, and the
+  `ShadcnBaseColor` type. Palette selection persists with mode/variant and survives variant switching;
+  invalid values normalize to Neutral and older storage records retain configured defaults.
+- CSS-only same-element palette/mode scopes, local-dark rebinding, observable explicit-light boundaries,
+  SSR/teardown checks, and an isolated MIT-pinned shadcn-vue reference with Inter/Phosphor normalization.
+  No mandatory Tailwind/Reka dependencies; shadcn requires Quasar >=2.35 without narrowing the existing peer range.
+- Mandatory runtime checks in `verify:publish`, finite compressed/gzip budgets for both CSS exports,
+  separate optional-extension allowances, and pinned gallery/reference screenshot-pair CI gates.
+- Gallery regression coverage for variant-card bounds and pagination, multiline font geometry, and
+  table fullscreen across all five variants in light/dark and desktop/mobile, plus Fluent dark scene contrast.
+  Legacy variant aliases remain covered by the theme tests.
+
+### Changed
+
+- Shadcn's shared prose, typography, custom focus, and semantic role grammar are scoped to the new
+  variant; existing Fluent/Ink/One/Term styling is retained. Ordinary filled shadcn buttons use primary,
+  while native contextual controls and literal palette colors retain their own grammar. Semantic on-fill
+  text takes precedence over normal author color; inline important color remains authoritative.
+- Shadcn text/focus and hover/pressed fills are calibrated for contrast after sRGB quantization; official
+  legacy Gray/Slate sidebar gaps are explicit aliases, not invented upstream values. Custom targets cover
+  descendants only; body targeting is required for full portal/plugin styling.
+
+### Fixed
+
+- Gallery variant cards and pagination stay within their mobile bounds without overlapping controls.
+- Gallery font samples use readable multiline line spacing without overlapping glyphs.
+- Gallery tables remove their demo margin in fullscreen so the table covers the full viewport and restores
+  its original spacing on exit.
+- The Fluent dark gallery scene uses an opaque reading surface with AA text contrast over its wallpaper.
 
 ## [0.8.0-rc.2] — 2026-09-29
 

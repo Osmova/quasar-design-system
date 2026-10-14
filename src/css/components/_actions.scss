@@ -1,3 +1,4 @@
+@use '../importance';
 $banner-roles: (positive: positive, negative: negative, warning: warning, info: info);
 $ink-term: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink, .qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
@@ -66,19 +67,18 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
   .qds-ui .q-btn-toggle > .q-btn.q-btn-item {
     min-height: calc(var(--qds-button-min-height) - 0.25rem);
     margin: 0;
-    background-color: transparent !important;
+    @include importance.declarations { background-color: transparent !important; }
     border-color: transparent;
     border-radius: var(--qds-button-radius);
   }
 
-  .qds-ui .q-btn-toggle > .q-btn.q-btn-item:where(:not(.disabled)) { color: var(--qds-fg-muted) !important; }
+  .qds-ui .q-btn-toggle > .q-btn.q-btn-item:where(:not(.disabled)) { @include importance.declarations { color: var(--qds-fg-muted) !important; } }
 
   #{$ink-term} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
   #{$term} .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { border-color: var(--qds-control-stroke-default); }
 
   .qds-ui .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) {
-    color: var(--qds-fg-strong) !important;
-    background-color: var(--qds-segmented-thumb-bg) !important;
+    @include importance.declarations { color: var(--qds-fg-strong) !important; background-color: var(--qds-segmented-thumb-bg) !important; }
     box-shadow: var(--qds-shadow-2);
   }
 
@@ -95,7 +95,7 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
   .qds-ui .q-avatar--square { border-radius: var(--qds-radius-control); }
 
   @each $role in primary, secondary, accent, positive, negative, warning, info {
-    .qds-ui .q-avatar.bg-#{$role} { color: var(--qds-text-on-#{$role}) !important; }
+    .qds-ui .q-avatar.bg-#{$role} { @include importance.declarations { color: var(--qds-text-on-#{$role}) !important; } }
   }
 
   .qds-ui .q-avatar--rounded { border-radius: var(--qds-radius-md); }
@@ -145,8 +145,7 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
   @each $role, $soft in $banner-roles {
     .qds-ui .q-banner:is(.bg-#{$role}, .text-#{$role}) {
-      color: var(--qds-fg-default) !important;
-      background: var(--qds-surface-#{$soft}-soft) !important;
+      @include importance.declarations { color: var(--qds-fg-default) !important; background: var(--qds-surface-#{$soft}-soft) !important; }
       border-color: color-mix(in srgb, var(--qds-color-#{$role}) 32%, transparent);
       border-inline-start: 0.1875rem solid var(--qds-color-#{$role});
     }
@@ -156,4 +155,20 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
   #{$one} .q-btn-toggle { padding: 0.25rem; }
   #{$one} .q-btn-toggle > .q-btn-item { min-height: var(--qds-button-min-height); }
+
+  .qds-variant-shadcn:is(.qds-ui,.qds-ui *) {
+    .q-btn-toggle { border-radius: var(--qds-radius-control); }
+    .q-btn-toggle > .q-btn-item { --qds-button-on-fill: var(--qds-fg-default); box-shadow: none; }
+    .q-btn-toggle > .q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { box-shadow: var(--qds-shadow-sm); }
+    .q-fab .q-fab__actions .q-btn { box-shadow: var(--qds-shadow-sm); }
+    .q-avatar:where(:not([class*='text-weight-'])) { font-weight: var(--qds-font-weight-medium); }
+    .q-breadcrumbs .q-breadcrumbs__separator { color: var(--qds-fg-muted); }
+    .q-breadcrumbs .q-breadcrumbs__el:is([aria-current='page'], :not(a)) { color: var(--qds-fg-default); }
+    .q-banner { background: var(--qds-bg-card); border-color: var(--qds-card-stroke); }
+    .q-banner .q-banner__avatar { color: var(--qds-fg-default); }
+    @each $role, $soft in $banner-roles {
+      .q-banner:is(.bg-#{$role}, .text-#{$role}) { border-inline-start-width: var(--qds-border-width-control); }
+      .q-banner:is(.bg-#{$role}, .text-#{$role}) .q-banner__avatar { color: var(--qds-fg-#{$role}); }
+    }
+  }
 }

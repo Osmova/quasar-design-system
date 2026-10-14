@@ -15,13 +15,18 @@ const sample = 'The quick brown fox jumps. Le vif œuf brun. 0123456789'
         <div class="text-h6" :style="{ fontFamily: f.stack }">{{ f.label }}</div>
         <code class="caption">{{ f.note }}</code>
       </div>
-      <div :style="{ fontFamily: f.stack }" style="font-size: 1.5rem">{{ sample }}</div>
+      <div :style="{ fontFamily: f.stack }" class="font-sample">{{ sample }}</div>
       <div :style="{ fontFamily: f.stack }" class="q-mt-sm qds-text-muted">{{ sample }}</div>
     </q-card>
   </div>
 </template>
 
 <style scoped>
+.font-sample {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
 .caption {
   font-size: 0.7rem;
   color: var(--qds-text-muted);

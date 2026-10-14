@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Immutable optional-extension CSS baseline.
 
       - uses: pnpm/action-setup@v4
         with:
@@ -27,21 +29,18 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Package build, types, Sass, and pack dry-run
-        run: |
-          pnpm build
-          pnpm typecheck
-          npx sass src/css/index.scss /tmp/qds-ci.css
-          npx sass src/css/index.layered.scss /tmp/qds-ci-layered.css
-          npm pack --dry-run --json
+      - name: Install browser for mandatory runtime and gallery checks
+        run: pnpm -C examples/gallery exec playwright install --with-deps chromium
+
+      - name: Package build, types, runtime, CSS budgets, and pack dry-run
+        run: pnpm verify:publish
 
       - run: pnpm gallery:build
+      - name: Verify emitted consumer CSS adoption order
+        run: node examples/gallery/scripts/test-consumer-css-order.mjs
       - run: pnpm stories:build
-
-      - name: Install Playwright browser dependencies
-        run: pnpm -C examples/gallery exec playwright install --with-deps chromium
 
       - run: pnpm gallery:test
 
@@ -51,4 +50,65 @@ jobs:
         with:
           name: playwright-report
           path: examples/gallery/playwright-report/
+          if-no-files-found: ignore
+
+  screenshots-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm build
+      - run: pnpm shadcn-reference:check
+      - run: pnpm shadcn-reference:build
+      - run: pnpm gallery:build
+
+      - name: Verify emitted consumer CSS adoption order
+        run: node examples/gallery/scripts/test-consumer-css-order.mjs
+
+      - name: Check shared pinned Playwright version
+        run: |
+          GALLERY_VERSION="$(pnpm -C examples/gallery exec node -p "require('@playwright/test/package.json').version")"
+          REFERENCE_VERSION="$(pnpm -C examples/shadcn-reference exec node -p "require('@playwright/test/package.json').version")"
+          test "$GALLERY_VERSION" = 1.61.0
+          test "$REFERENCE_VERSION" = "$GALLERY_VERSION"
+
+      # screens.sh owns its preview server and matching v1.61.0-noble container; do not wrap it in Docker.
+      - name: Pinned gallery screenshots (two non-update runs)
+        run: |
+          pnpm gallery:screens
+          pnpm gallery:screens
+
+      - name: Reference checks in matching pinned browser image
+        run: |
+          docker run --rm --ipc host \
+            -v "$PWD:$PWD" -w "$PWD" \
+            mcr.microsoft.com/playwright:v1.61.0-noble \
+            bash -euc 'corepack enable; corepack prepare pnpm@10.28.1 --activate;
+              pnpm -C examples/shadcn-reference test:reference;
+              pnpm gallery:shadcn-reference:test --workers=2 --output=test-results-reference-metrics;
+              QDS_SCREENS=1 pnpm gallery:shadcn-reference:test --workers=2 --output=test-results-reference-screens'
+
+      - name: Upload screenshot and reference evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-reference
+          path: |
+            examples/gallery/playwright-report/
+            examples/gallery/test-results/
+            examples/gallery/test-results-reference-metrics/
+            examples/gallery/test-results-reference-screens/
+            examples/shadcn-reference/playwright-report/
+            examples/shadcn-reference/test-results/
+            examples/shadcn-reference/dist/
           if-no-files-found: ignore

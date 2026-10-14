@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { applyTheme, CANONICAL_VARIANTS, resolvedColor, type Mode } from './helpers'
+import { applyTheme, LEGACY_VARIANTS as CANONICAL_VARIANTS, resolvedColor, type Mode } from './helpers'
 
 const MODES: Mode[] = ['light', 'dark']
 

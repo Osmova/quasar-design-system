@@ -2,6 +2,7 @@
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   // QMenu `fit` pins min-width to the anchor inline; the anchor gap is Quasar's `offset` prop.
@@ -38,4 +39,21 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
   #{$one} .q-menu { border-radius: var(--qds-card-radius); }
   #{$one} .q-menu .q-list { padding: var(--qds-space-sm); }
   #{$one} .q-menu .q-item { padding-inline: var(--qds-space-md); border-radius: var(--qds-radius-control); }
+
+  #{$shadcn} .q-menu { padding: var(--qds-space-xs); border-color: var(--qds-menu-border); box-shadow: var(--qds-menu-shadow); @include materials.solid(var(--qds-menu-bg)); }
+  #{$shadcn} .q-menu--square { border-radius: 0; }
+  #{$shadcn} .q-menu > .q-card--flat:not(.q-card--bordered) { background: transparent; border: 0; box-shadow: none; }
+  #{$shadcn} .q-menu .q-list { padding: 0; }
+  #{$shadcn} .q-menu .q-item { min-height: var(--qds-menu-item-min-height); padding: var(--qds-space-xs) var(--qds-space-sm); gap: var(--qds-space-sm); border-radius: var(--qds-row-radius); font-size: var(--qds-font-size-body); line-height: var(--qds-line-height-body); }
+  #{$shadcn} .q-menu :is(.q-item--dense, .q-list--dense > .q-item) { min-height: calc(var(--qds-control-size-sm) - var(--qds-space-xs)); }
+  #{$shadcn} .q-menu .q-item + .q-item { margin-block-start: 0; }
+  #{$shadcn} .q-menu .q-item__section--avatar { min-width: var(--qds-control-icon-size-md); padding-inline-end: 0; }
+  #{$shadcn} .q-menu .q-item__section--side { padding-inline-start: 0; color: var(--qds-fg-muted); }
+  #{$shadcn} .q-menu :is(.q-item__label--caption, .q-item__label--header) { color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); }
+  #{$shadcn} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible, .q-manual-focusable--focused, .q-item--active, [aria-selected='true']) { background: var(--qds-state-selected); }
+  #{$shadcn} .q-menu .q-item:not(.disabled):active { background: var(--qds-state-pressed); }
+  #{$shadcn} .q-menu .q-item > .q-focus-helper { opacity: 0; }
+  #{$shadcn} .q-menu .q-item:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: calc(-1 * var(--qds-focus-ring-width)); }
+  @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-menu:is(.q-transition--fade-enter-active, .q-transition--fade-leave-active) { transition: none; } }
+  @media (forced-colors: active) { #{$shadcn} .q-menu { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; } #{$shadcn} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible, .q-manual-focusable--focused, .q-item--active, [aria-selected='true']) { outline: var(--qds-focus-ring-width) solid Highlight; } }
 }

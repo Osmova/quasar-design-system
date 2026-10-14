@@ -1,4 +1,5 @@
 // Layered optional QWindow extension for apps that also layer Quasar/QWindow CSS.
+@use '../importance' with ($layered: true);
 @use 'qwindow-styles' as qwindow;
 
 @layer qds.quasar {

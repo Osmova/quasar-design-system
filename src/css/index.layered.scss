@@ -1,6 +1,7 @@
 // Layered bundle: emits the SAME overrides as ./css but wrapped in @layer for
 // apps that deliberately layer Quasar's own CSS (so the cascade order is
 // controlled by layer order rather than import order + specificity).
+@use 'importance' with ($layered: true);
 @use 'layers';
 @use '../themes/fallbacks';
 @use '../themes/default';

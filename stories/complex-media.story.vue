@@ -234,7 +234,7 @@ onBeforeUnmount(() => {
                       <div class="qds-story-image-proof">
                         <QImg :src="invalidArtwork" alt="Unavailable local artwork preview" :ratio="16 / 9" data-test="qds-story-image-error">
                           <template #error>
-                            <div class="qds-story-image-slot column flex-center q-gutter-xs">
+                            <div class="qds-story-image-slot qds-story-image-slot--error column flex-center q-gutter-xs">
                               <PhWarning :size="25" weight="duotone" />
                               <span class="text-caption">Preview unavailable</span>
                             </div>
@@ -288,26 +288,26 @@ onBeforeUnmount(() => {
                     data-test="qds-story-carousel"
                   >
                     <template #control>
-                      <QCarouselControl position="left" :offset="[10, 0]">
+                      <QCarouselControl position="left" :offset="[10, 0]" class="flex items-center">
                         <QBtn
                           round
                           unelevated
                           :icon="ppArrowLeft"
                           aria-label="Previous slide"
                           color="white"
-                          text-color="primary"
+                          text-color="dark"
                           data-test="qds-story-carousel-prev"
                           @click="carouselSlide = wrapCarouselSlide(-1)"
                         />
                       </QCarouselControl>
-                      <QCarouselControl position="right" :offset="[10, 0]">
+                      <QCarouselControl position="right" :offset="[10, 0]" class="flex items-center">
                         <QBtn
                           round
                           unelevated
                           :icon="ppArrowRight"
                           aria-label="Next slide"
                           color="white"
-                          text-color="primary"
+                          text-color="dark"
                           data-test="qds-story-carousel-next"
                           @click="carouselSlide = wrapCarouselSlide(1)"
                         />
@@ -321,7 +321,7 @@ onBeforeUnmount(() => {
                             round
                             unelevated
                             :color="carouselSlide === slide.name ? 'white' : 'grey-4'"
-                            text-color="primary"
+                            text-color="dark"
                             :label="String(index + 1)"
                             :aria-label="`Show ${slide.title} slide`"
                             :aria-pressed="carouselSlide === slide.name"
@@ -498,6 +498,11 @@ onBeforeUnmount(() => {
 
 .qds-story-image-slot {
   color: var(--qds-text-muted);
+}
+
+.qds-story-image-slot--error {
+  color: var(--qds-fg-negative);
+  background: var(--qds-surface-negative-soft);
 }
 
 .qds-story-editor-grid {

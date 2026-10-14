@@ -398,6 +398,8 @@
     --qds-badge-min-height: #{map.get(map.get(tokens.$components, badge), min-height)};
     --qds-badge-padding: #{map.get(map.get(tokens.$components, badge), padding)};
     --qds-avatar-initials-scale: #{map.get(map.get(tokens.$components, avatar), initials-scale)};
+    --qds-spinner-static-arc: #{map.get(map.get(tokens.$components, spinner), static-arc)};
+    --qds-spinner-static-offset: #{map.get(map.get(tokens.$components, spinner), static-offset)};
     --qds-chip-min-height: #{map.get(map.get(tokens.$components, chip), min-height)};
     --qds-chip-padding: #{map.get(map.get(tokens.$components, chip), padding)};
     --qds-chip-dense-min-height: #{map.get(map.get(tokens.$components, chip), dense-min-height)};

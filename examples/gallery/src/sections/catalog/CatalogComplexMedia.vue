@@ -393,7 +393,7 @@ onBeforeUnmount(() => {
                   round
                   unelevated
                   color="white"
-                  text-color="primary"
+                  text-color="dark"
                   aria-label="Toggle carousel fullscreen"
                   data-test="qds-carousel-fullscreen"
                   @click="carouselFullscreen = !carouselFullscreen"
@@ -432,7 +432,7 @@ onBeforeUnmount(() => {
       <div class="catalog-demo">
         <div class="catalog-label">QParallax</div>
         <q-parallax :src="visualImage" :height="220">
-          <div class="text-white text-h5 qds-display">Parallax surface</div>
+          <div class="catalog-parallax-caption text-white text-h5 qds-display" data-test="qds-parallax-caption">Parallax surface</div>
         </q-parallax>
       </div>
 
@@ -585,6 +585,12 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.catalog-parallax-caption {
+  padding: var(--qds-space-sm) var(--qds-space-md);
+  border-radius: var(--qds-radius-control);
+  background: var(--qds-media-scrim-strong);
+}
+
 .catalog-carousel-controls,
 .catalog-uploader-header {
   display: flex;

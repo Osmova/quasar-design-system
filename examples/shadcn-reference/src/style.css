@@ -1,0 +1,83 @@
+/* Private document only. Never import this stylesheet into the QDS gallery. */
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@import "../../../src/fonts/inter.css";
+@source "./";
+@source "../upstream/apps/v4/registry/new-york-v4/ui";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Selected component theme bindings from pinned apps/v4/assets/css/main.css.
+   Keep the upstream multiplicative radius scale, not a recreated approximation. */
+@theme inline {
+  --font-sans: "Inter Variable", sans-serif;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground font-sans; font-synthesis-weight: none; text-rendering: optimizeLegibility; }
+}
+
+/* Fixture composition only: no data-slot/component geometry overrides. */
+.reference-shell { max-width: 1120px; margin-inline: auto; padding: 32px; }
+.reference-toolbar, .reference-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.reference-toolbar { justify-content: space-between; margin-bottom: 32px; }
+.reference-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.reference-family { min-width: 0; scroll-margin-top: 24px; }
+.reference-family > h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+.reference-stack { display: grid; gap: 16px; }
+.reference-field { display: grid; gap: 8px; font-size: 14px; }
+.reference-sidebar { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); }
+.reference-wide { grid-column: 1 / -1; }
+.reference-caption { color: var(--muted-foreground); font-size: 14px; }
+@media (max-width: 640px) {
+  .reference-shell { padding: 20px 16px; }
+  .reference-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+}
+/* Opt-in capture mode freezes transitions without changing sizes or colors. */
+html[data-reference-capture="true"] *,
+html[data-reference-capture="true"] *::before,
+html[data-reference-capture="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+  caret-color: transparent !important;
+}

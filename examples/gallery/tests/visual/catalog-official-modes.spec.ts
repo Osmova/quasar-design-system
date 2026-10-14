@@ -90,7 +90,7 @@ test.describe('QDS official stable data and layout modes', () => {
     expect(await computed(page, '[data-test="qds-tree-dark-no-connectors"] .q-tree__node-header', 'display', '::before')).toBe('none')
   })
 
-  for (const variant of ['ink', 'one'] as const) {
+  for (const variant of ['ink', 'one', 'term'] as const) {
     test(`keeps explicit QTable and QTree dark in light/${variant}`, async ({ page }) => {
       await openComponents(page)
       await applyTheme(page, 'light', variant)
@@ -126,11 +126,31 @@ test.describe('QDS official stable data and layout modes', () => {
       )
       await expect(table.locator('td').first()).toHaveCSS('color', await resolvedColor(page, '--qds-surface-0'))
 
+      if (variant === 'term') {
+        // Local dark inverts Term's light-page tokens; it is not the global Term dark palette.
+        await expect(table).toHaveCSS('background-color', 'rgb(14, 13, 11)')
+        await expect(table.locator('td').first()).toHaveCSS('color', 'rgb(248, 246, 240)')
+        await expect(table.locator('th').first()).toHaveCSS('text-transform', 'uppercase')
+        await expect(table).toHaveCSS('box-shadow', 'none')
+        await expect(table).toHaveCSS('border-top-width', '1px')
+        await expect(table.locator('thead tr')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+        expect(
+          contrastRatio(darkHeaderText, await table.evaluate((element) => getComputedStyle(element).backgroundColor)),
+          'Term transparent explicit-dark header keeps AA contrast against the inverted table surface',
+        ).toBeGreaterThanOrEqual(4.5)
+      }
+
       await openCatalog(page)
       const tree = page.locator('[data-test="qds-tree-dark-no-connectors"]')
       await expect(tree).toHaveClass(/q-tree--dark/)
       await expect(tree).toHaveCSS('background-color', await resolvedColor(page, '--qds-text-strong'))
       await expect(tree.locator('.q-tree__node-header').first()).toHaveCSS('color', await resolvedColor(page, '--qds-surface-0'))
+      if (variant === 'term') {
+        await expect(tree).toHaveCSS('background-color', 'rgb(14, 13, 11)')
+        await expect(tree.locator('.q-tree__node-header').first()).toHaveCSS('color', 'rgb(248, 246, 240)')
+        await expect(tree).toHaveClass(/q-tree--no-connectors/)
+        expect(await computed(page, '[data-test="qds-tree-dark-no-connectors"] .q-tree__node-header', 'display', '::before')).toBe('none')
+      }
     })
   }
 

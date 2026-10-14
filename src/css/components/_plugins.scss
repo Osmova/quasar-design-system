@@ -3,6 +3,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-dialog__inner > .q-bottom-sheet {
@@ -53,4 +54,19 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
     box-shadow: none;
     @include materials.solid(var(--qds-surface-0));
   }
+
+  #{$shadcn} .q-dialog__inner > .q-bottom-sheet { color: var(--qds-fg-default); border: var(--qds-border-width-control) solid var(--qds-border); box-shadow: var(--qds-shadow-lg); @include materials.solid(var(--qds-bg-flyout)); }
+  #{$shadcn} .q-bottom-sheet__item { font-size: var(--qds-font-size-body); line-height: var(--qds-line-height-body); }
+  #{$shadcn} .q-bottom-sheet--list :is(.q-icon, img) { font-size: var(--qds-icon-size-lg); width: var(--qds-icon-size-lg); height: var(--qds-icon-size-lg); }
+  #{$shadcn} .q-bottom-sheet--grid .q-bottom-sheet__item { flex: 1 0 calc(25% - 2 * var(--qds-space-xs)); min-width: var(--qds-control-size-lg); }
+  #{$shadcn} .q-bottom-sheet--grid :is(.q-icon, img, .q-bottom-sheet__empty-icon) { font-size: var(--qds-control-size-md); width: var(--qds-control-size-md); height: var(--qds-control-size-md); }
+  #{$shadcn} .q-bottom-sheet__item:is(:hover, :focus-visible) { background: var(--qds-state-hover); }
+  #{$shadcn} .q-bottom-sheet__item:active { background: var(--qds-state-pressed); }
+  #{$shadcn} .q-bottom-sheet__item > .q-focus-helper { opacity: 0; }
+  #{$shadcn} .q-bottom-sheet__item:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: calc(-1 * var(--qds-focus-ring-width)); }
+  #{$shadcn} .q-loading .q-loading__box { border: var(--qds-border-width-control) solid var(--qds-border); @include materials.solid(var(--qds-bg-flyout)); }
+  #{$shadcn} .q-loading .q-loading__message { margin: 0; font-size: var(--qds-font-size-body); line-height: var(--qds-line-height-body); overflow-wrap: anywhere; }
+  @media (max-width: 599.98px) { #{$shadcn} .q-bottom-sheet--grid .q-bottom-sheet__item { flex-basis: calc(33.333% - 2 * var(--qds-space-xs)); } }
+  @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-loading { transition: none; } #{$shadcn} .q-loading__spinner, #{$shadcn} .q-loading__spinner * { animation: none; } }
+  @media (forced-colors: active) { #{$shadcn} .q-dialog__inner > .q-bottom-sheet, #{$shadcn} .q-loading .q-loading__box { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; } #{$shadcn} .q-bottom-sheet__item:focus-visible { outline-color: Highlight; } }
 }

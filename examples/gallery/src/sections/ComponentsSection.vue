@@ -429,7 +429,7 @@ function notify(type: 'positive' | 'negative' | 'warning' | 'info') {
           dark
           dense
           flat
-          class="q-mb-md"
+          :class="{ 'q-mb-md': !tableFullscreen }"
           data-test="qds-table-official-modes"
         >
           <template #top="scope">

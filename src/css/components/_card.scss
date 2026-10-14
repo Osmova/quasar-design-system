@@ -1,8 +1,10 @@
 @use '../materials';
+@use '../../themes/shadcn';
 
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $framed: '.q-card--bordered, .qds-card--readable, .qds-card--contrast, .qds-card--opaque, .qds-card--solid';
 $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark)';
 
@@ -68,6 +70,11 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$explicit-dark} .qds-text-muted { color: var(--qds-fg-muted); }
   #{$explicit-dark} .qds-text-strong { color: var(--qds-fg-strong); }
 
+  // One palette/material closure after native inversion, with no geometry copies.
+  @include shadcn.local-scopes(':is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark, .q-bar--dark, .q-drawer--dark, .q-tab-panels--dark, .q-timeline--dark, .q-editor--dark)', dark, $shadcn);
+  // QBar is the native family with an explicit observable light class.
+  @include shadcn.local-scopes('.q-bar--light', light, $shadcn);
+
   .qds-ui :is(.q-card, .qds-card, .qds-tile) {
     color: var(--qds-fg-default);
     background: var(--qds-card-fill);
@@ -103,4 +110,18 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$term} :is(.q-card, .qds-card, .qds-tile):where(:not(.qds-material, .qds-card--transient)) { background: var(--qds-card-fill); }
   #{$term} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(.qds-material, .qds-card--transient)) { background: var(--qds-bg-surface-1); }
   #{$term} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(#{$framed})) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
+
+  #{$shadcn} :is(.q-card, .qds-card, .qds-tile) { color: var(--qds-shadcn-card-foreground); }
+  #{$shadcn} .q-card > .q-card__section--vert { padding: var(--qds-space-lg); }
+  #{$shadcn} .q-card > .q-card__section--vert:where(:not(.qds-card__header, .qds-card-header)) + .q-card__section--vert { padding-block-start: 0; }
+  #{$shadcn} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { padding: var(--qds-space-lg); }
+  #{$shadcn} .q-card > .q-card__section:is(.qds-card__header--accent, .qds-card-header--accent) { color: var(--qds-fg-default); background: var(--qds-state-selected); }
+  #{$shadcn} .q-card > .q-card__actions { padding: var(--qds-space-sm) var(--qds-space-lg) var(--qds-space-lg); gap: var(--qds-space-sm); }
+  #{$shadcn} .q-card > .q-card__actions--vert { padding: var(--qds-space-lg); }
+  #{$shadcn} .q-card > .q-card__actions .q-btn + .q-btn { margin-inline-start: 0; }
+  #{$shadcn} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { background: var(--qds-card-fill); border: var(--qds-border-width-control) solid var(--qds-card-stroke); box-shadow: var(--qds-shadow-sm); }
+  #{$shadcn} :is(.q-card, .qds-card) :is(.q-card, .qds-card).qds-card--transient { background: var(--qds-surface-transient); box-shadow: var(--qds-shadow-md); }
+  #{$shadcn} .q-card.q-card--flat { box-shadow: none; }
+  #{$shadcn} .q-card.q-card--square { border-radius: 0; }
+  #{$shadcn} .q-card:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); }
 }

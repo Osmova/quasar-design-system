@@ -171,6 +171,7 @@ $components: (
   card: (acrylic-tint-rgb: '255, 255, 255', dark-acrylic-tint-rgb: '255, 255, 255', tonal-opacity: 0.016, fallback-tonal-opacity: 0.012, readable-tonal-opacity: 0.032, readable-surface-mix: 100%, header-tonal-opacity: 0.026, header-surface-mix: 100%, dark-tonal-opacity: 0.018, dark-fallback-tonal-opacity: 0.014, dark-readable-tonal-opacity: 0.032, dark-readable-surface-mix: 100%, dark-header-tonal-opacity: 0.028, dark-header-surface-mix: 100%, border-mix: 22%, backdrop-blur: 0, backdrop-saturate: 1),
   badge: (min-height: 1.25rem, padding: 0 0.5rem),
   avatar: (initials-scale: 0.375em),
+  spinner: (static-arc: 89 200, static-offset: 0),
   chip: (min-height: 1.75rem, padding: 0 0.75rem, dense-min-height: 1.5rem, dense-padding: 0 0.5rem),
   field: (padding-inline: 0.75rem, label-size: 0.8125rem, focus-border-width: 2px, min-height: 3rem, dense-min-height: 2.5rem, focus-stroke-mix: 20%, halo-mix: 24%),
   tab: (min-height: 2.25rem),

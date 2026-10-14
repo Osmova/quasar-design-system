@@ -174,6 +174,16 @@ const materials = [
   max-width: 26rem;
 }
 
+/* This owned pale wallpaper needs a solid dark reading surface, not acrylic. */
+.scene-frame--fluent .scene-panel.q-card--dark {
+  background: var(--qds-bg-card);
+  color: var(--qds-fg-default);
+}
+
+.scene-frame--fluent .scene-panel.q-card--dark .scene-panel__eyebrow {
+  color: var(--qds-fg-brand);
+}
+
 .scene-panel__header {
   padding-bottom: var(--qds-space-sm);
 }

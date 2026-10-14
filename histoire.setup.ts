@@ -1,6 +1,9 @@
 import {
   ClosePopup,
+  BottomSheet,
+  Dialog,
   Loading,
+  LoadingBar,
   Notify,
   QBadge,
   QBanner,
@@ -25,6 +28,8 @@ import 'quasar/src/css/index.sass'
 import './src/fonts/inter.css'
 import './src/fonts/selawik.css'
 import './src/css/index.scss'
+import '@quasar/quasar-ui-qwindow/index.css'
+import '@bastvi/quasar-design-system/css/extensions/qwindow'
 import './stories/_shared/story.scss'
 
 type QuasarInstall = (app: App, options: object, ssrContext?: unknown) => void
@@ -54,7 +59,10 @@ export function setupVue3({ app }: { app: App }) {
     },
     iconSet: qdsIconSet,
     plugins: {
+      BottomSheet,
+      Dialog,
       Loading,
+      LoadingBar,
       Notify,
     },
   }

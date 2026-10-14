@@ -1,4 +1,7 @@
+@use '../importance';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
+$shadcn-roles: ':is(.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info)';
 
 @mixin styles {
   .qds-ui .q-option-group {
@@ -96,7 +99,8 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
   .qds-ui .q-date__calendar-item--out { opacity: 0.4; }
   .qds-ui .q-date .q-date__today { color: var(--qds-fg-brand); box-shadow: inset 0 0 0 var(--qds-border-width-control) var(--qds-stroke-focus); }
   .qds-ui :is(.q-date__range, .q-date__range-from, .q-date__range-to, .q-date__edit-range)::before { background: var(--qds-surface-brand-soft); opacity: 1; }
-  .qds-ui :is(.q-date__range, .q-date__edit-range) > .q-btn { color: var(--qds-fg-default) !important; }
+  .qds-ui :is(.q-date__range, .q-date__edit-range) > .q-btn,
+  #{$shadcn} :is(.q-date__header, .q-time__header, .q-time__clock-position--active)#{$shadcn-roles} { @include importance.declarations { color: var(--qds-picker-on-fill, var(--qds-fg-default)) !important; } }
   .qds-ui .q-date__range-from::before { border-start-start-radius: var(--qds-radius-full); border-end-start-radius: var(--qds-radius-full); }
   .qds-ui .q-date__range-to::before { border-start-end-radius: var(--qds-radius-full); border-end-end-radius: var(--qds-radius-full); }
   .qds-ui .q-date__event { background: var(--qds-color-primary); box-shadow: 0 0 0 1px var(--qds-bg-flyout); }
@@ -151,8 +155,7 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
   // Quasar pins the header/footer tab heights.
   .qds-ui .q-color-picker .q-tab {
-    height: var(--qds-control-size-sm) !important;
-    min-height: var(--qds-control-size-sm) !important;
+    @include importance.declarations { height: var(--qds-control-size-sm) !important; min-height: var(--qds-control-size-sm) !important; }
     color: var(--qds-fg-muted);
     font-size: var(--qds-font-size-caption);
     font-weight: var(--qds-font-weight-semibold);
@@ -172,14 +175,14 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
   // Replaces Quasar's pinned raster checker with a token-coloured one.
   .qds-ui .q-color-picker__header-bg {
     background-color: var(--qds-bg-flyout);
-    background-image: conic-gradient(var(--qds-bg-layer) 25%, transparent 0 50%, var(--qds-bg-layer) 0 75%, transparent 0) !important;
+    @include importance.declarations { background-image: conic-gradient(var(--qds-bg-layer) 25%, transparent 0 50%, var(--qds-bg-layer) 0 75%, transparent 0) !important; }
     background-size: 0.5rem 0.5rem;
   }
 
   .qds-ui :is(.q-color-picker__sliders, .q-color-picker__tune-tab, .q-color-picker__palette-rows) { padding: var(--qds-space-sm) var(--qds-space-md); }
 
   // Hides Quasar's pinned raster checker and draws a token checker under the alpha ramp.
-  .qds-ui .q-color-picker__alpha .q-slider__track { background-color: transparent !important; background-size: 0 0 !important; }
+  .qds-ui .q-color-picker__alpha .q-slider__track { @include importance.declarations { background-color: transparent !important; background-size: 0 0 !important; } }
 
   .qds-ui .q-color-picker__alpha .q-slider__track::before {
     background:
@@ -215,7 +218,7 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
   // Quasar pins swatch width at 10%; the grid owns the size.
   .qds-ui .q-color-picker__cube {
-    width: auto !important;
+    @include importance.declarations { width: auto !important; }
     padding: 0;
     aspect-ratio: 1;
     border-radius: var(--qds-radius-xs);
@@ -235,4 +238,41 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
   }
 
   .qds-ui .q-popup-edit__buttons .q-btn + .q-btn { margin-inline-start: 0; }
+
+  #{$shadcn} {
+    .q-option-group :is(.q-checkbox, .q-radio, .q-toggle).disabled:is(:hover, :focus-within) { background: transparent; }
+    .qds-option-group--card :is(.q-checkbox, .q-radio, .q-toggle) { background: var(--qds-bg-card); border-color: var(--qds-card-stroke); }
+    .qds-option-group--card :is(.q-checkbox, .q-radio, .q-toggle):has(> .q-checkbox__inner--truthy, > .q-radio__inner--truthy, > .q-toggle__inner--truthy) { border-color: var(--qds-stroke-focus); }
+    .qds-option-group--card :is(.q-checkbox, .q-radio, .q-toggle):focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); }
+    .q-file .q-field__native { min-width: 0; overflow-wrap: anywhere; }
+    .q-file .q-field__native > div { min-width: 0; }
+    .q-file .q-file__dnd { color: var(--qds-fg-default); background: var(--qds-state-selected); }
+    :is(.q-date, .q-time, .q-color-picker) { box-shadow: var(--qds-shadow-sm); border-radius: var(--qds-radius-control); }
+    :is(.q-date__header, .q-time__header) { color: var(--qds-fg-default); background: var(--qds-bg-flyout); }
+    :is(.q-date__header-subtitle, .q-date__header-title-label, .q-time__header-label) { font-size: var(--qds-font-size-body1); line-height: var(--qds-line-height-body1); letter-spacing: normal; }
+    .q-date__header-title-label { font-weight: var(--qds-font-weight-medium); }
+    :is(.q-date__calendar-item, .q-date__months-item, .q-date__years-item) > :is(.q-btn, div) { border-radius: var(--qds-radius-sm); }
+    .q-date__calendar-item--out { opacity: 1; color: var(--qds-fg-muted); }
+    .q-date__calendar-item--out > :is(.q-btn, div) { color: var(--qds-fg-muted); }
+    .q-date__calendar-item > .q-btn.disabled { --qds-button-disabled-opacity: 0.5; }
+    .q-date .q-date__today { color: var(--qds-fg-default); background-color: var(--qds-state-selected); box-shadow: inset 0 0 0 var(--qds-border-width-control) var(--qds-control-stroke-strong); }
+    :is(.q-date__range, .q-date__range-from, .q-date__range-to, .q-date__edit-range)::before { background: var(--qds-state-selected); border-radius: 0; }
+    .q-date__edit-range::after { border-color: var(--qds-stroke-focus); }
+    .q-time__header-ampm .q-time__link--active { box-shadow: var(--qds-shadow-sm); }
+    .q-time__clock-pointer { color: var(--qds-color-primary); }
+    .q-time__clock-position--active:hover { color: var(--qds-text-on-primary); background: var(--qds-color-primary-hover); }
+    .q-time__now-button { color: var(--qds-text-on-primary); background: var(--qds-color-primary); }
+    .q-color-picker .q-tab--active { box-shadow: var(--qds-shadow-sm); }
+    .q-color-picker__header-content { background: var(--qds-bg-flyout); color: var(--qds-fg-default); }
+    .q-color-picker__header input { font: inherit; color: var(--qds-fg-default); background: var(--qds-control-fill-default); border: var(--qds-border-width-control) solid var(--qds-control-stroke-strong); border-radius: var(--qds-radius-sm); }
+    .q-color-picker__header input:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); }
+    .q-color-picker__tune-tab input { border-color: var(--qds-control-stroke-strong); }
+    .q-color-picker__error-icon { color: var(--qds-fg-negative); }
+    .q-color-picker__sliders .q-slider__thumb { color: var(--qds-control-stroke-strong); }
+    .q-color-picker__spectrum:focus-visible::after { box-shadow: inset 0 0 0 var(--qds-border-width-control) var(--qds-bg-canvas), inset 0 0 0 var(--qds-focus-ring-width) var(--qds-stroke-focus); }
+    :is(.q-date__header, .q-time__header, .q-time__clock-position--active)#{$shadcn-roles} { --qds-picker-on-fill: var(--_qds-on); }
+    :is(.q-date__header, .q-time__header)#{$shadcn-roles} :is(.q-date__header-link, .q-time__link) { color: var(--qds-picker-on-fill); }
+    :is(.q-date__header, .q-time__header)#{$shadcn-roles} :is(.q-date__header-link, .q-time__link):hover { background: var(--_qds-hover); }
+    :is(.q-date__header, .q-time__header)#{$shadcn-roles} :is(.q-date__header-link, .q-time__link):active { background: var(--_qds-pressed); }
+  }
 }

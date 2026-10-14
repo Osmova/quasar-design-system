@@ -1,8 +1,10 @@
 @use '../materials';
+@use '../importance';
 
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-notification {
@@ -14,8 +16,7 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
     position: relative;
     overflow: hidden;
     padding-inline-start: calc(var(--qds-space-md) + 3px);
-    color: var(--qds-fg-default) !important;
-    background: var(--qds-notify-bg) !important;
+    @include importance.declarations { color: var(--qds-fg-default) !important; background: var(--qds-notify-bg) !important; }
     border: var(--qds-border-width-control) solid transparent;
     border-radius: var(--qds-notification-radius);
     box-shadow: var(--qds-notification-shadow);
@@ -56,4 +57,18 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
     border-color: color-mix(in srgb, var(--qds-notify-accent) 32%, var(--qds-border));
     @include materials.solid;
   }
+
+  #{$shadcn} .q-notification { --qds-notify-bg: var(--qds-bg-flyout); --qds-notify-icon: var(--qds-fg-primary); padding-inline: var(--qds-space-md); border-color: var(--qds-border); font-size: var(--qds-font-size-body); line-height: var(--qds-line-height-body); transition-duration: var(--qds-motion-duration-base); @include materials.solid; }
+  #{$shadcn} .q-notification:is(.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info) { --qds-notify-accent: var(--_qds-fill); --qds-notify-on-accent: var(--_qds-on); --qds-notify-icon: var(--_qds-fg); }
+  #{$shadcn} .q-notification::before { content: none; }
+  #{$shadcn} :is(.q-notification__icon, .q-notification__spinner) { color: var(--qds-notify-icon); font-size: var(--qds-icon-size-lg); }
+  #{$shadcn} .q-notification__avatar { font-size: var(--qds-control-size-sm); }
+  #{$shadcn} .q-notification__message { overflow-wrap: anywhere; font-weight: var(--qds-font-weight-medium); }
+  #{$shadcn} .q-notification__caption { font-size: var(--qds-font-size-caption); line-height: var(--qds-line-height-caption); font-weight: var(--qds-font-weight-regular); }
+  #{$shadcn} .q-notification__actions { color: var(--qds-fg-default); gap: var(--qds-space-xs); }
+  #{$shadcn} .q-notification__progress { opacity: 1; inset-inline: 0; bottom: 0; height: var(--qds-border-width-control); }
+  #{$shadcn} .q-notification__badge { border-radius: var(--qds-radius-full); font-weight: var(--qds-font-weight-medium); }
+  #{$shadcn} .q-notification:has(.q-btn--dense) { min-height: var(--qds-control-size-lg); }
+  @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-notification { transition: none; } #{$shadcn} .q-notification__badge { animation: none; } #{$shadcn} .q-notification__progress { display: none; } }
+  @media (forced-colors: active) { #{$shadcn} .q-notification { --qds-notify-bg: Canvas; --qds-fg-default: CanvasText; border-color: CanvasText; box-shadow: none; } #{$shadcn} :is(.q-notification__icon, .q-notification__spinner) { color: CanvasText; } #{$shadcn} .q-notification__badge { background: Highlight; color: HighlightText; } #{$shadcn} .q-notification__progress { background: Highlight; } }
 }

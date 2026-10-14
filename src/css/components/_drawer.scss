@@ -1,5 +1,6 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
   .qds-ui :is(.q-layout, .q-page-container) { color: var(--qds-fg-default); background: transparent; }
@@ -22,4 +23,16 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
   #{$one} .q-drawer--mini { background: var(--qds-card-fill); }
   #{$one} .q-drawer--mini .q-list { margin: 0; background: transparent; }
+
+  #{$shadcn} .q-drawer { color: var(--qds-shadcn-sidebar-foreground); background: var(--qds-shadcn-sidebar); }
+  #{$shadcn} .q-drawer.q-drawer--bordered { border-color: var(--qds-shadcn-sidebar-border); }
+  #{$shadcn} .q-drawer .q-list { padding: var(--qds-space-sm); }
+  #{$shadcn} .q-drawer .q-item { min-height: var(--qds-control-size-sm); }
+  #{$shadcn} .q-drawer .q-item:is(.q-item--active, [aria-selected='true'], .q-manual-focusable--focused),
+  #{$shadcn} .q-drawer .q-item.q-hoverable:not(.disabled):hover { color: var(--qds-shadcn-sidebar-accent-foreground); background: var(--qds-shadcn-sidebar-accent); }
+  #{$shadcn} .q-drawer--mini .q-item { padding-inline: var(--qds-space-sm); }
+  #{$shadcn} .q-drawer--mini .q-item__section--avatar { min-width: 0; padding-inline-end: 0; }
+  #{$shadcn} .q-drawer .q-toolbar { padding-inline: var(--qds-space-sm); background: transparent; }
+  #{$shadcn} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
+  #{$shadcn} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
 }

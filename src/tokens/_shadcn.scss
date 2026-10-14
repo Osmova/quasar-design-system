@@ -1,0 +1,237 @@
+@use 'sass:color';
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+
+// MIT unovue/shadcn-vue b251d9fd92aa496495e127137a7734704fb34a29.
+// Upstream copyright and full permission notice: SHADCN-NOTICE.md in this directory.
+// Modern: apps/v4/registry/themes.ts. Gray/Slate: apps/v4/public/r/themes/*.json.
+// Keep source colors here; every emitted sRGB channel is quantized exactly once.
+$base-colors: 'neutral', 'gray', 'zinc', 'stone', 'slate';
+$roles: primary, secondary, accent, positive, negative, warning, info;
+
+@function srgb($value) {
+  $rgb: color.to-space($value, rgb);
+  @return color.change($rgb,
+    $red: math.round(math.clamp(0, color.channel($rgb, 'red'), 255)),
+    $green: math.round(math.clamp(0, color.channel($rgb, 'green'), 255)),
+    $blue: math.round(math.clamp(0, color.channel($rgb, 'blue'), 255)));
+}
+
+@function rgb-channels($value) {
+  $rgb: srgb($value);
+  @return color.channel($rgb, 'red'), color.channel($rgb, 'green'), color.channel($rgb, 'blue');
+}
+
+@function luminance($value) {
+  $sum: 0;
+  $rgb: color.to-space($value, rgb);
+  $weights: ('red': 0.2126, 'green': 0.7152, 'blue': 0.0722);
+  @each $channel, $weight in $weights {
+    $v: math.div(math.clamp(0, color.channel($rgb, $channel), 255), 255);
+    $v: if($v <= 0.04045, math.div($v, 12.92), math.pow(math.div($v + 0.055, 1.055), 2.4));
+    $sum: $sum + $v * $weight;
+  }
+  @return $sum;
+}
+
+@function contrast($a, $b) {
+  $a: luminance($a);
+  $b: luminance($b);
+  @return math.div(math.max($a, $b) + 0.05, math.min($a, $b) + 0.05);
+}
+
+// Source-over composition, not perceptual mixing; background is already opaque.
+@function composite($foreground, $background) {
+  @return color.mix(color.change(srgb($foreground), $alpha: 1), $background,
+    color.channel($foreground, 'alpha') * 100%, $method: rgb);
+}
+
+@function readable($source, $backgrounds, $scheme, $minimum: 4.5, $opacity: 1) {
+  $oklch: color.to-space($source, oklch);
+  $l: math.div(color.channel($oklch, 'lightness'), 100%);
+  @for $step from 0 through 1000 {
+    $next: $l + if($scheme == dark, $step * 0.001, $step * -0.001);
+    @if $next >= 0 and $next <= 1 {
+      $candidate: srgb(color.change($oklch, $lightness: $next * 100%));
+      $passes: true;
+      @each $bg in $backgrounds {
+        @if $passes {
+          $paint: $candidate;
+          @if $opacity != 1 { $paint: composite(color.change($candidate, $alpha: $opacity), $bg); }
+          @if contrast($paint, $bg) < $minimum { $passes: false; }
+        }
+      }
+      @if $passes { @return $candidate; }
+    }
+  }
+  @error 'Shadcn contrast conflict: #{$source} cannot meet #{$minimum} on #{$backgrounds} (#{$scheme}).';
+}
+
+// Compact source profiles: foreground, primary, secondary/muted/accent,
+// muted foreground, border/input, ring, bright foreground/sidebar, five charts.
+$modern: (
+  neutral: (
+    light: (oklch(0.145 0 0), oklch(0.205 0 0), oklch(0.97 0 0), oklch(0.556 0 0), oklch(0.922 0 0), oklch(0.708 0 0), oklch(0.985 0 0)),
+    dark: (oklch(0.985 0 0), oklch(0.922 0 0), oklch(0.269 0 0), oklch(0.708 0 0), oklch(1 0 0 / 10%), oklch(0.556 0 0), oklch(0.205 0 0)),
+    charts: (oklch(0.87 0 0), oklch(0.556 0 0), oklch(0.439 0 0), oklch(0.371 0 0), oklch(0.269 0 0)),
+  ),
+  zinc: (
+    light: (oklch(0.141 0.005 285.823), oklch(0.21 0.006 285.885), oklch(0.967 0.001 286.375), oklch(0.552 0.016 285.938), oklch(0.92 0.004 286.32), oklch(0.705 0.015 286.067), oklch(0.985 0 0)),
+    dark: (oklch(0.985 0 0), oklch(0.92 0.004 286.32), oklch(0.274 0.006 286.033), oklch(0.705 0.015 286.067), oklch(1 0 0 / 10%), oklch(0.552 0.016 285.938), oklch(0.21 0.006 285.885)),
+    charts: (oklch(0.871 0.006 286.286), oklch(0.552 0.016 285.938), oklch(0.442 0.017 285.786), oklch(0.37 0.013 285.805), oklch(0.274 0.006 286.033)),
+  ),
+  stone: (
+    light: (oklch(0.147 0.004 49.25), oklch(0.216 0.006 56.043), oklch(0.97 0.001 106.424), oklch(0.553 0.013 58.071), oklch(0.923 0.003 48.717), oklch(0.709 0.01 56.259), oklch(0.985 0.001 106.423)),
+    dark: (oklch(0.985 0.001 106.423), oklch(0.923 0.003 48.717), oklch(0.268 0.007 34.298), oklch(0.709 0.01 56.259), oklch(1 0 0 / 10%), oklch(0.553 0.013 58.071), oklch(0.216 0.006 56.043)),
+    charts: (oklch(0.869 0.005 56.366), oklch(0.553 0.013 58.071), oklch(0.444 0.011 73.639), oklch(0.374 0.01 67.558), oklch(0.268 0.007 34.298)),
+  ),
+);
+
+$legacy: (
+  'gray': (
+    light: (hsl(224 71.4% 4.1%), hsl(220.9 39.3% 11%), hsl(220 14.3% 95.9%), hsl(220 8.9% 46.1%), hsl(220 13% 91%), hsl(224 71.4% 4.1%), hsl(210 20% 98%)),
+    dark: (hsl(210 20% 98%), hsl(210 20% 98%), hsl(215 27.9% 16.9%), hsl(217.9 10.6% 64.9%), hsl(215 27.9% 16.9%), hsl(216 12.2% 83.9%), hsl(220.9 39.3% 11%)),
+  ),
+  slate: (
+    light: (hsl(222.2 84% 4.9%), hsl(222.2 47.4% 11.2%), hsl(210 40% 96.1%), hsl(215.4 16.3% 46.9%), hsl(214.3 31.8% 91.4%), hsl(222.2 84% 4.9%), hsl(210 40% 98%)),
+    dark: (hsl(210 40% 98%), hsl(210 40% 98%), hsl(217.2 32.6% 17.5%), hsl(215 20.2% 65.1%), hsl(217.2 32.6% 17.5%), hsl(212.7 26.8% 83.9%), hsl(222.2 47.4% 11.2%)),
+  ),
+);
+
+// Returns all upstream slots, normalized to nearest 8-bit sRGB (alpha retained).
+// Legacy sidebar omissions alias popover/secondary/primary/border/ring exactly.
+@function profile($palette: neutral, $scheme: light, $quantize: true) {
+  @if not list.index($base-colors, $palette) or not list.index((light, dark), $scheme) {
+    @error 'Unknown shadcn profile #{$palette}/#{$scheme}';
+  }
+  $modern-profile: map.has-key($modern, $palette);
+  $source: map.get(if($modern-profile, $modern, $legacy), $palette);
+  $values: map.get($source, $scheme);
+  $light: map.get($source, light);
+  $fg: list.nth($values, 1);
+  $primary: list.nth($values, 2);
+  $muted: list.nth($values, 3);
+  $bright: list.nth($light, 7);
+  $card: if($scheme == light, white, if($modern-profile, list.nth($values, 7), list.nth($light, 1)));
+  $pair: if($scheme == light, $bright, list.nth($light, 2));
+  $secondary-pair: if($scheme == light, $primary, $fg);
+  $destructive: if($modern-profile,
+    if($scheme == light, oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216)),
+    if($scheme == light, hsl(0 84.2% 60.2%), hsl(0 62.8% 30.6%)));
+  $result: (
+    background: if($scheme == light, white, list.nth($light, 1)), foreground: $fg,
+    card: $card, card-foreground: $fg, popover: $card, popover-foreground: $fg,
+    primary: $primary, primary-foreground: $pair,
+    secondary: $muted, secondary-foreground: $secondary-pair,
+    muted: $muted, muted-foreground: list.nth($values, 4),
+    accent: $muted, accent-foreground: $secondary-pair,
+    destructive: $destructive,
+    border: list.nth($values, 5), input: if($modern-profile and $scheme == dark, oklch(1 0 0 / 15%), list.nth($values, 5)),
+    ring: list.nth($values, 6),
+    sidebar: if($modern-profile and $scheme == light, $bright, $card), sidebar-foreground: $fg,
+    sidebar-primary: if($modern-profile and $scheme == dark, oklch(0.488 0.243 264.376), $primary),
+    sidebar-primary-foreground: if($modern-profile, $bright, $pair),
+    sidebar-accent: $muted, sidebar-accent-foreground: $secondary-pair,
+    sidebar-border: list.nth($values, 5), sidebar-ring: list.nth($values, 6),
+  );
+  @if not $modern-profile { $result: map.set($result, destructive-foreground, $bright); }
+  $charts: if($modern-profile, map.get($source, charts),
+    if($scheme == light,
+      (hsl(12 76% 61%), hsl(173 58% 39%), hsl(197 37% 24%), hsl(43 74% 66%), hsl(27 87% 67%)),
+      (hsl(220 70% 50%), hsl(160 60% 45%), hsl(30 80% 55%), hsl(280 65% 60%), hsl(340 75% 55%))));
+  @for $i from 1 through 5 { $result: map.set($result, 'chart-#{$i}', list.nth($charts, $i)); }
+  @if $quantize {
+    @each $slot, $value in $result { $result: map.set($result, $slot, srgb($value)); }
+  }
+  @return $result;
+}
+
+@function role-fills($profile, $scheme) {
+  @return (
+    primary: map.get($profile, primary), secondary: map.get($profile, secondary), accent: map.get($profile, accent),
+    negative: map.get($profile, destructive), positive: if($scheme == light, #15803d, #22c55e),
+    warning: #f59e0b, info: if($scheme == light, #2563eb, #60a5fa),
+  );
+}
+
+@function role-pairs($profile, $scheme) {
+  $negative: map.get($profile, destructive);
+  @return (
+    primary: map.get($profile, primary-foreground), secondary: map.get($profile, secondary-foreground),
+    accent: map.get($profile, accent-foreground),
+    negative: if(contrast(white, $negative) >= contrast(#18181b, $negative), white, #18181b),
+    positive: if($scheme == light, white, #18181b), warning: #18181b, info: if($scheme == light, white, #18181b),
+  );
+}
+
+// 90%/80% sRGB source-over is the fidelity starting point, not a contrast
+// exemption. Keep the candidate's OKLCH C/h and move only L in .001 steps,
+// away from the unchanged on-fill foreground. Return the first quantized pass.
+// Opaque output makes the resulting pair independent of its eventual backdrop.
+@function state-fill($fill, $on-fill, $container, $weight, $minimum: 4.5) {
+  @if color.channel($container, 'alpha') != 1 {
+    @error 'state-fill requires an opaque composed container; use role-state-fills for local surface chains.';
+  }
+  @if contrast($on-fill, $fill) < $minimum {
+    @error 'Shadcn rest fill/pair conflict: #{$fill}/#{$on-fill}';
+  }
+  $start: color.mix($fill, $container, $weight, $method: rgb);
+  $initial: srgb($start);
+  @if contrast($on-fill, $initial) >= $minimum { @return $initial; }
+  $space: color.to-space($start, oklch);
+  $l: math.div(color.channel($space, 'lightness'), 100%);
+  $direction: if(luminance($on-fill) >= luminance($start), -1, 1);
+  @for $step from 1 through 1000 {
+    $next: $l + $direction * $step * 0.001;
+    @if $next >= 0 and $next <= 1 {
+      $candidate: srgb(color.change($space, $lightness: $next * 100%));
+      @if contrast($on-fill, $candidate) >= $minimum { @return $candidate; }
+    }
+  }
+  @error 'Shadcn state fill/pair conflict: #{$fill}/#{$on-fill} on #{$container} at #{$weight}';
+}
+
+// $container may override the default card -> canvas source-over chain for an
+// explicit Sass-known local surface. CSS primitive overrides must rebind states.
+@function role-state-fills($profile, $scheme, $container: null) {
+  $card: composite(map.get($profile, card), map.get($profile, background));
+  @if $container == null {
+    $container: $card;
+  } @else {
+    $container: composite($container, $card);
+  }
+  $fills: role-fills($profile, $scheme);
+  $pairs: role-pairs($profile, $scheme);
+  $result: ();
+  @each $role, $fill in $fills {
+    $result: map.set($result, $role, (
+      hover: state-fill($fill, map.get($pairs, $role), $container, 90%),
+      pressed: state-fill($fill, map.get($pairs, $role), $container, 80%),
+    ));
+  }
+  @return $result;
+}
+
+// The static geometry is independent of palette and scheme. Native explicit
+// sizes remain component-lane responsibilities; no coarse-pointer size reset.
+$geometry: (
+  radius-xs: 0.25rem, radius-sm: 0.375rem, radius-md: 0.5rem, radius-lg: 0.875rem, radius-xl: 0.875rem, radius-control: 0.5rem,
+  control-size-sm: 2rem, control-size-md: 2.25rem, control-size-lg: 2.5rem,
+  control-font-size-sm: 0.875rem, control-letter-spacing: normal, control-text-transform: none, control-content-line-height: 1.25rem,
+  control-icon-opacity: 1, control-icon-opacity-active: 1,
+  inline-icon-gap: 0.5rem, inline-icon-dense-gap: 0.375rem,
+  button-padding-inline: 1rem, button-dense-padding-inline: 0.75rem, button-dense-radius: 0.5rem, button-dense-font-size: 0.875rem,
+  field-min-height: 2.25rem, field-dense-min-height: 2rem, field-padding-inline: 0.75rem, field-label-size: 0.875rem,
+  field-focus-border-width: 1px, field-label-size-rest: 0.875rem, field-label-size-float: 0.75rem,
+  field-value-inset-block-start: 0.5rem, field-value-inset-block-end: 0.5rem,
+  field-value-inset-block-start-dense: 0.375rem, field-value-inset-block-end-dense: 0.375rem,
+  list-item-min-height-value: 2.25rem, menu-item-min-height-value: 2rem, expansion-item-min-height-value: 2.25rem,
+  table-row-height-value: 2.5rem, table-header-height-value: 2.5rem, tab-min-height: 2.25rem, toolbar-dense-min-height: 2.5rem,
+  row-gap: 0.125rem, row-inset: 0.5rem, tonal-bg-opacity: 0.1, tonal-hover-opacity: 0.15, tonal-border-opacity: 0.2, tonal-text-mix: 100%,
+  focus-ring-width: 3px, focus-ring-offset: 0px, focus-ring-opacity: 0.5,
+  card-tonal-opacity: 0, card-fallback-tonal-opacity: 0, card-readable-tonal-opacity: 0, card-header-tonal-opacity: 0,
+  card-readable-surface-mix: 100%, card-header-surface-mix: 100%, card-border-mix: 100%, card-backdrop-blur: 0px, card-backdrop-saturate: 1,
+  chrome-border-mix: 100%, chrome-border-soft-mix: 100%, chrome-surface-mix: 100%, chrome-surface-strong-mix: 100%, separator-mix: 100%,
+  handle-border-mix: 100%, handle-primary-mix: 0%, glass-blur: 0px, glass-saturate: 1, glass-border-mix: 100%,
+);

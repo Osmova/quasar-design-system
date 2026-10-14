@@ -1,7 +1,8 @@
+@use 'importance';
 @mixin styles {
   @each $role in primary, secondary, accent, positive, negative, warning, info {
-    .qds-ui .text-#{$role} { color: var(--qds-fg-#{$role}) !important; }
-    .qds-ui .bg-#{$role} { background: var(--qds-color-#{$role}) !important; }
+    .qds-ui .text-#{$role} { @include importance.declarations { color: var(--qds-fg-#{$role}) !important; } }
+    .qds-ui .bg-#{$role} { @include importance.declarations { background: var(--qds-color-#{$role}) !important; } }
   }
 
   .qds-ui .rounded-borders { border-radius: var(--qds-radius-control); }
@@ -33,9 +34,20 @@
   .qds-text-muted { color: color-mix(in srgb, var(--qds-text-muted) 75%, var(--qds-text-strong)); }
   .qds-text-strong { color: var(--qds-text-strong); font-weight: var(--qds-font-weight-semibold); }
   @each $role in solid, primary, secondary, accent, positive, negative, warning, info {
-    .qds-text-on-#{$role} { color: var(--qds-text-on-#{$role}) !important; }
+    .qds-text-on-#{$role} { @include importance.declarations { color: var(--qds-text-on-#{$role}) !important; } }
   }
   .qds-focus-ring:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-color-primary); outline-offset: var(--qds-focus-ring-offset); box-shadow: none; }
+  // Private bindings keep role-dependent component grammar compact. Text and fill
+  // bindings stay separate so bg-primary + text-negative cannot swap the fill.
+  .qds-variant-shadcn:is(.qds-ui,.qds-ui *) {
+    @each $role in primary, secondary, accent, positive, negative, warning, info {
+      .bg-#{$role} { --_qds-fill: var(--qds-color-#{$role}); --_qds-on: var(--qds-text-on-#{$role}); --_qds-hover: var(--qds-color-#{$role}-hover); --_qds-pressed: var(--qds-color-#{$role}-pressed); --_qds-fg: var(--qds-fg-#{$role}); --_qds-pressed-mix: var(--qds-text-on-#{$role}-pressed-mix); }
+      .text-#{$role} { --_qds-text: var(--qds-fg-#{$role}); --_qds-text-hover: var(--qds-color-#{$role}-hover); --_qds-text-pressed: var(--qds-color-#{$role}-pressed); }
+    }
+    .qds-text-muted { color: var(--qds-fg-muted); }
+    .qds-focus-ring:focus-visible { outline-color: var(--qds-stroke-focus); box-shadow: var(--qds-field-focus-halo); }
+    .qds-card { border: var(--qds-border-width-control) solid var(--qds-card-stroke); box-shadow: var(--qds-card-shadow); }
+  }
   .qds-button-row,
   .qds-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--qds-space-sm); }
   .qds-button-row--tight { gap: var(--qds-space-xs); }

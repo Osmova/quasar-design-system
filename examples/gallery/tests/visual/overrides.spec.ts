@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { QDS_TOKENS } from '../../../../src/tokens'
-import { applyTheme, CANONICAL_VARIANTS, coarsePointer, computed, customProperty, MATRIX_VARIANTS, resolvedColor, resolvedShadow, type Mode, type Variant } from './helpers'
+import { applyTheme, waitForThemePaint, LEGACY_VARIANTS as CANONICAL_VARIANTS, coarsePointer, computed, customProperty, MATRIX_VARIANTS, resolvedColor, resolvedShadow, type Mode, type LegacyVariant as Variant } from './helpers'
 
 type Rgba = readonly [number, number, number, number]
 
@@ -34,11 +34,25 @@ function composite(foreground: Rgba, backdrop: Rgba): Rgba {
 }
 
 async function renderedContrast(page: Parameters<typeof computed>[0], selector: string, backdropSelector: string) {
-  const [foreground, background, backdrop] = await Promise.all([
-    computed(page, selector, 'color'),
-    computed(page, selector, 'background-color'),
-    computed(page, backdropSelector, 'background-color'),
-  ])
+  let previous: string | undefined
+  let connectedPaint: { foreground: string; background: string; backdrop: string } | undefined
+  await expect.poll(async () => {
+    const snapshot = await page.evaluate(({ selector, backdropSelector }) => {
+      const element = document.querySelector(selector)
+      const backdrop = element?.closest(backdropSelector) ?? document.querySelector(backdropSelector)
+      if (!element?.isConnected || !backdrop?.isConnected) return null
+      const style = getComputedStyle(element)
+      const paint = { foreground: style.color, background: style.backgroundColor, backdrop: getComputedStyle(backdrop).backgroundColor }
+      return element.isConnected && backdrop.isConnected && Object.values(paint).every(Boolean) ? paint : null
+    }, { selector, backdropSelector })
+    if (!snapshot) { previous = undefined; connectedPaint = undefined; return false }
+    const key = JSON.stringify(snapshot)
+    const stable = key === previous
+    previous = key
+    if (stable) connectedPaint = snapshot
+    return stable
+  }, { message: `${selector} has connected, atomically sampled settled paint` }).toBe(true)
+  const { foreground, background, backdrop } = connectedPaint!
   return contrast(parseColor(foreground), composite(parseColor(background), parseColor(backdrop)))
 }
 
@@ -353,7 +367,7 @@ test.describe('QDS override gate', () => {
       expect.soft(state.canonicalClass, `${input} writes canonical class`).toBe(true)
       expect.soft(state.oldClass, `${input} old class is absent`).toBe(false)
       expect.soft(state.dataVariant, `${input} writes the canonical data-qds-variant`).toBe(canonical)
-      expect.soft(state.labels, `${input} exposes only canonical switcher entries`).toEqual(['Fluent', 'Ink', 'One', 'Term'])
+      expect.soft(state.labels, `${input} exposes only canonical switcher entries`).toEqual(['Fluent', 'Ink', 'One', 'Term', 'Shadcn'])
     }
   })
 
@@ -465,7 +479,7 @@ test.describe('QDS override gate', () => {
     }
   })
 
-  test('one stays neutral with toned blocks, a calm blue accent, readable text and touch rows', async ({ page }) => {
+  test('one stays neutral with toned blocks, a calm blue accent, readable text and touch rows', async ({ page }, info) => {
     const ratio = async (first: string, second: string) => contrast(parseColor(await resolvedColor(page, first)), parseColor(await resolvedColor(page, second)))
     for (const mode of ['light', 'dark'] as const) {
       await page.goto('/#catalog')
@@ -553,7 +567,24 @@ test.describe('QDS override gate', () => {
       await page.goto('/#apps')
       const navCard = page.locator('[data-test="qds-apps-nav-card"]')
       const settledBox = async () => {
+        await waitForThemePaint(page)
         await expect.poll(async () => (await navCard.boundingBox())?.x ?? -1).toBeGreaterThanOrEqual(0)
+        await navCard.evaluate(async element => {
+          let previous = '', stable = 0
+          for (let frame = 0; frame < 180; frame++) {
+            await new Promise(requestAnimationFrame)
+            const rect = element.getBoundingClientRect()
+            const key = [rect.x, rect.y, rect.width, rect.height].join(',')
+            let entering = false
+            for (let node: Element | null = element; node; node = node.parentElement) {
+              if ([...node.classList].some(name => /(?:enter|leave)-(?:active|from|to)$/.test(name))) entering = true
+            }
+            stable = !entering && document.fonts.status === 'loaded' && key === previous ? stable + 1 : 0
+            previous = key
+            if (stable >= 3) return
+          }
+          throw new Error('Navigation card did not reach stable native panel/font geometry')
+        })
         return (await navCard.boundingBox())!
       }
       await applyTheme(page, mode, 'fluent')
@@ -563,10 +594,17 @@ test.describe('QDS override gate', () => {
       expect.soft(Math.abs(oneCard.x - fluentCard.x), `${mode}/one page gutter stays within One's wider space step of Fluent`).toBeLessThanOrEqual(4)
       expect.soft(Math.abs(oneCard.width - fluentCard.width), `${mode}/one cards keep the Fluent width within the gutter step`).toBeLessThanOrEqual(8)
       const active = '[data-test="qds-apps-nav-drawer"] .q-item--active'
-      const block = parseColor(await computed(page, '[data-test="qds-apps-nav-drawer"] .q-list', 'background-color'))
-      const activeFill = parseColor(await computed(page, active, 'background-color'))
+      await waitForThemePaint(page)
+      const endpoint = await page.locator(active).evaluate(element => {
+        const style = getComputedStyle(element)
+        return { foreground: style.color, background: style.backgroundColor, block: getComputedStyle(element.closest('.q-list')!).backgroundColor, fonts: document.fonts.status }
+      })
+      const block = parseColor(endpoint.block)
+      const activeFill = parseColor(endpoint.background)
       expect.soft(activeFill.slice(0, 3), `${mode}/one active nav item stands out from its block`).not.toEqual(block.slice(0, 3))
-      expect.soft(contrast(parseColor(await computed(page, active, 'color')), activeFill), `${mode}/one active nav label contrast`).toBeGreaterThanOrEqual(4.5)
+      const endpointContrast = contrast(parseColor(endpoint.foreground), activeFill)
+      expect.soft(endpointContrast, `${mode}/one active nav label contrast`).toBeGreaterThanOrEqual(4.5)
+      await info.attach(`one-${mode}-settled-native-endpoint`, { body: JSON.stringify({ mode, fluentCard, oneCard, gutterDelta: Math.abs(oneCard.x - fluentCard.x), widthDelta: Math.abs(oneCard.width - fluentCard.width), ...endpoint, contrast: endpointContrast }), contentType: 'application/json' })
       expect.soft(await computed(page, '[data-test="qds-apps-subpage-panels"] .qds-settings-card', 'background-color'), `${mode}/one nested settings card takes the nested block tone`).toBe(await resolvedColor(page, '--qds-surface-focus-block'))
 
       await page.goto('/#scenes')

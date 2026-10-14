@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { PhFileArrowUp, PhFolderOpen } from '@phosphor-icons/vue'
+import { useDesignSystem } from '@bastvi/quasar-design-system'
+
+const ds = useDesignSystem()
 
 const optionSingle = ref('compact')
 const optionMultiple = ref(['motion', 'contrast'])
@@ -231,9 +234,10 @@ const checkboxChoices = [
           <q-date v-model="dateRange" name="catalog-date-range" range flat bordered class="catalog-picker" data-test="qds-catalog-date-range" />
         </div>
 
-        <div class="catalog-demo">
+        <div class="catalog-demo catalog-demo--wide">
           <div class="catalog-label">QTime AM/PM {{ isWideViewport ? 'landscape' : 'portrait' }}</div>
-          <q-time v-model="time" name="catalog-time" flat bordered :landscape="isWideViewport" :format24h="false" :hour-options="timeHourOptions" class="catalog-picker" data-test="qds-catalog-time" />
+          <!-- Shadcn landscape keeps native QTime geometry; legacy moods retain their compact demo. -->
+          <q-time v-model="time" name="catalog-time" flat bordered :landscape="isWideViewport" :format24h="false" :hour-options="timeHourOptions" :class="{ 'catalog-picker': !isWideViewport || ds.variant.value !== 'shadcn' }" data-test="qds-catalog-time" />
         </div>
 
         <div class="catalog-demo">

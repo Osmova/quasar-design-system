@@ -1,0 +1,3 @@
+# Preserve byte-exact upstream theme snapshots, including their CRLF endings.
+examples/shadcn-reference/upstream/apps/v4/public/r/themes/gray.json -text whitespace=cr-at-eol
+examples/shadcn-reference/upstream/apps/v4/public/r/themes/slate.json -text whitespace=cr-at-eol

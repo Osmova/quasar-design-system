@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@lucide/vue": ["src/icons.ts"],
+      "@/lib/utils": ["upstream/apps/v4/lib/utils.ts"],
+      "@/registry/new-york-v4/*": ["upstream/apps/v4/registry/new-york-v4/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "tests/**/*.ts", "upstream/apps/v4/registry/new-york-v4/**/*.ts", "upstream/apps/v4/registry/new-york-v4/**/*.vue", "upstream/apps/v4/lib/utils.ts", "vite.config.ts", "playwright.config.ts"]
+}

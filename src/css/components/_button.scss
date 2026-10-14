@@ -1,6 +1,7 @@
 @use 'sass:list';
 @use 'sass:map';
 @use '../materials';
+@use '../importance';
 
 $roles: (
   primary: (hover: var(--qds-color-primary-hover), pressed: var(--qds-color-primary-pressed)),
@@ -32,6 +33,8 @@ $height: clamp(var(--qds-button-size-sm), calc(var(--qds-button-min-height) + (1
 $padding: clamp(var(--qds-button-dense-padding-inline), calc(var(--qds-button-padding-inline) + 1em - 0.875rem), calc(var(--qds-button-padding-inline) + 0.25rem));
 $not-fab: ':where(:not(.q-btn--fab, .q-btn--fab-mini))';
 $filled: ':is(.q-btn--standard, .q-btn--unelevated, .q-btn--push):where(:not(.q-btn-toggle > .q-btn))';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
+$shadcn-default: '.q-btn#{$filled}:where(:not([class*="bg-"], .qds-tonal, .qds-button--link, .q-date .q-btn, .q-time .q-btn, .q-pagination .q-btn, .q-btn-toggle .q-btn, .q-editor .q-btn, .q-color-picker .q-btn))';
 $accent-fills: ();
 $role-texts: ();
 
@@ -103,7 +106,7 @@ $role-texts: ();
 
   // QBtn carries Quasar's `no-outline` utility.
   .qds-ui .q-btn:focus-visible {
-    outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus) !important;
+    @include importance.declarations { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus) !important; }
     outline-offset: var(--qds-focus-ring-offset);
   }
 
@@ -188,7 +191,7 @@ $role-texts: ();
 
   @each $role, $_ in $roles {
     .qds-ui .q-btn.text-#{$role} {
-      color: role-value($role, fg) !important;
+      @include importance.declarations { color: role-value($role, fg) !important; }
     }
 
     .qds-ui .q-btn--outline.text-#{$role} {
@@ -196,11 +199,12 @@ $role-texts: ();
     }
 
     // States swap --qds-button-fill/-on-fill so only the base rule needs !important against Quasar's bg-*/text-*.
-    .qds-ui .q-btn.bg-#{$role}:not(.qds-tonal) {
+    $solid-selector: '.qds-ui .q-btn.bg-#{$role}:not(.qds-tonal)';
+    @if $role == primary { $solid-selector: '#{$solid-selector}, #{$shadcn} #{$shadcn-default}'; }
+    #{$solid-selector} {
       --qds-button-fill: var(--qds-color-#{$role});
       --qds-button-on-fill: var(--qds-text-on-#{$role});
-      color: var(--qds-button-on-fill) !important;
-      background-color: var(--qds-button-fill) !important;
+      @include importance.declarations { color: var(--qds-button-on-fill) !important; background-color: var(--qds-button-fill) !important; }
       border-color: transparent;
     }
 
@@ -215,8 +219,7 @@ $role-texts: ();
 
     .qds-ui .q-btn.bg-#{$role}.qds-tonal {
       --qds-button-fill: #{role-soft($role)};
-      color: role-value($role, fg) !important;
-      background-color: var(--qds-button-fill) !important;
+      @include importance.declarations { color: role-value($role, fg) !important; background-color: var(--qds-button-fill) !important; }
       border-color: transparent;
     }
 
@@ -242,14 +245,13 @@ $role-texts: ();
 
   // Fluent disabled: neutral fill, stroke and foreground instead of Quasar's opacity dimming.
   .qds-ui .q-btn.q-btn-item.disabled {
-    color: var(--qds-fg-disabled) !important;
-    opacity: 1 !important;
+    @include importance.declarations { color: var(--qds-button-disabled-fg, var(--qds-fg-disabled)) !important; opacity: var(--qds-button-disabled-opacity, 1) !important; }
   }
 
   .qds-ui .q-btn.q-btn-item.disabled#{$filled} {
-    --qds-button-fill: var(--qds-control-fill-disabled);
-    background-color: var(--qds-button-fill) !important;
-    border-color: var(--qds-stroke-subtle);
+    --qds-button-fill: var(--qds-button-disabled-fill, var(--qds-control-fill-disabled));
+    @include importance.declarations { background-color: var(--qds-button-fill) !important; }
+    border-color: var(--qds-button-disabled-stroke, var(--qds-stroke-subtle));
   }
 
   .qds-ui .q-btn.q-btn-item.disabled.q-btn--outline:where(:not(.q-btn-toggle > .q-btn)) {
@@ -288,4 +290,46 @@ $role-texts: ();
       border-color: ButtonText;
     }
   }
+
+  #{$shadcn} .q-btn {
+    --qds-button-disabled-opacity: 0.5;
+    --qds-button-disabled-fg: var(--qds-button-on-fill, var(--qds-fg-default));
+  }
+  #{$shadcn} .q-btn:where(:not([class*='text-weight-'])) { font-weight: var(--qds-font-weight-medium); }
+  @each $weight, $fallback in (thin: 100, light: 300, regular: 400, medium: 500, bold: 700, bolder: 900) {
+    #{$shadcn} :is(.q-btn, .q-avatar, .q-badge, .q-chip).text-weight-#{$weight} { font-weight: var(--qds-font-weight-#{$weight}, #{$fallback}); }
+  }
+  #{$shadcn} .q-btn:where(:not(.text-uppercase, .text-lowercase, .text-capitalize)) { text-transform: none; }
+  @each $case in uppercase, lowercase, capitalize { #{$shadcn} .q-btn.text-#{$case} { text-transform: $case; } }
+  #{$shadcn} .q-btn.text-bold { font-weight: var(--qds-font-weight-bold); }
+  #{$shadcn} .q-btn .q-btn__content { font-size: inherit; }
+  #{$shadcn} #{$shadcn-default} {
+    --qds-button-disabled-fill: var(--qds-color-primary);
+    --qds-button-disabled-stroke: transparent;
+    border-color: transparent;
+  }
+  #{$shadcn} #{$shadcn-default}:not(.disabled):hover { --qds-button-fill: var(--qds-color-primary-hover); }
+  #{$shadcn} #{$shadcn-default}:not(.disabled):active { --qds-button-fill: var(--qds-color-primary-pressed); color: var(--qds-button-on-fill); }
+  #{$shadcn} .q-btn#{$filled} { box-shadow: var(--qds-button-elevated-shadow); }
+  #{$shadcn} .q-btn--push { box-shadow: inset 0 calc(-1 * var(--qds-border-width-control)) 0 currentColor; }
+  #{$shadcn} .q-btn--push:not(.disabled):active { transform: translateY(var(--qds-border-width-control)); }
+  #{$shadcn} .q-btn--outline { border-color: var(--qds-control-stroke-strong); box-shadow: inset 0 0 0 100vmax var(--qds-button-outline-fill, var(--qds-control-fill-default)); }
+  #{$shadcn} .q-btn--outline:not(.disabled):hover { --qds-button-outline-fill: var(--qds-control-fill-hover); }
+  #{$shadcn} .q-btn--outline:not(.disabled):active { --qds-button-outline-fill: var(--qds-control-fill-pressed); }
+  #{$shadcn} .q-btn:is(.q-btn--flat, .q-btn--outline):not(.disabled):is(:hover, :active) { --qds-button-state: transparent; }
+  #{$shadcn} .q-btn--flat:not(.disabled):hover { background-color: var(--qds-control-fill-hover); }
+  #{$shadcn} .q-btn--flat:not(.disabled):active { background-color: var(--qds-control-fill-pressed); }
+  #{$shadcn} .q-btn.qds-button--link { color: var(--qds-fg-primary); background: transparent; border-color: transparent; box-shadow: none; text-underline-offset: var(--qds-space-xs); }
+  #{$shadcn} .q-btn.qds-button--link:hover { text-decoration: underline; }
+  #{$shadcn} .q-btn .q-btn__progress-indicator { background: var(--qds-button-progress-fill, var(--qds-color-primary-pressed)); opacity: 1; }
+  #{$shadcn} .q-btn:is(#{$accent-fills}):not(.qds-tonal) {
+      --qds-button-disabled-fill: var(--_qds-fill);
+      --qds-button-disabled-stroke: transparent;
+      --qds-button-progress-fill: var(--_qds-pressed);
+      --qds-text-on-fill-pressed-mix: var(--_qds-pressed-mix);
+      border-color: transparent;
+  }
+  #{$shadcn} .q-btn:is(#{$accent-fills}):not(.qds-tonal, .disabled):hover { --qds-button-fill: var(--_qds-hover); }
+  #{$shadcn} .q-btn:is(#{$accent-fills}):not(.qds-tonal, .disabled):active { --qds-button-fill: var(--_qds-pressed); --qds-button-on-fill: var(--_qds-on); }
+  @media (forced-colors: active) { #{$shadcn} .q-btn { --qds-button-disabled-stroke: ButtonText; border-color: ButtonText; box-shadow: none; } }
 }

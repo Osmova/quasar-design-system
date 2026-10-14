@@ -1,0 +1,3 @@
+@layer qds-important, quasar, qds;
+@import 'quasar/dist/quasar.css' layer(quasar);
+@import '@quasar/quasar-ui-qwindow/index.css' layer(quasar);

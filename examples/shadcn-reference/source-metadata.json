@@ -1,0 +1,59 @@
+{
+  "task": "T172",
+  "repository": "https://github.com/unovue/shadcn-vue",
+  "commit": "b251d9fd92aa496495e127137a7734704fb34a29",
+  "license": "MIT",
+  "licenseFile": "upstream/LICENSE",
+  "integrityManifest": "upstream/manifest.json",
+  "components": "upstream/apps/v4/registry/new-york-v4/ui",
+  "componentSourceChanges": "none",
+  "paletteSources": {
+    "neutral": "apps/v4/registry/themes.ts",
+    "stone": "apps/v4/registry/themes.ts",
+    "zinc": "apps/v4/registry/themes.ts",
+    "gray": "apps/v4/public/r/themes/gray.json",
+    "slate": "apps/v4/public/r/themes/slate.json"
+  },
+  "normalization": {
+    "modernColors": "verbatim OKLCH strings",
+    "legacyColors": "hsl(source HSL triplet), with no rounding or conversion",
+    "legacySidebar": "explicit aliases to same-palette background/foreground/primary/accent/border/ring; the legacy files do not define sidebar tokens",
+    "radius": "each modern light radius retained in dark; legacy palettes use neutral.light.radius",
+    "geometry": "upstream component classes and multiplicative radius bindings from apps/v4/assets/css/main.css; no geometry corrections to match QDS"
+  },
+  "intentionalComparisonAdaptations": {
+    "font": "shared src/fonts/inter.css and its local woff2 files; no QDS reset, tokens, CSS, or runtime",
+    "icons": "Vite @lucide/vue import alias to Phosphor regular named equivalents; no component source edits; not a Lucide silhouette oracle",
+    "sidebar": "upstream noncollapsible fixture, explicit open=true/defaultOpen=true; no cookie-dependent fixture state; random SidebarMenuSkeleton is not rendered",
+    "capture": "capture=1 or setCapture(true) disables animation/transition/caret painting only; normal mode retains upstream motion"
+  },
+  "automation": {
+    "hook": "window.__shadcnReference",
+    "query": "?mode=light|dark&palette=neutral|gray|zinc|stone|slate&family=all|button|input|selection|tabs|badge|card|table|menu|dialog|sidebar&capture=1",
+    "readiness": "hook.ready and html[data-reference-ready=true], after local font loading, Vue nextTick and two animation frames",
+    "setters": ["setMode", "setPalette", "setBaseColor", "setFamily", "setCapture", "openOverlay", "reset", "settle"],
+    "overlayValues": ["menu", "dialog", "select", null],
+    "dataSelectors": ["[data-family]", "[data-case]", "[data-slot]", "[data-reference-root]"],
+    "isolation": "separate document/origin or iframe only; never import reference CSS into the Quasar gallery",
+    "network": "dev/build/runtime use committed files only; --acquire is the sole explicit upstream network maintenance action"
+  },
+  "dependencyOwnership": "private package.json only; existing examples/* workspace glob already includes this app. Parent T178 owns lock integration and optional root script aliases before dependency installation.",
+  "verificationCommands": [
+    "pnpm -C examples/shadcn-reference check:source",
+    "pnpm -C examples/shadcn-reference typecheck",
+    "pnpm -C examples/shadcn-reference build",
+    "pnpm -C examples/shadcn-reference test:reference"
+  ],
+  "parentScriptRequests": {
+    "shadcn-reference:build": "pnpm -C examples/shadcn-reference build",
+    "shadcn-reference:check": "pnpm -C examples/shadcn-reference check:source && pnpm -C examples/shadcn-reference typecheck",
+    "shadcn-reference:test": "pnpm -C examples/shadcn-reference build && pnpm -C examples/shadcn-reference test:reference"
+  },
+  "limitations": [
+    "Legacy Gray/Slate are officially sourced legacy palettes applied to v4 geometry, not missing modern OKLCH palette definitions.",
+    "Legacy sidebar slots are source-value aliases, not an upstream Gray/Slate sidebar-specific theme.",
+    "This reference preserves upstream contrast, including failures; it is not a QDS accessibility-conformance assertion.",
+    "Sidebar fixture covers native noncollapsible anatomy; responsive mobile sheet behavior is vendored but not a screenshot fixture.",
+    "Buttons in card/footer are deterministic visual actions, not business operations."
+  ]
+}

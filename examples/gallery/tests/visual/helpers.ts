@@ -1,10 +1,44 @@
 import { expect, type Page } from '@playwright/test'
 
 export type Mode = 'light' | 'dark'
-export type Variant = 'fluent' | 'ink' | 'one' | 'term'
+export type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
+export type LegacyVariant = Exclude<Variant, 'shadcn'>
+export type BaseColor = 'neutral' | 'gray' | 'zinc' | 'stone' | 'slate'
 
-export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term']
-export const MATRIX_VARIANTS: Exclude<Variant, 'term'>[] = ['fluent', 'ink', 'one']
+export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term', 'shadcn']
+// Existing grammar tests deliberately keep their four-variant expectations.
+export const LEGACY_VARIANTS: LegacyVariant[] = ['fluent', 'ink', 'one', 'term']
+export const MATRIX_VARIANTS: Exclude<LegacyVariant, 'term'>[] = ['fluent', 'ink', 'one']
+export const SHADCN_PALETTES: BaseColor[] = ['neutral', 'gray', 'zinc', 'stone', 'slate']
+
+export async function waitForThemePaint(page: Page) {
+  await page.evaluate(async () => {
+    const frames = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    // Give Vue's queued DOM work and newly used font faces a rendering turn
+    // before inspecting native transitions, then recheck after they finish.
+    await frames()
+    await document.fonts.ready
+    await frames()
+    for (let pass = 0; pass < 8; pass++) {
+      const finite = document.getAnimations().filter(animation => animation.playState === 'running' && Number.isFinite(Number(animation.effect?.getComputedTiming().endTime)))
+      if (finite.length) await Promise.all(finite.map(animation => animation.finished.catch(() => undefined)))
+      await document.fonts.ready
+      await frames()
+      if (!document.getAnimations().some(animation => animation.playState === 'running' && Number.isFinite(Number(animation.effect?.getComputedTiming().endTime)))) return
+    }
+    throw new Error('Native finite animations/font commits did not settle after theme change')
+  })
+}
+
+export async function applyShadcn(page: Page, mode: Mode, palette: BaseColor) {
+  await applyTheme(page, mode, 'shadcn')
+  await page.evaluate((color) => {
+    const ds = (window as unknown as { __qdsGallery: { setShadcnBaseColor: (value: BaseColor) => void } }).__qdsGallery
+    ds.setShadcnBaseColor(color)
+  }, palette)
+  await expect(page.locator('body')).toHaveAttribute('data-qds-shadcn-base-color', palette)
+  await waitForThemePaint(page)
+}
 
 export async function applyTheme(page: Page, mode: Mode, variant: Variant) {
   await page.waitForFunction(() => Boolean((window as unknown as { __qdsGallery?: unknown }).__qdsGallery))
@@ -18,6 +52,7 @@ export async function applyTheme(page: Page, mode: Mode, variant: Variant) {
   )
   await expect(page.locator('body')).toHaveClass(new RegExp(`qds-variant-${variant}`))
   await expect(page.locator('body')).toHaveClass(new RegExp(mode === 'dark' ? 'qds-theme-dark' : 'qds-theme-light'))
+  await waitForThemePaint(page)
 }
 
 export async function computed(page: Page, selector: string, property: string, pseudo?: string): Promise<string> {

@@ -140,6 +140,10 @@ import CatalogLoadingData from './catalog/CatalogLoadingData.vue'
 }
 
 @media (max-width: 640px) {
+  /* Leave room for native 290px portrait pickers by reducing wrapper padding,
+     not the component's native geometry. */
+  .catalog-section .catalog-card.q-pa-lg { padding: var(--qds-space-sm); }
+  .catalog-section .catalog-demo { padding: var(--qds-space-xs); }
   .catalog-heading {
     grid-template-columns: 1fr;
   }

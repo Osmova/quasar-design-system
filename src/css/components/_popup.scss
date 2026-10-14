@@ -1,4 +1,5 @@
 @use '../materials';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-tooltip {
@@ -20,4 +21,10 @@
     border-radius: inherit;
     box-shadow: none;
   }
+
+  #{$shadcn} .q-tooltip { color: var(--qds-text-on-primary); border-color: var(--qds-color-primary); border-radius: var(--qds-row-radius); box-shadow: var(--qds-shadow-sm); @include materials.solid(var(--qds-color-primary)); }
+  #{$shadcn} .q-popup-edit { padding: var(--qds-space-md); }
+  #{$shadcn} .q-popup-edit__buttons { gap: var(--qds-space-sm); margin-block-start: var(--qds-space-sm); }
+  #{$shadcn} .q-popup-edit__buttons .q-btn + .q-btn { margin-inline-start: 0; }
+  @media (forced-colors: active) { #{$shadcn} .q-tooltip { background: CanvasText; color: Canvas; border-color: CanvasText; box-shadow: none; } }
 }

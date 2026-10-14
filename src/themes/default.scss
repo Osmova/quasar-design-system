@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '../tokens/default' as tokens;
 @use 'fallbacks' as fallbacks;
+@use 'shadcn';
 
 @function qds-variant-token($variant, $token) {
   @return map.get(map.get(tokens.$variants, $variant), $token);
@@ -367,3 +368,5 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
     #{$qds-one-scopes} { @include qds-one-control-layers; }
   }
 }
+
+@include shadcn.scopes;

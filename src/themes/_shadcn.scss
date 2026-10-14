@@ -1,0 +1,275 @@
+@use 'sass:map';
+@use 'sass:color';
+@use 'sass:list';
+@use 'sass:selector';
+@use 'sass:string';
+@use '../tokens/shadcn' as tokens;
+@use '../tokens/default' as defaults;
+
+// Declaration-only reusable emitter. Include at an unlayered component boundary
+// AFTER native local-dark inversion. Palette belongs to the same scope as mode.
+// $palette: 'neutral'|'gray'|'zinc'|'stone'|'slate'; $scheme: light|dark; $bridge: boolean.
+// All upstream primitives: --qds-shadcn-{slot}; native aliases: --qds-* below.
+@mixin scheme($palette: neutral, $scheme: light, $bridge: true, $state-container: null) {
+  @include aliases;
+  @include palette($palette, $scheme, $state-container);
+  @if $bridge { @include bridge; }
+}
+
+// Palette-dependent declarations only. Scopes use this after Neutral aliases
+// to avoid duplicating the identical native contract for every base color.
+@function palette-values($palette: neutral, $scheme: light, $state-container: null) {
+  $profile: tokens.profile($palette, $scheme);
+  $source: tokens.profile($palette, $scheme, false);
+  $fills: tokens.role-fills($profile, $scheme);
+  $pairs: tokens.role-pairs($profile, $scheme);
+  $states: tokens.role-state-fills($profile, $scheme, $state-container);
+  $card: map.get($profile, card);
+  $backgrounds: (map.get($profile, background), $card, map.get($profile, popover), map.get($profile, muted), map.get($profile, accent));
+  @each $role, $fill in $fills {
+    $backgrounds: list.append($backgrounds, color.mix($fill, $card, 10%, $method: rgb), comma);
+  }
+
+  $values: ('color-scheme': $scheme);
+  @each $slot, $value in $profile { $values: map.set($values, '--qds-shadcn-#{$slot}', $value); }
+  // Search from the original source L/C/h, not an RGB round-trip, then recheck
+  // the nearest-8-bit candidate against actual source-over backgrounds.
+  $values: map.set($values, '--qds-text-muted', tokens.readable(map.get($source, muted-foreground), $backgrounds, $scheme));
+  // The ring is painted at 50% opacity: verify that actual composite, not just
+  // its opaque color. Pinned border/input remain decorative, not control proof.
+  $values: map.set($values, '--qds-stroke-strong', tokens.readable(map.get($source, ring), $backgrounds, $scheme, 3, 0.5));
+  $values: map.set($values, '--qds-card-acrylic-tint-rgb', tokens.rgb-channels($card));
+  @each $role, $fill in $fills {
+    $values: map.set($values, '--qds-color-#{$role}', $fill);
+    $values: map.set($values, '--qds-color-#{$role}-rgb', tokens.rgb-channels($fill));
+    $values: map.set($values, '--qds-text-on-#{$role}', map.get($pairs, $role));
+    @each $state, $paint in map.get($states, $role) {
+      $values: map.set($values, '--qds-color-#{$role}-#{$state}', $paint);
+      $values: map.set($values, '--qds-color-#{$role}-#{$state}-rgb', tokens.rgb-channels($paint));
+    }
+    $fg: $fill;
+    @if $role == primary { $fg: map.get($source, primary); }
+    @if $role == secondary or $role == accent { $fg: map.get($source, '#{$role}-foreground'); }
+    @if $role == negative { $fg: map.get($source, destructive); }
+    @if $role == positive { $fg: if($scheme == light, #166534, #4ade80); }
+    @if $role == warning { $fg: if($scheme == light, #92400e, #fbbf24); }
+    @if $role == info { $fg: if($scheme == light, #1d4ed8, #93c5fd); }
+    $values: map.set($values, '--qds-fg-#{$role}', tokens.readable($fg, $backgrounds, $scheme));
+  }
+  @return $values;
+}
+
+// Delta mode is only valid after a same-scope Neutral palette of that scheme.
+// Complete public emitters keep $delta:false; grouped scopes opt in explicitly.
+@mixin palette($palette: neutral, $scheme: light, $state-container: null, $delta: false) {
+  $values: palette-values($palette, $scheme, $state-container);
+  $base: ();
+  @if $delta { $base: palette-values(neutral, $scheme, $state-container); }
+  @each $name, $value in $values {
+    @if not map.has-key($base, $name) or map.get($base, $name) != $value { #{$name}: #{$value}; }
+  }
+}
+
+// Final declarations only: no Fluent fallback assignments followed by overrides.
+// This map is also the dependency graph used to rebind local scheme boundaries.
+@function alias-values() {
+  $values: map.merge(tokens.$geometry, (
+    font-family: map.get(defaults.$font, body), font-family-display: 'var(--qds-font-family)', font-family-accent: 'var(--qds-font-family)',
+    font-size-body: 0.875rem, line-height-body: 1.25rem, font-size-body-strong: 0.875rem, line-height-body-strong: 1.25rem,
+    font-weight-body-strong: 500, font-size-body1: 0.875rem, line-height-body1: 1.25rem, font-size-body2: 0.875rem, line-height-body2: 1.25rem,
+    font-size-caption: 0.75rem, line-height-caption: 1rem,
+    elevation-1: 'var(--qds-shadow-sm)', elevation-2: 'var(--qds-shadow-md)', elevation-3: 'var(--qds-shadow-lg)',
+    elevation-card: 'var(--qds-shadow-sm)', elevation-flyout: 'var(--qds-shadow-md)', elevation-dialog: 'var(--qds-shadow-lg)',
+    interactive-bg: 'var(--qds-surface-0)', interactive-bg-hover: 'var(--qds-surface-1)', interactive-bg-active: 'var(--qds-surface-2)',
+    interactive-border: 'var(--qds-border-subtle)', interactive-border-strong: 'var(--qds-border)',
+    interactive-text: 'var(--qds-text)', interactive-text-muted: 'var(--qds-text-muted)',
+    field-label-gap: 0.25rem, field-label-column: 8rem, field-transition: 'var(--qds-motion-fast)',
+    field-label-weight: 'var(--qds-font-weight-regular)', field-shadow: none, field-help-gap: 'var(--qds-space-xs)',
+    field-focus-stroke: 'var(--qds-stroke-focus)',
+    field-focus-halo: '0 0 0 3px color-mix(in srgb, var(--qds-stroke-focus) 50%, transparent)',
+    field-description-color: 'var(--qds-text-muted)', control-halo: none, control-icon-color: 'var(--qds-text-muted)',
+    progress-stripe: 'rgba(255, 255, 255, 0.24)', button-min-height: 'var(--qds-control-size-md)',
+    button-dense-min-height: 'var(--qds-control-size-sm)', button-round-size: 'var(--qds-control-size-md)',
+    compact-action-size: 'var(--qds-control-size-md)', compact-action-icon-size: 'var(--qds-control-icon-size-md)',
+    button-icon-gap: 'var(--qds-inline-icon-gap)', button-dense-icon-gap: 'var(--qds-inline-icon-dense-gap)', button-radius: 'var(--qds-radius-control)',
+    chip-icon-gap: 'var(--qds-inline-icon-gap)', chip-dense-icon-gap: 'var(--qds-inline-icon-dense-gap)', chip-radius: 'var(--qds-radius-full)',
+    badge-icon-gap: 'var(--qds-inline-icon-gap)', badge-dense-icon-gap: 'var(--qds-inline-icon-dense-gap)', badge-radius: 'var(--qds-radius-full)',
+    surface-0: 'var(--qds-shadcn-background)', surface-1: 'var(--qds-shadcn-card)', surface-2: 'var(--qds-shadcn-muted)',
+    surface-3: 'var(--qds-shadcn-accent)', surface-glass: 'var(--qds-shadcn-card)',
+    text: 'var(--qds-shadcn-foreground)', text-strong: 'var(--qds-shadcn-foreground)',
+    fg-default: 'var(--qds-text)', fg-strong: 'var(--qds-text-strong)', fg-muted: 'var(--qds-text-muted)', fg-disabled: 'var(--qds-text-muted)',
+    fg-brand: 'var(--qds-fg-primary)', fg-on-brand: 'var(--qds-text-on-primary)', text-on-solid: 'var(--qds-text-on-primary)',
+    border: 'var(--qds-shadcn-border)', border-subtle: 'var(--qds-shadcn-border)',
+    fill-hover-mix: 90%, fill-pressed-mix: 80%, fill-state-base: 'var(--qds-bg-card)', text-on-fill-pressed-mix: 100%,
+    surface-focus-block: 'var(--qds-shadcn-accent)', surface-transient: 'var(--qds-shadcn-popover)',
+    bg-canvas: 'var(--qds-shadcn-background)', bg-surface-1: 'var(--qds-shadcn-card)', bg-surface-2: 'var(--qds-shadcn-muted)',
+    bg-layer: 'var(--qds-shadcn-accent)', bg-flyout: 'var(--qds-shadcn-popover)', bg-card: 'var(--qds-shadcn-card)',
+    bg-card-hover: 'var(--qds-shadcn-accent)', bg-overlay: 'rgba(0, 0, 0, 0.5)',
+    stroke-default: 'var(--qds-border)', stroke-subtle: 'var(--qds-border-subtle)', stroke-divider: 'var(--qds-border)',
+    stroke-focus: 'var(--qds-stroke-strong)', stroke-error: 'var(--qds-fg-negative)', control-stroke-strong: 'var(--qds-stroke-strong)',
+    control-fill-default: 'var(--qds-shadcn-background)', control-fill-hover: 'var(--qds-shadcn-accent)',
+    control-fill-pressed: 'var(--qds-shadcn-muted)', control-fill-disabled: 'var(--qds-shadcn-muted)', control-fill-input-active: 'var(--qds-shadcn-background)',
+    control-stroke-on-accent-top: transparent, control-stroke-on-accent-bottom: transparent,
+    card-fill: 'var(--qds-shadcn-card)', card-stroke: 'var(--qds-border)', card-radius: 0.875rem, row-radius: 0.375rem,
+    state-hover: 'var(--qds-shadcn-accent)', state-pressed: 'var(--qds-shadcn-muted)', state-selected: 'var(--qds-shadcn-accent)',
+    state-disabled: 'var(--qds-shadcn-muted)', state-focus-indicator: 'var(--qds-stroke-focus)',
+    material-stroke: 'var(--qds-border)', material-saturate: 1, material-edge: 'inset 0 0 0 0 transparent',
+    mica-alt: 'var(--qds-shadcn-background)', backdrop: 'var(--qds-shadcn-background)',
+    card-border: 'var(--qds-border)', card-border-strong: 'var(--qds-border)', card-header-border: 'var(--qds-border)',
+    chrome-border: 'var(--qds-border)', chrome-border-soft: 'var(--qds-border)',
+    chrome-surface: 'var(--qds-shadcn-sidebar)', chrome-surface-strong: 'var(--qds-shadcn-sidebar)',
+    chrome-shadow: 'var(--qds-chrome-shadow-value, none)', media-frame-shadow: 'var(--qds-media-frame-shadow-value, var(--qds-card-shadow))',
+    toolbar-bg: 'var(--qds-shadcn-background)', separator-color: 'var(--qds-border)', handle-color: 'var(--qds-text-muted)',
+    menu-bg: 'var(--qds-shadcn-popover)', menu-border: 'var(--qds-border)', menu-radius: 0.5rem, menu-shadow: 'var(--qds-shadow-md)',
+    menu-item-min-height: 'var(--qds-menu-item-min-height-value, 2rem)', notification-radius: 'var(--qds-radius-md)', notification-shadow: 'var(--qds-shadow-md)',
+    list-item-min-height: 'var(--qds-list-item-min-height-value, 2.25rem)', expansion-item-min-height: 'var(--qds-expansion-item-min-height-value, 2.75rem)',
+    table-header-height: 'var(--qds-table-header-height-value, 2.5rem)', table-row-height: 'var(--qds-table-row-height-value, 2.5rem)',
+    field-label-bg: 'var(--qds-bg-canvas)', slider-label-bg: 'var(--qds-surface-0)', slider-label-text: 'var(--qds-text-strong)', slider-label-border: 'var(--qds-border-subtle)',
+    tab-radius: 'var(--qds-radius-control)', tab-hover-bg: 'var(--qds-shadcn-accent)', tab-active-bg: 'var(--qds-shadcn-background)',
+    tab-active-text: 'var(--qds-text)', tab-active-rail: transparent,
+    segmented-track-bg: 'var(--qds-shadcn-muted)', segmented-thumb-bg: 'var(--qds-shadcn-background)',
+    bar-dark-bg: 'var(--qds-shadcn-primary)', bar-dark-fg: 'var(--qds-shadcn-primary-foreground)',
+    toggle-track-width: 'var(--qds-control-size-lg)', toggle-track-height: 'calc(var(--qds-control-size-lg) / 2)', toggle-thumb-inset: 0.1875rem,
+    shadow-sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    shadow-md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+    shadow-lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+    button-elevated-shadow: 'var(--qds-shadow-sm)', button-elevated-shadow-hover: 'var(--qds-shadow-sm)', card-shadow: 'var(--qds-shadow-sm)',
+    banner-accent: 'var(--qds-color-primary)', banner-accent-rgb: 'var(--qds-color-primary-rgb)', banner-text: 'var(--qds-text)',
+    notify-accent: 'var(--qds-color-primary)', notify-accent-rgb: 'var(--qds-color-primary-rgb)', notify-bg: 'var(--qds-surface-transient)', notify-text: 'var(--qds-text)',
+    pagination-active-bg: 'var(--qds-surface-brand-soft)', pagination-active-border: 'rgba(var(--qds-color-primary-rgb), var(--qds-tonal-border-opacity))',
+    pagination-active-text: 'var(--qds-text-strong)', scrollbar-size: 0.625rem, scrollbar-thumb: 'var(--qds-handle-color)',
+    scrollbar-thumb-hover: 'color-mix(in srgb, var(--qds-handle-color) 72%, var(--qds-text-muted))',
+    selection-inner-size: 'var(--qds-icon-size-lg)', selection-mark-size: 'var(--qds-icon-size-md)',
+    selection-mark-offset: 'calc((var(--qds-selection-inner-size) - var(--qds-selection-mark-size)) / 2)',
+    stepper-rail: 'var(--qds-separator-color)', stepper-rail-active: 'var(--qds-color-primary)',
+    table-header-bg: 'var(--qds-surface-1)', table-header-text: 'var(--qds-text-muted)', table-row-hover-bg: 'var(--qds-surface-brand-soft)',
+    table-selected-bg: 'var(--qds-surface-focus-block)', table-sort-icon: 'var(--qds-color-primary)',
+    timeline-rail: 'var(--qds-separator-color)', chat-bubble-bg: 'var(--qds-surface-1)', chat-bubble-fg: 'var(--qds-text)',
+  ));
+  @each $role in tokens.$roles {
+    $values: map.set($values, 'text-on-#{$role}-pressed-mix', 100%);
+    $soft: if($role == primary, brand, $role);
+    $values: map.set($values, 'surface-#{$soft}-soft', 'color-mix(in srgb, var(--qds-color-#{$role}) 10%, var(--qds-bg-card))');
+  }
+  @each $step in light, dark {
+    $values: map.set($values, 'color-primary-#{$step}', 'var(--qds-color-primary)');
+    $values: map.set($values, 'color-primary-#{$step}-rgb', 'var(--qds-color-primary-rgb)');
+  }
+  @each $step in sm, md, lg {
+    @each $kind in button, field { $values: map.set($values, '#{$kind}-size-#{$step}', 'var(--qds-control-size-#{$step})'); }
+  }
+  @each $kind in button, field, chip {
+    $values: map.set($values, '#{$kind}-icon-size', 'var(--qds-control-icon-size-md)');
+    $values: map.set($values, '#{$kind}-dense-icon-size', 'var(--qds-control-icon-size-sm)');
+  }
+  @each $stroke in default, secondary, top, bottom { $values: map.set($values, 'control-stroke-#{$stroke}', 'var(--qds-shadcn-input)'); }
+  @each $level in thin, regular, thick {
+    $values: map.set($values, 'material-#{$level}-bg', 'var(--qds-shadcn-popover)');
+    $values: map.set($values, 'material-#{$level}-filter', none);
+    $values: map.set($values, 'material-#{$level}-blur', 0px);
+  }
+  @each $name in bg, bg-fallback, bg-readable, bg-opaque, header-bg, header-bg-opaque {
+    $values: map.set($values, 'card-#{$name}', 'var(--qds-shadcn-card)');
+  }
+  @each $step, $alias in (2: sm, 4: sm, 8: md, 16: lg, 28: lg, 64: lg) { $values: map.set($values, 'shadow-#{$step}', 'var(--qds-shadow-#{$alias})'); }
+  $result: ();
+  @each $name, $value in $values { $result: map.set($result, '--qds-#{$name}', $value); }
+  @return $result;
+}
+
+@mixin aliases {
+  @each $name, $value in alias-values() { #{$name}: #{$value}; }
+}
+
+// Rebind the transitive color/material dependency closure, not dimensions
+// or disconnected component defaults already inherited from the Shadcn root.
+// Literal flags touched by native local inversion are explicit seeds as well.
+@function boundary-alias-values() {
+  $aliases: alias-values();
+  $needed: ();
+  @each $name, $value in palette-values(neutral, dark) { $needed: map.set($needed, $name, true); }
+  @each $name in bg-overlay, control-halo, control-stroke-on-accent-top, control-stroke-on-accent-bottom,
+    material-edge, material-saturate, tab-active-rail,
+    fill-hover-mix, fill-pressed-mix, text-on-fill-pressed-mix {
+    $needed: map.set($needed, '--qds-#{$name}', true);
+  }
+  @each $role in tokens.$roles { $needed: map.set($needed, '--qds-text-on-#{$role}-pressed-mix', true); }
+  @each $level in thin, regular, thick {
+    $needed: map.set($needed, '--qds-material-#{$level}-filter', true);
+    $needed: map.set($needed, '--qds-material-#{$level}-blur', true);
+  }
+  $changed: true;
+  @while $changed {
+    $changed: false;
+    @each $name, $value in $aliases {
+      @if not map.has-key($needed, $name) {
+        $text: '#{$value}';
+        @each $dependency, $flag in $needed {
+          @if string.index($text, 'var(#{$dependency})') or string.index($text, 'var(#{$dependency},') {
+            $needed: map.set($needed, $name, true);
+            $changed: true;
+          }
+        }
+      }
+    }
+  }
+  $result: ();
+  @each $name, $value in $aliases {
+    @if map.has-key($needed, $name) { $result: map.set($result, $name, $value); }
+  }
+  @return $result;
+}
+
+@mixin boundary-aliases {
+  @each $name, $value in boundary-alias-values() { #{$name}: #{$value}; }
+}
+
+// Call once, unlayered AFTER native inversion. $boundaries is a relative selector
+// (or selector list) beneath the palette-bearing $scope. Five profiles share one
+// alias/bridge block; non-Neutral profiles emit only differing declarations.
+// Supply an isolated $scope when composing independently themed nested roots.
+@mixin local-scopes($boundaries, $scheme: dark,
+  $scope: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)', $state-container: null) {
+  #{selector.nest($scope, $boundaries)} {
+    @include boundary-aliases;
+    @include bridge;
+    @include palette(neutral, $scheme, $state-container);
+  }
+  @each $palette in tokens.$base-colors {
+    @if $palette != neutral {
+      $anchor: selector.append($scope, '[data-qds-shadcn-base-color="#{$palette}"]');
+      #{selector.nest($anchor, $boundaries)} { @include palette($palette, $scheme, $state-container, true); }
+    }
+  }
+}
+
+@mixin bridge {
+  @each $role in tokens.$roles { --q-#{$role}: var(--qds-color-#{$role}); }
+}
+
+// Variables-only scope rules, emitted after the existing theme. Unknown/missing
+// palette attributes inherit the same-scope Neutral default, never a parent hue.
+@mixin scopes {
+  // Match the existing body.qds-ui.body--dark token boundary (specificity 3)
+  // without selector doubling, so a stale Quasar class cannot keep old aliases.
+  $scope: ':is(body.qds-ui.qds-variant-shadcn, .qds-variant-shadcn)';
+  @layer qds.tokens {
+    #{$scope} { @include scheme; }
+    @each $palette in tokens.$base-colors {
+      @if $palette != neutral {
+        #{$scope}[data-qds-shadcn-base-color='#{$palette}'] { @include palette($palette, light, null, true); }
+      }
+    }
+    @each $palette in tokens.$base-colors {
+      $attr: if($palette == neutral, '', '[data-qds-shadcn-base-color="#{$palette}"]');
+      #{$scope}#{$attr}:where(.qds-theme-dark, [data-qds-resolved='dark'], body.qds-ui.body--dark):not([data-qds-resolved='light']):not(.qds-theme-light),
+      :where(.qds-theme-dark, body.qds-ui.body--dark) #{$scope}#{$attr}:not([data-qds-resolved='light']):not(.qds-theme-light):not(:where(.qds-theme-light *)) {
+        // The common scope already rebinds every native alias on this same
+        // element. Only palette-dependent values change at scheme boundaries.
+        @include palette($palette, dark, null, $palette != neutral);
+      }
+    }
+  }
+  // Quasar owns unlayered root variables; this scoped bridge must be unlayered.
+  .qds-variant-shadcn { @include bridge; }
+}

@@ -1,0 +1,9 @@
+// Only the layered entry opts in. Important rules reverse normal layer order.
+$layered: false !default;
+@mixin declarations {
+  @if $layered {
+    @at-root (without: layer) {
+      @layer qds-important { @content; }
+    }
+  } @else { @content; }
+}

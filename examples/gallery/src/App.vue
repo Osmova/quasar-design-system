@@ -8,10 +8,13 @@ import {
   PhPenNib,
   PhSun,
   PhTerminal,
+  PhSquaresFour,
 } from '@phosphor-icons/vue'
 import {
   useDesignSystem,
   DESIGN_SYSTEM_VARIANTS,
+  SHADCN_BASE_COLORS,
+  type ShadcnBaseColor,
   type DesignSystemMode,
   type DesignSystemVariantName,
 } from '@bastvi/quasar-design-system'
@@ -49,6 +52,7 @@ const variantIcons: Record<string, Component> = {
   ink: PhPenNib,
   one: PhDeviceMobile,
   term: PhTerminal,
+  shadcn: PhSquaresFour,
 }
 
 const modeOptions = modes.map((mode) => ({
@@ -70,6 +74,10 @@ function onMode(mode: DesignSystemMode) {
 
 function onVariant(variant: DesignSystemVariantName) {
   ds.setVariant(variant)
+}
+
+function onBaseColor(color: ShadcnBaseColor) {
+  ds.setShadcnBaseColor(color)
 }
 
 function tabFromHash(): GalleryTab {
@@ -131,6 +139,7 @@ watch(tab, (value) => {
             :model-value="ds.mode.value"
             no-caps
             aria-label="Mode"
+            role="group"
             class="gallery-switcher"
             :options="modeOptions"
             @update:model-value="onMode"
@@ -145,6 +154,7 @@ watch(tab, (value) => {
             :model-value="ds.variant.value"
             no-caps
             aria-label="Variant"
+            role="group"
             class="gallery-switcher"
             :options="variantOptions"
             @update:model-value="onVariant"
@@ -154,6 +164,22 @@ watch(tab, (value) => {
               <span class="gallery-switcher__label">{{ variant.label }}</span>
             </template>
           </q-btn-toggle>
+          <q-select
+            v-if="ds.variant.value === 'shadcn'"
+            :model-value="ds.shadcnBaseColor.value"
+            :options="SHADCN_BASE_COLORS"
+            option-value="name"
+            option-label="label"
+            emit-value
+            map-options
+            dense
+            outlined
+            label="Base palette"
+            aria-label="Shadcn base palette"
+            class="gallery-palette"
+            data-test="qds-shadcn-palette"
+            @update:model-value="onBaseColor"
+          />
         </div>
       </q-toolbar>
 
@@ -241,6 +267,12 @@ watch(tab, (value) => {
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+.gallery-palette {
+  flex: 0 1 10rem;
+  min-width: 8rem;
+  max-width: 100%;
 }
 
 .gallery-switcher :deep(.q-btn__content) {

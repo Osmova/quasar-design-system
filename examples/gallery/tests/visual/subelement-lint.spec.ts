@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { qdsIconSet } from '../../../../src/icons/quasar-icon-set'
 import { FAMILIES, type Section } from './atlas-families'
-import { applyTheme, resolvedColor, type Mode } from './helpers'
+import { applyTheme, LEGACY_VARIANTS, resolvedColor, type LegacyVariant, type Mode } from './helpers'
 
 const MODES: Mode[] = ['light', 'dark']
 const RAW_FILLS = ['rgb(255, 255, 255)', 'rgb(0, 0, 0)']
@@ -33,16 +33,16 @@ async function backgrounds(page: Page, selector: string): Promise<string[]> {
   return page.locator(selector).evaluateAll((elements) => elements.map((element) => getComputedStyle(element).backgroundColor))
 }
 
-async function openSection(page: Page, section: Section, mode: Mode) {
+async function openSection(page: Page, section: Section, mode: Mode, variant: LegacyVariant) {
   await page.goto(`./#${section}`)
-  await applyTheme(page, mode, 'fluent')
+  await applyTheme(page, mode, variant)
 }
 
 test.describe('sub-element lint', () => {
-  for (const mode of MODES) {
-    test(`atlas families render no Material glyphs (${mode})`, async ({ page }) => {
+  for (const [variant, mode] of LEGACY_VARIANTS.flatMap((variant) => MODES.map((mode) => [variant, mode] as const))) {
+    test(`atlas families render unique hooks and no Material glyphs (${mode}/${variant})`, async ({ page }) => {
       for (const section of Object.keys(FAMILIES) as Section[]) {
-        await openSection(page, section, mode)
+        await openSection(page, section, mode, variant)
         for (const hook of Object.values(FAMILIES[section]).flat()) {
           const target = page.locator(byHook(hook))
           await expect(target, `${hook} is rendered exactly once`).toHaveCount(1)
@@ -51,8 +51,8 @@ test.describe('sub-element lint', () => {
       }
     })
 
-    test(`chat and tree drop Material tells (${mode})`, async ({ page }) => {
-      await openSection(page, 'catalog', mode)
+    test(`chat tails, tree connectors, caret icons and surface fills drop Material tells (${mode}/${variant})`, async ({ page }) => {
+      await openSection(page, 'catalog', mode, variant)
 
       const bubbles = `${byHook('qds-chat-sent')} .q-message-text, ${byHook('qds-chat-received')} .q-message-text`
       await expect(page.locator(bubbles).first()).toBeAttached()
@@ -101,8 +101,8 @@ test.describe('sub-element lint', () => {
       }
     })
 
-    test(`icon size tokens resolve (${mode})`, async ({ page }) => {
-      await openSection(page, 'catalog', mode)
+    test(`icon and selection size tokens resolve (${mode}/${variant})`, async ({ page }) => {
+      await openSection(page, 'catalog', mode, variant)
       const sizes = await page.locator('.qds-ui').first().evaluate((root) => {
         const probe = document.createElement('span')
         probe.style.display = 'block'

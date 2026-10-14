@@ -9,6 +9,8 @@ const BASE_URL = `http://127.0.0.1:${PORT}/`
 
 export default defineConfig({
   testDir: './tests/visual',
+  // The independent oracle has its own explicit two-origin server config.
+  testIgnore: ['**/shadcn-reference.spec.ts'],
   // The override-vs-Quasar assertions are deterministic; never retry-mask a gap.
   retries: 0,
   fullyParallel: true,

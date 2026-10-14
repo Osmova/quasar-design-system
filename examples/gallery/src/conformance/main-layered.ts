@@ -1,0 +1,5 @@
+import './quasar-layered.css'
+import '@bastvi/quasar-design-system/css/layered'
+import '@bastvi/quasar-design-system/css/extensions/qwindow/layered'
+import '@bastvi/quasar-design-system/fonts/inter.css'
+import './bootstrap'

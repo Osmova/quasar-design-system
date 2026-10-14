@@ -1,0 +1,5 @@
+// One indivisible consumer stylesheet: native CSS, QDS, then its optional extension.
+@use 'quasar/src/css/index.sass' as native;
+@use '@quasar/quasar-ui-qwindow/index.css' as native-window;
+@use '@bastvi/quasar-design-system/css' as qds;
+@use '@bastvi/quasar-design-system/css/extensions/qwindow' as qds-window;

@@ -1,3 +1,4 @@
+@use 'importance';
 @mixin qds-type-step($step) {
   font-size: var(--qds-font-size-#{$step});
   line-height: var(--qds-line-height-#{$step});
@@ -79,6 +80,12 @@ $weight-utilities: '.text-weight-thin, .text-weight-light, .text-weight-regular,
     outline-offset: calc(-1 * var(--qds-focus-ring-width));
   }
 
+  .qds-variant-shadcn:is(.qds-ui,.qds-ui *) {
+    :where(h1, h2, h3, h4, h5, h6, .qds-display) { font-family: var(--qds-font-family); }
+    :where(a[href]:not([class*='q-'])) { color: var(--qds-fg-primary); text-decoration-color: currentColor; text-underline-offset: var(--qds-space-xs); }
+    :where(a[href], [role='button'][tabindex], [role='link'][tabindex]):not([class*='q-']):focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); box-shadow: var(--qds-field-focus-halo); }
+  }
+
   // Ripple is a Material 2 tell; CSS states replace it.
   .qds-ui .q-ripple {
     display: none;
@@ -88,9 +95,7 @@ $weight-utilities: '.text-weight-thin, .text-weight-light, .text-weight-regular,
     .qds-ui *,
     .qds-ui *::before,
     .qds-ui *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
+      @include importance.declarations { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
   }
 
@@ -98,5 +103,6 @@ $weight-utilities: '.text-weight-thin, .text-weight-light, .text-weight-regular,
     .qds-ui [class*="q-"]:focus-visible {
       outline-color: Highlight;
     }
+    .qds-variant-shadcn:is(.qds-ui,.qds-ui *) :is(.qds-focus-ring, a[href], [role='button'][tabindex], [role='link'][tabindex]):focus-visible { outline-color: Highlight; box-shadow: none; }
   }
 }

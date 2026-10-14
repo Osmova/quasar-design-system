@@ -1,6 +1,8 @@
 @use '../materials';
+@use '../importance';
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-dialog__backdrop { background: var(--qds-bg-overlay); }
@@ -41,9 +43,9 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
   .qds-ui .q-dialog__message { color: var(--qds-fg-default); }
 
-  .qds-ui .q-dialog .q-card__actions .q-btn:is(.q-btn--flat, .q-btn--outline):not(:last-child, .text-negative, .text-warning, .text-positive, .disabled) { color: var(--qds-fg-default) !important; }
+  .qds-ui .q-dialog .q-card__actions .q-btn:is(.q-btn--flat, .q-btn--outline):not(:last-child, .text-negative, .text-warning, .text-positive, .disabled) { @include importance.declarations { color: var(--qds-fg-default) !important; } }
   // The Dialog plugin defaults its actions to Quasar's amber in dark mode.
-  .qds-ui .q-dialog-plugin .q-btn.text-amber { color: var(--qds-fg-brand) !important; }
+  .qds-ui .q-dialog-plugin .q-btn.text-amber { @include importance.declarations { color: var(--qds-fg-brand) !important; } }
 
   #{$one} .q-dialog__inner > :is(.q-card, .q-bottom-sheet) {
     --qds-surface-focus-block: color-mix(in srgb, var(--qds-surface-transient) 92%, var(--qds-text));
@@ -53,4 +55,15 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
   }
 
   #{$one} .q-dialog__inner--standard > .q-card { border-color: transparent; border-radius: calc(var(--qds-card-radius) + 0.25rem); @include materials.solid(var(--qds-surface-transient)); }
+
+  #{$shadcn} .q-dialog__inner > .q-card { color: var(--qds-fg-default); border: var(--qds-border-width-control) solid var(--qds-border); box-shadow: var(--qds-shadow-lg); @include materials.solid(var(--qds-bg-card)); }
+  #{$shadcn} .q-dialog__inner--standard > .q-card { border-radius: var(--qds-card-radius); }
+  #{$shadcn} .q-dialog__inner--maximized > .q-card { border: 0; box-shadow: none; }
+  #{$shadcn} .q-dialog__title { font-size: var(--qds-font-size-h6); line-height: var(--qds-line-height-h6); font-weight: var(--qds-font-weight-semibold); }
+  #{$shadcn} .q-dialog__message { color: var(--qds-fg-muted); font-size: var(--qds-font-size-body); line-height: var(--qds-line-height-body); }
+  #{$shadcn} .q-dialog-plugin__form { max-height: min(50dvh, 24rem); }
+  #{$shadcn} .q-dialog-plugin__form .q-option-group > div + div { margin-block-start: var(--qds-space-sm); }
+  #{$shadcn} .q-dialog__inner > .q-card > .q-card__actions { gap: var(--qds-space-sm); }
+  @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-dialog__inner:is(.q-transition--scale-enter-active, .q-transition--scale-leave-active), #{$shadcn} .q-dialog__inner:is(.q-transition--scale-enter-active, .q-transition--scale-leave-active) > * { transition: none; } }
+  @media (forced-colors: active) { #{$shadcn} .q-dialog__inner > .q-card { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; } }
 }

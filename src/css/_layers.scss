@@ -2,4 +2,6 @@
 // default ./css bundle the component/base/utility overrides are emitted
 // UNLAYERED (so they beat Quasar's unlayered CSS); the qds.base/utilities/quasar
 // layers are only populated by the optional ./css/layered bundle.
+@use 'importance';
+@if importance.$layered { @layer qds-important; }
 @layer qds.reset, qds.tokens, qds.base, qds.utilities, qds.quasar, qds.overrides;

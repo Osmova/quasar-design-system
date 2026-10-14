@@ -92,13 +92,13 @@ function pulseAjaxBar(): void {
         <div class="catalog-label">QInnerLoading</div>
         <div class="catalog-loading-box">
           <div class="qds-text-muted">Loading overlay preview</div>
-          <q-inner-loading showing label="Syncing" color="primary" />
+          <q-inner-loading showing label="Syncing" color="primary" data-test="qds-catalog-inner-loading" />
         </div>
       </div>
 
       <div class="catalog-demo catalog-demo--wide">
         <div class="catalog-label">QSkeleton</div>
-        <q-skeleton type="text" width="45%" />
+        <q-skeleton type="text" width="45%" data-test="qds-catalog-skeleton" />
         <q-skeleton type="rect" height="64px" class="q-mt-sm" />
         <q-skeleton type="text" width="72%" class="q-mt-sm" />
       </div>
@@ -203,7 +203,7 @@ function pulseAjaxBar(): void {
 
       <div class="catalog-demo">
         <div class="catalog-label">QVirtualScroll</div>
-        <q-virtual-scroll :items="virtualItems" style="height: 220px" separator v-slot="{ item, index }">
+        <q-virtual-scroll :items="virtualItems" style="height: 220px" separator v-slot="{ item, index }" data-test="qds-catalog-virtual-scroll">
           <q-item :key="index" dense>
             <q-item-section>{{ item }}</q-item-section>
             <q-item-section side>#{{ index + 1 }}</q-item-section>
@@ -213,7 +213,7 @@ function pulseAjaxBar(): void {
 
       <div class="catalog-demo catalog-demo--wide">
         <div class="catalog-label">QMarkupTable</div>
-        <q-markup-table flat bordered dense tabindex="0" role="region" aria-label="Coverage summary">
+        <q-markup-table flat bordered dense tabindex="0" role="region" aria-label="Coverage summary" data-test="qds-catalog-markup">
           <thead>
             <tr>
               <th class="text-left">Component</th>

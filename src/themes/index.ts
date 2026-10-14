@@ -1,4 +1,4 @@
-export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term'
+export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
 export type LegacyDesignSystemVariantName = 'studio' | 'air' | 'glass' | 'feather' | 'mobile' | 'terminal'
 export type BuiltInDesignSystemVariantName = CanonicalDesignSystemVariantName | LegacyDesignSystemVariantName
 
@@ -22,6 +22,20 @@ export interface QuasarDesignTheme {
 }
 
 export const DEFAULT_THEME_NAME = 'default'
+
+export const SHADCN_BASE_COLORS = [
+  { name: 'neutral', label: 'Neutral' },
+  { name: 'gray', label: 'Gray' },
+  { name: 'zinc', label: 'Zinc' },
+  { name: 'stone', label: 'Stone' },
+  { name: 'slate', label: 'Slate' },
+] as const
+
+export type ShadcnBaseColor = (typeof SHADCN_BASE_COLORS)[number]['name']
+
+export function isShadcnBaseColor(value: unknown): value is ShadcnBaseColor {
+  return SHADCN_BASE_COLORS.some((color) => color.name === value)
+}
 
 export const DESIGN_SYSTEM_VARIANTS = {
   fluent: {
@@ -47,6 +61,12 @@ export const DESIGN_SYSTEM_VARIANTS = {
     label: 'Term',
     description: 'Opaque amber developer UI on warm cream or near-black panes, with hairline rules and monospace type.',
     cssClass: 'qds-variant-term',
+  },
+  shadcn: {
+    name: 'shadcn',
+    label: 'Shadcn',
+    description: 'Opaque New York-inspired surfaces with five neutral base palettes.',
+    cssClass: 'qds-variant-shadcn',
   },
 } as Record<CanonicalDesignSystemVariantName, DesignSystemVariant> & {
   studio: DesignSystemVariant
@@ -116,7 +136,7 @@ export const DESIGN_SYSTEM_THEMES = {
 } as const
 
 export function isBuiltInDesignSystemVariantName(value: unknown): value is BuiltInDesignSystemVariantName {
-  return value === 'fluent' || value === 'ink' || value === 'one' || value === 'term'
+  return value === 'fluent' || value === 'ink' || value === 'one' || value === 'term' || value === 'shadcn'
     || value === 'studio' || value === 'air' || value === 'glass' || value === 'feather'
     || value === 'mobile' || value === 'terminal'
 }

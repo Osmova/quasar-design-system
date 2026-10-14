@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { QBadge } from 'quasar'
+import { QBadge, QSelect } from 'quasar'
 import {
   DESIGN_SYSTEM_VARIANTS,
+  SHADCN_BASE_COLORS,
+  type ShadcnBaseColor,
   useDesignSystem,
   type DesignSystemMode,
   type DesignSystemVariantName,
@@ -26,7 +28,7 @@ watch(() => props.variant, (variant) => {
 }, { immediate: true })
 
 const rootState = computed(() => {
-  const variant = DESIGN_SYSTEM_VARIANTS[props.variant as keyof typeof DESIGN_SYSTEM_VARIANTS]
+  const variant = DESIGN_SYSTEM_VARIANTS[designSystem.variant.value as keyof typeof DESIGN_SYSTEM_VARIANTS]
 
   return [
     'qds-ui',
@@ -47,6 +49,21 @@ const rootState = computed(() => {
       <QBadge class="qds-story-root-state" color="primary" text-color="white" role="status" aria-live="polite">
         {{ rootState }}
       </QBadge>
+      <QSelect
+        v-if="designSystem.variant.value === 'shadcn'"
+        :model-value="designSystem.shadcnBaseColor.value"
+        :options="SHADCN_BASE_COLORS"
+        option-value="name"
+        option-label="label"
+        emit-value
+        map-options
+        dense
+        outlined
+        label="Base palette"
+        aria-label="Shadcn base palette"
+        style="min-width: 8rem; max-width: 100%"
+        @update:model-value="(color: ShadcnBaseColor) => designSystem.setShadcnBaseColor(color)"
+      />
     </header>
 
     <slot />

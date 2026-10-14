@@ -1,4 +1,5 @@
 @use 'button';
+@use '../importance';
 
 @mixin styles {
   .qds-ui .q-badge {
@@ -53,33 +54,42 @@
 
   .qds-ui .q-badge.bg-grey {
     color: var(--qds-fg-default);
-    background-color: var(--qds-bg-layer) !important;
+    @include importance.declarations { background-color: var(--qds-bg-layer) !important; }
   }
 
   .qds-ui .q-badge--outline.text-grey {
-    color: var(--qds-fg-muted) !important;
+    @include importance.declarations { color: var(--qds-fg-muted) !important; }
     border-color: currentColor;
   }
 
   @each $role, $_ in button.$roles {
     .qds-ui .q-badge.bg-#{$role}:not(.qds-tonal) {
-      color: var(--qds-text-on-#{$role});
-      background-color: var(--qds-color-#{$role}) !important;
+      color: var(--qds-badge-on-fill, var(--qds-text-on-#{$role}));
+      @include importance.declarations { background-color: var(--qds-badge-fill, var(--qds-color-#{$role})) !important; }
       border-color: transparent;
     }
 
     .qds-ui .q-badge.bg-#{$role}.qds-tonal {
-      color: button.role-value($role, fg);
-      background-color: button.role-soft($role) !important;
+      color: var(--qds-badge-on-fill, #{button.role-value($role, fg)});
+      @include importance.declarations { background-color: button.role-soft($role) !important; }
       border-color: transparent;
     }
 
-    .qds-ui .q-badge.text-#{$role} {
-      color: button.role-value($role, fg) !important;
+    .qds-ui .q-badge.text-#{$role}, #{button.$shadcn} .q-badge.bg-#{$role} {
+      @include importance.declarations { color: var(--qds-badge-on-fill, #{button.role-value($role, fg)}) !important; }
     }
 
     .qds-ui .q-badge--outline.text-#{$role} {
       border-color: currentColor;
     }
   }
+  #{button.$shadcn} .q-badge:where(:not([class*='text-weight-'])) { font-weight: var(--qds-font-weight-medium); }
+  #{button.$shadcn} .q-badge:where(:not([class*='bg-'], [class*='text-'], .q-badge--outline, .q-badge--transparent)) { color: var(--qds-text-on-primary); background-color: var(--qds-badge-fill, var(--qds-color-primary)); border-color: transparent; }
+  #{button.$shadcn} .q-badge:where(:not([class*='bg-'], [class*='text-'], .q-badge--outline, .q-badge--transparent)):is(a, [tabindex]):hover { --qds-badge-fill: var(--qds-color-primary-hover); }
+  #{button.$shadcn} .q-badge:where(:not([class*='bg-'], [class*='text-'], .q-badge--outline, .q-badge--transparent)):is(a, [tabindex]):active { --qds-badge-fill: var(--qds-color-primary-pressed); }
+  #{button.$shadcn} .q-badge:is(a, [tabindex]):focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); }
+  #{button.$shadcn} .q-badge:is(#{button.$accent-fills}):not(.qds-tonal) { --qds-badge-on-fill: var(--_qds-on); }
+  #{button.$shadcn} .q-badge:is(#{button.$accent-fills}).qds-tonal { --qds-badge-on-fill: var(--_qds-fg); }
+  #{button.$shadcn} .q-badge:is(#{button.$accent-fills}):not(.qds-tonal):is(a, [tabindex]):hover { --qds-badge-fill: var(--_qds-hover); }
+  #{button.$shadcn} .q-badge:is(#{button.$accent-fills}):not(.qds-tonal):is(a, [tabindex]):active { --qds-badge-fill: var(--_qds-pressed); }
 }

@@ -1,3 +1,5 @@
+$shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
+
 @mixin styles {
   .qds-ui .q-footer { border-top: var(--qds-border-width-control) solid var(--qds-stroke-subtle); }
 
@@ -8,4 +10,7 @@
   }
 
   :is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink) .q-footer { border-top-color: var(--qds-separator-color); }
+
+  #{$shadcn} .q-footer { border-top-color: var(--qds-stroke-divider); border-radius: 0; box-shadow: none; }
+  #{$shadcn} .q-footer .q-toolbar { font-size: var(--qds-font-size-body); }
 }

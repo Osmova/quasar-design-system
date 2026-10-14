@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use 'button';
 @use '../materials';
+@use '../importance';
 
 // Palette grey takes the neutral layer, as role chips take their tonal fill.
 $tonal-fills: ();
@@ -121,18 +122,16 @@ $tonal-fills: map.set($tonal-fills, 'grey', (fg: var(--qds-fg-default), bg: var(
 
   @each $fill, $tone in $tonal-fills {
     .qds-ui .q-chip.bg-#{$fill}:not(.qds-solid) {
-      color: map.get($tone, fg) !important;
-      background-color: map.get($tone, bg) !important;
+      @include importance.declarations { color: map.get($tone, fg) !important; background-color: map.get($tone, bg) !important; }
     }
 
     @if map.has-key(button.$roles, $fill) {
       .qds-ui .q-chip.bg-#{$fill}.qds-solid {
-        color: var(--qds-text-on-#{$fill}) !important;
-        background-color: var(--qds-color-#{$fill}) !important;
+        @include importance.declarations { color: var(--qds-chip-on-fill, var(--qds-text-on-#{$fill})) !important; background-color: var(--qds-chip-fill, var(--qds-color-#{$fill})) !important; }
       }
 
       .qds-ui .q-chip.text-#{$fill} {
-        color: button.role-value($fill, fg) !important;
+        @include importance.declarations { color: var(--qds-chip-on-fill, #{button.role-value($fill, fg)}) !important; }
       }
 
       .qds-ui .q-chip--outline.text-#{$fill} {
@@ -146,4 +145,13 @@ $tonal-fills: map.set($tonal-fills, 'grey', (fg: var(--qds-fg-default), bg: var(
       border-color: ButtonText;
     }
   }
+
+  #{button.$shadcn} .q-chip { border-color: var(--qds-card-stroke); box-shadow: none; }
+  #{button.$shadcn} .q-chip--clickable:where(:not([class*='bg-'])), #{button.$shadcn} .q-chip--clickable.qds-solid:is(.bg-secondary, .bg-accent):not(.disabled) { border-color: var(--qds-control-stroke-strong); }
+  #{button.$shadcn} .q-chip .q-chip__icon--remove:hover { background: var(--qds-state-hover); opacity: 1; }
+  #{button.$shadcn} .q-chip.q-chip--clickable[tabindex]:is(.q-chip--selected, :hover) { box-shadow: none; }
+  #{button.$shadcn} .q-chip:is(#{button.$accent-fills}).qds-solid { --qds-chip-on-fill: var(--_qds-on); border-color: transparent; }
+  #{button.$shadcn} .q-chip:is(#{button.$accent-fills}).qds-solid.q-chip--clickable:not(.disabled):hover { --qds-chip-fill: var(--_qds-hover); }
+  #{button.$shadcn} .q-chip:is(#{button.$accent-fills}).qds-solid.q-chip--clickable:not(.disabled):active { --qds-chip-fill: var(--_qds-pressed); }
+  @media (forced-colors: active) { #{button.$shadcn} .q-chip { border-color: ButtonText; } }
 }

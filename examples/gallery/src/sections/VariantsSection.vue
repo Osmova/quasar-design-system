@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { useDesignSystem } from '@bastvi/quasar-design-system'
+import ShadcnPalettePanels from '../components/ShadcnPalettePanels.vue'
 
-type VariantName = 'fluent' | 'ink' | 'one' | 'term'
+type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
+const ds = useDesignSystem()
 
 type VariantSample = {
   name: VariantName
@@ -35,6 +38,12 @@ const variants: VariantSample[] = [
     intent: 'Developer shell: monospace type, crisp hairlines, compact amber controls.',
     sample: 'qdsctl --inspect',
   },
+  {
+    name: 'shadcn',
+    label: 'Shadcn',
+    intent: 'Opaque neutral New York surfaces, crisp outlines, and restrained role fills.',
+    sample: 'Native surface 05',
+  },
 ]
 
 const pages = reactive<Record<VariantName, number>>({
@@ -42,17 +51,19 @@ const pages = reactive<Record<VariantName, number>>({
   ink: 3,
   one: 3,
   term: 3,
+  shadcn: 3,
 })
 </script>
 
 <template>
   <section class="variants-section" data-test="qds-variants-section" aria-labelledby="qds-variants-title">
+    <ShadcnPalettePanels v-if="ds.variant.value === 'shadcn'" />
     <div class="variants-hero qds-card">
       <p class="variants-kicker">Variant lab</p>
       <h1 id="qds-variants-title" class="qds-display">Same anatomy, different visual systems</h1>
       <p class="qds-text-muted">
         This view keeps component anatomy identical so variant-specific typography, density, borders,
-        material, and state rules are visible side by side. Four canonical variants share one token system.
+        material, and state rules are visible side by side. Five canonical variants share one token system.
       </p>
     </div>
 
@@ -62,6 +73,7 @@ const pages = reactive<Record<VariantName, number>>({
         :key="variant.name"
         class="variant-card"
         :class="`qds-variant-${variant.name}`"
+        :data-qds-shadcn-base-color="variant.name === 'shadcn' ? ds.shadcnBaseColor.value : undefined"
         :data-test="`qds-variant-card-${variant.name}`"
       >
         <q-card-section>
@@ -145,7 +157,14 @@ const pages = reactive<Record<VariantName, number>>({
 <style scoped>
 .variants-section {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--qds-space-lg);
+}
+
+.variants-section > *,
+.variant-card,
+.variant-card__controls > * {
+  min-width: 0;
 }
 
 .variants-hero {
@@ -210,6 +229,7 @@ const pages = reactive<Record<VariantName, number>>({
 
 .variant-card__controls {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--qds-space-md);
 }
 
@@ -260,9 +280,19 @@ const pages = reactive<Record<VariantName, number>>({
   justify-content: flex-start;
 }
 
+.variant-card :deep(.q-pagination__content) {
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.variant-card :deep(.q-pagination__middle) {
+  flex-shrink: 0;
+}
+
 @media (max-width: 900px) {
   .variants-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

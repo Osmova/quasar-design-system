@@ -302,7 +302,8 @@ function hideNewerLoadingGroup() {
 }
 
 function startLoadingBar() {
-  $q.loadingBar.start()
+  // Native speed=0 disables random timed increments for reproducible capture.
+  $q.loadingBar.start(0)
   $q.loadingBar.increment(34)
   setStatus('LoadingBar plugin started')
 }

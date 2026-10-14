@@ -17,6 +17,8 @@ export {
   DEFAULT_THEME_NAME,
   DESIGN_SYSTEM_THEMES,
   DESIGN_SYSTEM_VARIANTS,
+  SHADCN_BASE_COLORS,
+  isShadcnBaseColor,
   isBuiltInDesignSystemVariantName,
   isDesignSystemVariantName,
   type BuiltInDesignSystemVariantName,
@@ -25,6 +27,7 @@ export {
   type DesignSystemVariantName,
   type LegacyDesignSystemVariantName,
   type QuasarDesignTheme,
+  type ShadcnBaseColor,
 } from './themes/index.js'
 
 export { QDS_TOKENS, type QdsToken, type QdsTokenMap } from './tokens/index.js'

@@ -1,6 +1,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
   // QMarkupTable carries the same container/card classes, so one anatomy covers both.
@@ -57,4 +58,40 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
   .qds-ui .q-card > .q-table__container { background: transparent; border: 0; box-shadow: none; }
   .qds-ui .q-card > .q-card__section + .q-table__container { border-block-start: var(--qds-border-width-control) solid var(--qds-stroke-divider); }
   .qds-ui .q-card > .q-table__container:not(:last-child) { border-block-end: var(--qds-border-width-control) solid var(--qds-stroke-divider); }
+
+  #{$shadcn} .q-table__container { --qds-table-divider: var(--qds-stroke-divider); --qds-table-header-text: var(--qds-fg-default); --qds-table-row-hover-bg: color-mix(in srgb, var(--qds-state-hover) 50%, var(--qds-bg-card)); --qds-table-selected-bg: var(--qds-state-selected); }
+  #{$shadcn} .q-table :is(th, td) { padding: var(--qds-space-sm); }
+  #{$shadcn} .q-table th { font-weight: var(--qds-font-weight-body-strong); }
+  #{$shadcn} .q-table :is(th, td):has(.q-checkbox) { padding-inline-end: 0; }
+  #{$shadcn} .q-table :is(th, td) > .q-checkbox { vertical-align: middle; }
+  #{$shadcn} .q-table__sort-icon { color: var(--qds-fg-muted); font-size: var(--qds-control-icon-size-md); }
+  // Paint below text/checkboxes rather than Quasar's opaque cell pseudo overlay.
+  #{$shadcn} .q-table tbody td::before, #{$shadcn} .q-table tbody td::after { background: none; }
+  #{$shadcn} .q-table tbody tr.selected { background: var(--qds-table-selected-bg); }
+  @media (any-hover: hover) {
+    #{$shadcn} .q-table tbody > tr:not(.q-tr--no-hover):hover > td:not(.q-td--no-hover) { background: var(--qds-table-row-hover-bg); }
+  }
+  #{$shadcn} .q-table tfoot { color: var(--qds-fg-default); background: color-mix(in srgb, var(--qds-state-selected) 50%, var(--qds-bg-card)); font-weight: var(--qds-font-weight-body-strong); }
+  #{$shadcn} .q-table tfoot td { border-block-start: var(--qds-border-width-control) solid var(--qds-stroke-divider); }
+  #{$shadcn} :is(.q-table__top, .q-table__bottom) { padding: var(--qds-space-sm) var(--qds-space-md); gap: var(--qds-space-sm); font-size: var(--qds-font-size-body); }
+  #{$shadcn} .q-table__title { color: var(--qds-fg-strong); font-size: var(--qds-font-size-body); font-weight: var(--qds-font-weight-semibold); letter-spacing: normal; }
+  #{$shadcn} .q-table__bottom { min-height: var(--qds-table-row-height); }
+  #{$shadcn} .q-table__bottom .q-table__control { gap: var(--qds-space-xs); }
+  #{$shadcn} .q-table__bottom .q-btn:where(:not(.q-btn--round, .q-btn--rounded)) { border-radius: var(--qds-radius-control); }
+  #{$shadcn} .q-table__bottom .q-btn.q-btn--flat:not(.disabled):hover { background: var(--qds-state-hover); }
+  #{$shadcn} .q-table__bottom .q-btn.q-btn--flat:not(.disabled):active { background: var(--qds-state-pressed); }
+  #{$shadcn} .q-table--dense .q-table :is(th, td) { padding: var(--qds-space-xs) var(--qds-space-sm); }
+  #{$shadcn} .q-table__grid-content { gap: 0; padding: var(--qds-space-xs); }
+  #{$shadcn} .q-table__grid-item-card { color: var(--qds-fg-default); background: var(--qds-bg-card); border: var(--qds-border-width-control) solid var(--qds-stroke-divider); padding: var(--qds-space-md); }
+  #{$shadcn} .q-table__grid-item--selected { transform: none; }
+  #{$shadcn} .q-table__grid-item--selected .q-table__grid-item-card { background: var(--qds-state-selected); }
+  #{$shadcn} .q-table__grid-item-title { color: var(--qds-fg-muted); opacity: 1; font-size: var(--qds-font-size-caption); }
+  #{$shadcn} .q-table__grid-item-value { font-size: var(--qds-font-size-body); }
+  #{$shadcn} .q-table__bottom--nodata { min-height: var(--qds-control-size-lg); color: var(--qds-fg-muted); }
+  #{$shadcn} .q-table__bottom-nodata-icon { font-size: var(--qds-control-icon-size-lg); }
+  #{$shadcn} .q-table__linear-progress { height: var(--qds-space-xs); }
+  #{$shadcn} .q-table__container.fullscreen { background: var(--qds-bg-canvas); border-radius: 0; }
+  #{$shadcn} .q-table__container.q-table--flat { box-shadow: none; }
+  #{$shadcn} .q-table__container.q-table--square { border-radius: 0; }
+  #{$shadcn} .q-card > .q-table__container { background: transparent; box-shadow: none; }
 }

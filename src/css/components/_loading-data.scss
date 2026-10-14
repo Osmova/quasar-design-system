@@ -1,8 +1,10 @@
 @use '../materials';
+@use '../importance';
 
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
 
 @mixin styles {
   .qds-ui :is(.q-ajax-bar, .q-loading-bar) { background: var(--qds-color-primary); box-shadow: none; }
@@ -14,7 +16,8 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 
   // Role fills use the text-safe foreground so charcoal/grey roles keep 3:1 against the track.
   @each $role in primary, secondary, accent, positive, negative, warning, info {
-    .qds-ui :is(.q-linear-progress, .q-circular-progress__circle).text-#{$role} { color: var(--qds-fg-#{$role}) !important; }
+    .qds-ui :is(.q-linear-progress, .q-circular-progress__circle).text-#{$role},
+    #{$shadcn} .q-spinner.text-#{$role} { @include importance.declarations { color: var(--qds-fg-#{$role}) !important; } }
   }
 
   .qds-ui .q-circular-progress { color: var(--qds-color-primary); }
@@ -90,4 +93,36 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
   #{$term} .q-linear-progress { border-radius: 0; }
   #{$ink} .q-inner-loading { @include materials.solid(var(--qds-surface-0)); }
   #{$term} .q-inner-loading { @include materials.solid(var(--qds-surface-0)); }
+
+  #{$shadcn} {
+    :is(.q-ajax-bar, .q-loading-bar) { background: var(--qds-color-primary); }
+    .q-linear-progress { color: var(--qds-fg-primary); border-radius: var(--qds-radius-full); }
+    .q-linear-progress__track { background: var(--qds-bg-surface-2); opacity: 1; }
+    .q-linear-progress__stripe { background-color: transparent; }
+    .q-circular-progress { color: var(--qds-fg-primary); }
+    .q-circular-progress__text { color: var(--qds-fg-default); }
+    .q-inner-loading { @include materials.solid(var(--qds-bg-card)); color: var(--qds-fg-default); }
+    .q-inner-loading > .q-spinner { color: var(--qds-fg-primary); }
+    .q-skeleton { background: var(--qds-bg-surface-2); }
+    .q-skeleton--anim-wave::after { background: linear-gradient(90deg, transparent, var(--qds-bg-layer), transparent); }
+    .q-tree { --qds-tree-pad: var(--qds-space-sm); color: var(--qds-fg-default); }
+    .q-tree__node--selected { background: var(--qds-state-selected); }
+    .q-tree__node--selected::after { display: none; }
+    .q-tree__node-header:active { background: var(--qds-state-pressed); }
+    .q-tree__node--disabled { color: var(--qds-fg-disabled); }
+    .q-tree__node-header.q-tree__node--disabled { background: transparent; }
+    :is(.q-tree__arrow, .q-tree__icon, .q-tree__spinner) { color: var(--qds-fg-muted); }
+    .q-tree__children::before { background: var(--qds-stroke-divider); }
+    .q-tree__tickbox { color: var(--qds-fg-primary); }
+    .q-virtual-scroll__slice { color: var(--qds-fg-default); background: var(--qds-bg-canvas); }
+    .q-virtual-scroll__slice > :is(.q-item, tr) { border-color: var(--qds-stroke-divider); }
+    @each $role in primary, secondary, accent, positive, negative, warning, info {
+      .q-ajax-bar.bg-#{$role} { background: var(--qds-color-#{$role}); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .q-spinner-mat > .path { stroke-dasharray: var(--qds-spinner-static-arc); stroke-dashoffset: var(--qds-spinner-static-offset); }
+      .q-skeleton::after, .q-spinner, .q-spinner * { animation-duration: 0s; }
+      .q-skeleton--anim { animation: none; }
+    }
+  }
 }

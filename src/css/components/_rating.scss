@@ -27,6 +27,15 @@ $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
   // Term amber stars deepen until filled marks hold 3:1 on cream.
   #{$term} .q-rating { color: color-mix(in srgb, var(--qds-color-accent) 62%, var(--qds-text-strong)); }
 
+  .qds-variant-shadcn:is(.qds-ui,.qds-ui *) .q-rating {
+    color: var(--qds-fg-primary);
+    .q-rating__icon { color: var(--qds-control-stroke-strong); }
+    :is(.q-rating__icon--active, .q-rating__icon--exselected) { color: currentColor; opacity: 1; }
+    .q-rating__icon--hovered { transform: none; }
+    &.q-rating--no-dimming .q-rating__icon { color: currentColor; }
+    &.disabled .q-rating__icon { color: var(--qds-fg-disabled); }
+  }
+
   @each $role in primary, positive, negative {
     .qds-ui .q-rating .q-rating__icon.text-#{$role} { color: var(--qds-color-#{$role}); }
   }

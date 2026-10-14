@@ -256,4 +256,15 @@ $wrap: '.qds-ui .qds-field-group:where(:has(> :nth-child(3)):not(:has(> .q-field
       margin: var(--qds-space-sm) 0 0;
     }
   }
+
+  .qds-variant-shadcn:is(.qds-ui,.qds-ui *) {
+    .qds-form-field__header { flex-wrap: wrap; }
+    :is(.qds-form-field__description, .qds-form-field__help, .qds-form-field__error) { overflow-wrap: anywhere; }
+    .qds-field-group > :focus-within { z-index: 2; }
+    .qds-field-group > .q-btn { border-color: var(--qds-control-stroke-strong); }
+    :is(kbd:not(:has(kbd)), .qds-kbd) { background: var(--qds-bg-surface-2); border-color: var(--qds-card-stroke); box-shadow: none; }
+    .qds-settings-card__action { flex-wrap: wrap; }
+    .qds-settings-card:is(a, button, [role='button']):focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); }
+    .qds-field--dropzone.q-field--disabled .q-field__control:has(.q-file__dnd) { background: var(--qds-control-fill-disabled); }
+  }
 }
