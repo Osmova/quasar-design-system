@@ -1,3 +1,4 @@
 .q-tab-panel {
-  visibility: hidden !important;
+  /* Preserve visible CSS anchors: hiding an anchor also hides its native popup. */
+  opacity: 0 !important;
 }
