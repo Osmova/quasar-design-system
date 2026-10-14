@@ -4,6 +4,8 @@ Opinionated Quasar 2 design system inspired by Microsoft Fluent 2, Apple's Human
 
 Published under the personal scope `@bastvi/quasar-design-system` while the visual language is still evolving. It contains only generic visual language — no business logic, models, or app-specific assumptions.
 
+[Live gallery](https://qds.osmova.com/) · [Component catalog](https://qds.osmova.com/histoire/)
+
 ## Goals
 
 - Provide a full Quasar 2 visual layer: tokens, surfaces, shape, motion, typography, and component overrides.
@@ -271,4 +273,4 @@ Some interaction-heavy Quasar states are intentionally documented/manual rather 
 
 ## Gallery
 
-Live: **https://qds.bastienviglianti.fr** · run locally with `pnpm gallery:dev` (build with `pnpm gallery:build`).
+Live: **https://qds.osmova.com** · run locally with `pnpm gallery:dev` (build with `pnpm gallery:build`).

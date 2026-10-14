@@ -84,7 +84,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bastVi/quasar-design-system.git"
+    "url": "git+https://github.com/Osmova/quasar-design-system.git"
   },
   "keywords": [
     "quasar",
@@ -98,9 +98,9 @@
   "author": "Bastien Viglianti",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bastVi/quasar-design-system/issues"
+    "url": "https://github.com/Osmova/quasar-design-system/issues"
   },
-  "homepage": "https://github.com/bastVi/quasar-design-system#readme",
+  "homepage": "https://github.com/Osmova/quasar-design-system#readme",
   "peerDependencies": {
     "@phosphor-icons/vue": "^2.0.0",
     "@quasar/quasar-ui-qwindow": "^3.0.0",

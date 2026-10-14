@@ -44,6 +44,27 @@ jobs:
 
       - run: pnpm gallery:test
 
+      - name: Test bounded site assembly and deploy receiver
+        run: python3 -m unittest discover -s .github/scripts -p 'test_site_deploy.py' -v
+
+      - name: Assemble verified production site
+        if: github.ref == 'refs/heads/production'
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+          SOURCE_RUN_ID: ${{ github.run_id }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: >-
+          python3 .github/scripts/assemble-site.py
+          --sha "$RELEASE_SHA" --run-id "$SOURCE_RUN_ID" --repository "$SOURCE_REPOSITORY"
+
+      - name: Upload verified production site
+        if: github.ref == 'refs/heads/production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-${{ github.sha }}
+          path: site/
+          if-no-files-found: error
+
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
