@@ -328,6 +328,66 @@ test.describe('apps', () => {
     })
   }
 
+  test('mini navigation retains the focused tooltip after a stale native focusout', async ({ page }) => {
+    await openApps(page)
+    await expandNav(page)
+    await page.locator(byHook('qds-apps-nav-toggle')).click()
+    await expect(page.locator('.q-drawer--mini')).toHaveCount(1)
+    await settle(page)
+
+    const members = page.locator('.q-drawer--mini [data-nav="members"]')
+    const settings = page.locator('.q-drawer--mini [data-nav="settings"]')
+    const tooltip = page.getByRole('tooltip').filter({ hasText: /^Settings$/ })
+    await members.focus()
+    await expect(page.getByRole('tooltip').filter({ hasText: /^Members$/ })).toHaveCSS('opacity', '1')
+    await settle(page)
+    await settings.focus()
+    await expect(settings).toBeFocused()
+    await expect(tooltip).toHaveCSS('opacity', '1')
+    await settle(page)
+    await expect(page.getByRole('tooltip').filter({ hasText: /^Members$/ })).toHaveCount(0)
+
+    // Only focusout reaches QTooltip's delayed native hide; it must not exercise Vue's @blur.
+    const retained = await tooltip.evaluate(async (tip) => {
+      const owner = document.activeElement
+      const previous = document.querySelector('.q-drawer--mini [data-nav="members"]')!
+      const duration = Number.parseFloat(getComputedStyle(tip).getPropertyValue('--q-transition-duration'))
+      previous.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: owner }))
+      await new Promise<void>((resolve) => setTimeout(resolve, 0))
+      for (let frame = 0; frame < 2; frame++) await new Promise(requestAnimationFrame)
+
+      // Observe every frame across the native close transition, not just its initially visible tail.
+      let frames = 0
+      let intact = true
+      const start = performance.now()
+      do {
+        const css = getComputedStyle(tip)
+        intact &&= document.activeElement === owner && tip.isConnected &&
+          css.opacity === '1' && css.visibility === 'visible' && tip.getBoundingClientRect().height > 0
+        frames++
+        await new Promise(requestAnimationFrame)
+      } while (performance.now() - start <= duration)
+      return { intact, frames, duration }
+    })
+    expect(retained.duration, 'observe the native 300ms close window').toBe(300)
+    expect(retained.frames).toBeGreaterThan(1)
+    expect(retained.intact, 'Settings stays focused and fully opaque throughout the stale hide').toBe(true)
+    await expect(settings).toBeFocused()
+    await expect(tooltip).toBeVisible()
+    await expect(tooltip).toHaveCSS('opacity', '1')
+
+    // A late blur from the previous owner must likewise leave Settings alone.
+    await members.evaluate(async (previous) => {
+      previous.dispatchEvent(new FocusEvent('blur', { relatedTarget: document.activeElement }))
+      await new Promise<void>((resolve) => setTimeout(resolve, 0))
+      for (let frame = 0; frame < 2; frame++) await new Promise(requestAnimationFrame)
+    })
+    await settle(page)
+    await expect(settings).toBeFocused()
+    await expect(tooltip).toBeVisible()
+    await expect(tooltip).toHaveCSS('opacity', '1')
+  })
+
   for (const variant of CANONICAL_VARIANTS) {
     test(`navigation demo shows every destination without an inner scroll (${variant})`, async ({ page }) => {
       await openApps(page, 'light', variant)

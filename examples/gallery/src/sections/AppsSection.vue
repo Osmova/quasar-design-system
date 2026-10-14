@@ -352,7 +352,7 @@ function backDialog() {
                       :data-nav="item.value"
                       @click="navActive = item.value"
                       @focus="navTip = item.value"
-                      @blur="navTip = null"
+                      @blur="navTip === item.value && (navTip = null)"
                     >
                       <q-item-section avatar><component :is="item.icon" :size="18" weight="duotone" /></q-item-section>
                       <q-item-section>{{ item.label }}</q-item-section>
@@ -362,7 +362,7 @@ function backDialog() {
                         self="center start"
                         :offset="[8, 0]"
                         :model-value="navTip === item.value"
-                        @update:model-value="(show: boolean) => { navTip = show ? item.value : null }"
+                        @update:model-value="(show: boolean) => { if (show) navTip = item.value; else if (navTip === item.value) navTip = null }"
                       >
                         {{ section.group ? `${section.group} › ${item.label}` : item.label }}
                       </q-tooltip>
