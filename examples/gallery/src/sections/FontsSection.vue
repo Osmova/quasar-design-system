@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Faces shipped via @bastvi/quasar-design-system/fonts/*.css (imported in main.ts).
+// Faces shipped via @osmova/quasar-design-system/fonts/*.css (imported in main.ts).
 const families = [
   { label: 'Inter Variable', stack: "'Inter Variable', sans-serif", note: 'Body and display / --qds-font-family' },
   { label: 'Open Sans Variable', stack: "'Open Sans Variable', sans-serif", note: 'Alternate body face' },

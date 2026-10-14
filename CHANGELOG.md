@@ -170,6 +170,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Joined QBtnGroup / split-button segments draw their focus ring inside their own edge (in the on-fill ink on role
   fills), so it no longer squares off against the next segment or overlaps nearby rows.
 
+## [@osmova/quasar-design-system 0.8.0-rc.3] — 2026-10-14
+
+### Changed
+
+- Publish the design system under the `@osmova/quasar-design-system` npm scope on `next`.
+  Update package imports and installation examples without changing the exported API or visual styling.
+  Existing `@bastvi/quasar-design-system` releases remain available; their versions and release tags are unchanged.
+- Move the repository to `Osmova/quasar-design-system` and the live gallery and component catalog to
+  `https://qds.osmova.com` and `https://qds.osmova.com/histoire/`.
+
 ## [0.8.0-rc.3] — 2026-10-14
 
 ### Added

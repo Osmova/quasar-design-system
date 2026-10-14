@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { QdsWindow } from '@bastvi/quasar-design-system/qwindow'
+import { QdsWindow } from '@osmova/quasar-design-system/qwindow'
 
 const visible = ref(true)
 const maximized = ref(false)

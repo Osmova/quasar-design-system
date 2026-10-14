@@ -3,9 +3,9 @@ import { afterEach, test } from 'node:test'
 import {
   createDesignSystemController, configureDesignSystem, DEFAULT_DESIGN_SYSTEM_OPTIONS,
   DESIGN_SYSTEM_VARIANTS, SHADCN_BASE_COLORS, isShadcnBaseColor, isBuiltInDesignSystemVariantName,
-} from '@bastvi/quasar-design-system'
-import { createDesignSystemController as runtimeExport } from '@bastvi/quasar-design-system/runtime'
-import { SHADCN_BASE_COLORS as themesExport } from '@bastvi/quasar-design-system/themes'
+} from '@osmova/quasar-design-system'
+import { createDesignSystemController as runtimeExport } from '@osmova/quasar-design-system/runtime'
+import { SHADCN_BASE_COLORS as themesExport } from '@osmova/quasar-design-system/themes'
 
 const storageKey = DEFAULT_DESIGN_SYSTEM_OPTIONS.storageKey
 const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')

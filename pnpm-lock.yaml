@@ -60,7 +60,7 @@ importers:
 
   examples/gallery:
     dependencies:
-      '@bastvi/quasar-design-system':
+      '@osmova/quasar-design-system':
         specifier: workspace:*
         version: link:../..
       '@phosphor-icons/vue':

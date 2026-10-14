@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useDesignSystem } from '@bastvi/quasar-design-system'
+import { useDesignSystem } from '@osmova/quasar-design-system'
 
 // Reference oracle: real Fluent 2 web components beside the QDS/Quasar equivalent.
 const ds = useDesignSystem()

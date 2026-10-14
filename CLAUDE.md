@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`@bastvi/quasar-design-system` — an opinionated **visual layer** for Quasar 2. Microsoft Fluent 2 is the
+`@osmova/quasar-design-system` — an opinionated **visual layer** for Quasar 2. Microsoft Fluent 2 is the
 primary direction, now with tonal/acrylic defaults; the `ink` variant is the paper-neutral editorial
 surface with charcoal type and pastel role washes, and the `one` variant references Samsung One UI
 (neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent). It provides design tokens, surfaces, shape, motion, typography,
@@ -40,7 +40,7 @@ fresh compiled runtime code. Validate visual work via `typecheck` + visual revie
 ### Three styling layers (apply in this order of preference)
 
 1. **Quasar Sass variable overrides** — `src/quasar.variables.scss`. Consumed from the app's own
-   `quasar.variables.scss` via `@use '@bastvi/quasar-design-system/quasar-variables' as *`. Always
+   `quasar.variables.scss` via `@use '@osmova/quasar-design-system/quasar-variables' as *`. Always
    override a Quasar variable here *before* reaching for a direct component selector.
 2. **Design tokens as CSS custom properties** — `--qds-*` vars defined in `src/themes/default.scss`,
    sourced from Sass maps in `src/tokens/_default.scss` (`$palette`, `$palette-rgb`, surfaces, text,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { QDS_TOKENS } from '@bastvi/quasar-design-system'
+import { QDS_TOKENS } from '@osmova/quasar-design-system'
 import TokenSwatch from '../components/TokenSwatch.vue'
 
 // Group the public --qds-* contract by visual category for the gallery.

@@ -1,3 +1,3 @@
 import '../adoption-default.scss'
-import '@bastvi/quasar-design-system/fonts/inter.css'
+import '@osmova/quasar-design-system/fonts/inter.css'
 import './bootstrap'

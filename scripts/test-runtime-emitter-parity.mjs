@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import * as sass from 'sass'
-import { QDS_TOKENS } from '@bastvi/quasar-design-system/tokens'
+import { QDS_TOKENS } from '@osmova/quasar-design-system/tokens'
 
 const root = new URL('../', import.meta.url)
 const { chromium } = createRequire(new URL('examples/gallery/package.json', root))('@playwright/test')

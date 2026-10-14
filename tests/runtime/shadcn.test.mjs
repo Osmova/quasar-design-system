@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { createHash } from 'node:crypto'
 import * as sass from 'sass'
-import { QDS_TOKENS } from '@bastvi/quasar-design-system/tokens'
+import { QDS_TOKENS } from '@osmova/quasar-design-system/tokens'
 import { palettes, roles, sourceProfiles, emittedProfiles, sourceRgb, parseRgb, mix, contrast } from './shadcn-fixtures.mjs'
 import { expectationSlots, expectations, stateExpectationSlots, stateExpectations } from './shadcn-expectations.mjs'
 

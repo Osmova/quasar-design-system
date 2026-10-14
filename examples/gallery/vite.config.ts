@@ -108,7 +108,7 @@ export default defineConfig({
   // The design-system is a source-only package (.ts/.scss). Keep it out of
   // esbuild's dep prebundle so Vite/Quasar/Sass compile its sources directly.
   optimizeDeps: {
-    exclude: ['@bastvi/quasar-design-system'],
+    exclude: ['@osmova/quasar-design-system'],
   },
   // The Docker Desktop screens runner reaches the preview through this host name.
   preview: { allowedHosts: ['host.docker.internal'] },

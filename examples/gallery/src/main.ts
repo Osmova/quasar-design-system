@@ -8,14 +8,14 @@ import './adoption-default.scss'
 import './gallery.css'
 
 // 4. Optional design-system fonts (drive --qds-font-family* faces).
-import '@bastvi/quasar-design-system/fonts/inter.css'
-import '@bastvi/quasar-design-system/fonts/open-sans.css'
-import '@bastvi/quasar-design-system/fonts/selawik.css'
+import '@osmova/quasar-design-system/fonts/inter.css'
+import '@osmova/quasar-design-system/fonts/open-sans.css'
+import '@osmova/quasar-design-system/fonts/selawik.css'
 
 import {
   configureDesignSystem,
   qdsIconSet,
-} from '@bastvi/quasar-design-system'
+} from '@osmova/quasar-design-system'
 
 import App from './App.vue'
 

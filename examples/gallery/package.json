@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Dogfood gallery that consumes @bastvi/quasar-design-system as an external app.",
+  "description": "Dogfood gallery that consumes @osmova/quasar-design-system as an external app.",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
@@ -12,7 +12,7 @@
     "test:screens": "bash scripts/screens.sh"
   },
   "dependencies": {
-    "@bastvi/quasar-design-system": "workspace:*",
+    "@osmova/quasar-design-system": "workspace:*",
     "@phosphor-icons/vue": "^2.2.1",
     "@quasar/quasar-ui-qwindow": "^3.0.2",
     "quasar": "^2.35.0",

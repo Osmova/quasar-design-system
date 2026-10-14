@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SHADCN_BASE_COLORS } from '@bastvi/quasar-design-system'
+import { SHADCN_BASE_COLORS } from '@osmova/quasar-design-system'
 </script>
 <template>
   <section aria-label="Shadcn palette comparison" data-test="qds-shadcn-panels" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px">

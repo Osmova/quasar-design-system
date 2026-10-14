@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { QdsToken } from '@bastvi/quasar-design-system'
+import type { QdsToken } from '@osmova/quasar-design-system'
 
 const props = defineProps<{
   token: QdsToken | string

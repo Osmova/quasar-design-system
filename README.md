@@ -2,7 +2,9 @@
 
 Opinionated Quasar 2 design system inspired by Microsoft Fluent 2, Apple's Human Interface Guidelines, and Samsung One UI.
 
-Published under the personal scope `@bastvi/quasar-design-system` while the visual language is still evolving. It contains only generic visual language — no business logic, models, or app-specific assumptions.
+Published as `@osmova/quasar-design-system`. It contains only generic visual language — no business logic, models, or app-specific assumptions.
+
+Previously published as `@bastvi/quasar-design-system`. Existing releases remain available; migrate the package dependency and import paths to `@osmova/quasar-design-system`. The exported API and visual styling are unchanged by the scope migration.
 
 [Live gallery](https://qds.osmova.com/) · [Component catalog](https://qds.osmova.com/histoire/)
 
@@ -28,7 +30,7 @@ The default language is Microsoft Fluent 2-inspired and neutral-first: colour ma
 ## Install
 
 ```bash
-pnpm add @bastvi/quasar-design-system
+pnpm add @osmova/quasar-design-system@next
 ```
 
 > **Built TS + source SCSS.** TypeScript runtime entrypoints ship pre-compiled as ESM
@@ -43,10 +45,10 @@ Import Quasar's own CSS first, then the design-system CSS:
 
 ```ts
 import 'quasar/src/css/index.sass'
-import '@bastvi/quasar-design-system/css'
+import '@osmova/quasar-design-system/css'
 ```
 
-The default `./css` bundle is **unlayered** and must be imported **after** Quasar's CSS — Quasar ships unlayered CSS, so the overrides win on cascade order plus specificity, not on `@layer`. If your app deliberately places Quasar's CSS in a lower `@layer`, use the advanced `@bastvi/quasar-design-system/css/layered` bundle instead. Mixing the layered bundle with unlayered Quasar CSS is unsupported (a layer cannot beat unlayered rules).
+The default `./css` bundle is **unlayered** and must be imported **after** Quasar's CSS — Quasar ships unlayered CSS, so the overrides win on cascade order plus specificity, not on `@layer`. If your app deliberately places Quasar's CSS in a lower `@layer`, use the advanced `@osmova/quasar-design-system/css/layered` bundle instead. Mixing the layered bundle with unlayered Quasar CSS is unsupported (a layer cannot beat unlayered rules).
 
 For the layered path, declare the order **before** importing either framework or skin. Normal rules prefer the later `qds` layer; important rules reverse that order, so the same QDS important declarations live in the earliest `qds-important` layer:
 
@@ -58,7 +60,7 @@ For the layered path, declare the order **before** importing either framework or
 
 ```ts
 import './quasar-layered.css'
-import '@bastvi/quasar-design-system/css/layered'
+import '@osmova/quasar-design-system/css/layered'
 ```
 
 Choose one adoption path; do not combine the default and layered exports in the same Sass compilation. Inline author important declarations still win over stylesheet declarations.
@@ -66,7 +68,7 @@ Choose one adoption path; do not combine the default and layered exports in the 
 For a deeper Quasar integration, use the package Sass variable bridge from your app-level `quasar.variables.scss`:
 
 ```scss
-@use '@bastvi/quasar-design-system/quasar-variables' as *;
+@use '@osmova/quasar-design-system/quasar-variables' as *;
 ```
 
 This is the first styling layer: it overrides Quasar Sass defaults where Quasar exposes variables. The runtime CSS then defines design tokens, and direct component selectors are only used for behavior or polish that Quasar variables cannot express.
@@ -74,7 +76,7 @@ This is the first styling layer: it overrides Quasar Sass defaults where Quasar 
 Configure the runtime theme controller during app startup:
 
 ```ts
-import { configureDesignSystem } from '@bastvi/quasar-design-system'
+import { configureDesignSystem } from '@osmova/quasar-design-system'
 
 configureDesignSystem(app, {
   mode: 'system',
@@ -94,16 +96,16 @@ Optional modules stay out of the default runtime and CSS bundle. Install their n
 `QdsWindow` wraps `@quasar/quasar-ui-qwindow` with QDS BEM chrome (`.qds-window`, `.qds-window__*`, `.qds-window--*`) while passing QWindow props, slots, methods, and events through to the native component.
 
 ```bash
-pnpm add @quasar/quasar-ui-qwindow @bastvi/quasar-design-system
+pnpm add @quasar/quasar-ui-qwindow @osmova/quasar-design-system@next
 ```
 
 ```ts
 import '@quasar/quasar-ui-qwindow/index.css'
-import '@bastvi/quasar-design-system/css/extensions/qwindow'
-import { QdsWindow } from '@bastvi/quasar-design-system/qwindow'
+import '@osmova/quasar-design-system/css/extensions/qwindow'
+import { QdsWindow } from '@osmova/quasar-design-system/qwindow'
 ```
 
-For layered Quasar setups, use `@bastvi/quasar-design-system/css/extensions/qwindow/layered` instead. Do not import either QWindow stylesheet unless the native QWindow peer is installed and used.
+For layered Quasar setups, use `@osmova/quasar-design-system/css/extensions/qwindow/layered` instead. Do not import either QWindow stylesheet unless the native QWindow peer is installed and used.
 
 When using that layered extension, also import the native QWindow stylesheet into `layer(quasar)` in the CSS file above, rather than importing it unlayered. Consumer `titlebarStyle`, colors, and other authored paint are preserved. Consumers own text and focus contrast on arbitrary authored backgrounds; the library's palette contrast guarantees do not extend to arbitrary color combinations.
 
@@ -145,7 +147,7 @@ Icons use Phosphor through a Quasar icon-set (no Material Icons):
 
 ```ts
 import { Quasar } from 'quasar'
-import { qdsIconSet } from '@bastvi/quasar-design-system'
+import { qdsIconSet } from '@osmova/quasar-design-system'
 
 app.use(Quasar, { iconSet: qdsIconSet })
 ```
@@ -157,9 +159,9 @@ For content icons, use `@phosphor-icons/vue` (duotone for feature icons, line we
 Inter (body and display), Open Sans (compatibility/body alternative), and Selawik (an optional display face an app may enable) ship as optional CSS — import what you need:
 
 ```ts
-import '@bastvi/quasar-design-system/fonts/inter.css'
-import '@bastvi/quasar-design-system/fonts/open-sans.css'
-import '@bastvi/quasar-design-system/fonts/selawik.css'
+import '@osmova/quasar-design-system/fonts/inter.css'
+import '@osmova/quasar-design-system/fonts/open-sans.css'
+import '@osmova/quasar-design-system/fonts/selawik.css'
 ```
 
 The display stack follows the body stack (Inter) by default. Selawik is not part of any default stack; to use it for display text, import its CSS and set the token after the QDS CSS:
@@ -210,13 +212,13 @@ Legacy inputs `air`, `glass`, and `studio` resolve to `fluent`; `feather` resolv
 
 ### Shadcn adoption and compatibility
 
-The new `shadcn` styling requires **Quasar 2.35 or newer**. The package's existing `quasar: ^2.0.0` peer range is unchanged for existing variants; this is not a claim that shadcn is tested on every Quasar 2 release. These changes target the `0.8.0-rc.3` prerelease on `next`; the stable `latest` channel remains on `0.7`.
+The new `shadcn` styling requires **Quasar 2.35 or newer**. The package's existing `quasar: ^2.0.0` peer range is unchanged for existing variants; this is not a claim that shadcn is tested on every Quasar 2 release. These changes are available as `@osmova/quasar-design-system@0.8.0-rc.3` on `next`; the legacy `@bastvi/quasar-design-system` stable `latest` channel remains on `0.7.0`.
 
 ```ts
 import {
   configureDesignSystem, SHADCN_BASE_COLORS,
   type ShadcnBaseColor,
-} from '@bastvi/quasar-design-system'
+} from '@osmova/quasar-design-system'
 
 const theme = configureDesignSystem(app, {
   mode: 'system', variant: 'shadcn', shadcnBaseColor: 'zinc', persist: true,
