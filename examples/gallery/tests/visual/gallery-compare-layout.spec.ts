@@ -5,6 +5,7 @@ test.use({ deviceScaleFactor: 1 })
 
 for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] as const) {
   test(`gallery Compare tabs bounds and labels ${variant}/${mode}`, async ({ page }, info) => {
+    const termNarrow = variant === 'term' && info.project.name === 'mobile'
     await page.setViewportSize(info.project.name === 'mobile'
       ? { width: 393, height: 851 } : { width: 1440, height: 1000 })
     await page.goto('/#compare')
@@ -19,12 +20,16 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
         const r = node.getBoundingClientRect()
         return { left: r.left, right: r.right, width: r.width }
       }
-      return [...element.querySelectorAll('.compare__cell')].map(cell => ({
-        cell: box(cell),
-        list: box(cell.querySelector('fluent-tablist, .compare__tab-scroll, .q-tabs')!),
-        nativeList: box(cell.querySelector('fluent-tablist, .q-tabs')!),
-        disabled: box(cell.querySelector('fluent-tab[disabled], .q-tab[aria-disabled="true"]')!),
-      }))
+      return [...element.querySelectorAll('.compare__cell')].map(cell => {
+        const scroll = cell.querySelector('.compare__tab-scroll')
+        return {
+          cell: box(cell),
+          list: box(scroll && getComputedStyle(scroll).display !== 'contents'
+            ? scroll : cell.querySelector('fluent-tablist, .q-tabs')!),
+          nativeList: box(cell.querySelector('fluent-tablist, .q-tabs')!),
+          disabled: box(cell.querySelector('fluent-tab[disabled], .q-tab[aria-disabled="true"]')!),
+        }
+      })
     })
     await info.attach('initial-tab-bounds', { body: JSON.stringify(bounds, null, 2), contentType: 'application/json' })
     for (const { cell, list } of bounds) {
@@ -32,7 +37,9 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
       expect(cell.right).toBeLessThanOrEqual(page.viewportSize()!.width)
       expect(list.width).toBeGreaterThan(0)
       expect(list.left).toBeGreaterThanOrEqual(cell.left - 1)
-      expect(list.right).toBeLessThanOrEqual(cell.right + 1)
+      // The fix bounds the Term demo; other variants retain their original native
+      // tracks (One can extend past its demo outline without viewport clipping).
+      if (termNarrow) expect(list.right).toBeLessThanOrEqual(cell.right + 1)
       expect(list.right).toBeLessThanOrEqual(page.viewportSize()!.width)
     }
     await expect(row.locator('.compare__title')).toHaveText('Tabs')
@@ -40,7 +47,18 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
     await expect(row.locator('fluent-tab')).toHaveCount(4)
     await expect(row.locator('.q-tab')).toHaveCount(4)
 
-    const content = row.locator('.compare__tab-scroll')
+    const wrapper = row.locator('.compare__tab-scroll')
+    if (termNarrow) {
+      await expect(wrapper).toHaveAttribute('role', 'region')
+      await expect(wrapper).toHaveAttribute('tabindex', '0')
+      expect(await wrapper.evaluate(e => getComputedStyle(e).overflowX)).toBe('auto')
+    } else {
+      await expect(wrapper).not.toHaveAttribute('role')
+      await expect(wrapper).not.toHaveAttribute('tabindex')
+      await expect(wrapper).not.toHaveAttribute('aria-label')
+      expect(await wrapper.evaluate(e => getComputedStyle(e).display)).toBe('contents')
+    }
+    const content = termNarrow ? wrapper : row.locator('.q-tabs__content')
     const labelFits = () => content.evaluate(element => {
       const clip = element.getBoundingClientRect()
       const label = element.querySelector('.q-tab[aria-disabled="true"] .q-tab__label')!
@@ -48,6 +66,7 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
       return rect.left >= clip.left - 1 && rect.right <= clip.right + 1
     })
     if (!await labelFits()) {
+      expect(termNarrow, 'unaffected native tablists must fit without authored scrolling').toBe(true)
       // Exercise keyboard scrolling of the authored, focusable native scroll region.
       expect(await content.evaluate(e => getComputedStyle(e).overflowX)).toBe('auto')
       await content.focus()
@@ -91,13 +110,22 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
       await info.attach('tabs-viewport', { path, contentType: 'image/png' })
     }
     // The initial labels remain reachable too, without moving the page sideways.
-    await content.focus()
-    for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowLeft')
+    if (termNarrow) {
+      await content.focus()
+      for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowLeft')
+    }
     await expect.poll(() => content.evaluate(element => {
       const clip = element.getBoundingClientRect()
       const label = element.querySelector('.q-tab__label')!.getBoundingClientRect()
       return label.left >= clip.left - 1 && label.right <= clip.right + 1
     })).toBe(true)
     expect(await page.evaluate(() => window.scrollX)).toBe(0)
+    if (termNarrow) {
+      // Resize must remove the authored scroll semantics and restore native desktop sizing.
+      await page.setViewportSize({ width: 1440, height: 1000 })
+      await expect(wrapper).not.toHaveAttribute('role')
+      await expect(wrapper).not.toHaveAttribute('tabindex')
+      expect(await wrapper.evaluate(e => getComputedStyle(e).display)).toBe('contents')
+    }
   })
 }

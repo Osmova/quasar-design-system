@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useDesignSystem } from '@bastvi/quasar-design-system'
 
 // Reference oracle: real Fluent 2 web components beside the QDS/Quasar equivalent.
 const ds = useDesignSystem()
 const root = ref<HTMLElement | null>(null)
 const ready = ref(false)
+const narrow = ref(false)
+const termNarrow = computed(() => ds.variant.value === 'term' && narrow.value)
+let narrowQuery: MediaQueryList | undefined
+const updateNarrow = () => { narrow.value = narrowQuery?.matches ?? false }
 
 const text = ref('')
 const select = ref<string | null>(null)
@@ -20,6 +24,9 @@ const dialogOpen = ref(false)
 let applyTheme: (dark: boolean) => void = () => {}
 
 onMounted(async () => {
+  narrowQuery = window.matchMedia('(max-width: 720px)')
+  updateNarrow()
+  narrowQuery.addEventListener('change', updateNarrow)
   // Children must upgrade before listbox/dropdown and radio-group read them.
   await Promise.all([
     import('@fluentui/web-components/option/define.js'),
@@ -60,6 +67,8 @@ onMounted(async () => {
   applyTheme(ds.isDark.value)
   ready.value = true
 })
+
+onUnmounted(() => narrowQuery?.removeEventListener('change', updateNarrow))
 
 watch(ds.isDark, (dark) => applyTheme(dark))
 
@@ -174,7 +183,7 @@ function openFluentDialog() {
         </fluent-tablist>
       </div>
       <div class="compare__cell compare__cell--qds">
-        <div class="compare__tab-scroll" tabindex="0" role="region" aria-label="QDS comparison tabs, scroll horizontally for more">
+        <div class="compare__tab-scroll" :tabindex="termNarrow ? 0 : undefined" :role="termNarrow ? 'region' : undefined" :aria-label="termNarrow ? 'QDS comparison tabs, scroll horizontally for more' : undefined">
           <q-tabs v-model="tab" no-caps align="left" inline-label>
             <q-tab name="overview" label="Overview" />
             <q-tab name="activity" label="Activity" />
@@ -385,25 +394,9 @@ function openFluentDialog() {
   width: 12rem;
 }
 
-/* Bound the demo tracks, not the library's native tab sizing/scroll grammar. */
-.compare__tabs {
-  width: 100%;
-  min-width: 0;
-}
-
-.compare__tabs--fluent {
-  flex-wrap: wrap;
-}
-
+/* Unaffected variants/desktops keep the original flex-item grammar. */
 .compare__tab-scroll {
-  width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-}
-
-.compare__tab-scroll > .q-tabs {
-  width: max-content;
-  min-width: 100%;
+  display: contents;
 }
 
 .compare__actions {
@@ -449,6 +442,28 @@ function openFluentDialog() {
 }
 
 @media (max-width: 720px) {
+  /* Only the confirmed Term/narrow overflow needs an authored demo adaptation. */
+  body.qds-variant-term .compare__tabs {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.qds-variant-term .compare__tabs--fluent {
+    flex-wrap: wrap;
+  }
+
+  body.qds-variant-term .compare__tab-scroll {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+  }
+
+  body.qds-variant-term .compare__tab-scroll > .q-tabs {
+    width: max-content;
+    min-width: 100%;
+  }
+
   .compare__row {
     grid-template-columns: minmax(0, 1fr);
   }
