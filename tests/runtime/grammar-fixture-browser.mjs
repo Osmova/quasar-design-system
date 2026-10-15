@@ -22,6 +22,8 @@ const assets = {
 // plain SVG data, not Node imports/functions or a font-dependent fallback set.
 const iconData = JSON.parse(JSON.stringify(qdsIconSet))
 assert.deepEqual(iconData, qdsIconSet, 'compiled QDS icon set must be losslessly JSON serializable')
+const cpuThrottleRate = Number(process.env.QDS_GRAMMAR_CPU_RATE ?? 1)
+assert.ok([1, 4].includes(cpuThrottleRate), 'QDS_GRAMMAR_CPU_RATE must be 1 or 4')
 const fixture = `body { margin: 24px; } #app { width: 600px; display: grid; gap: 24px; }
   .qds-compatibility-host { position: absolute; left: 650px; top: 24px; width: 220px; }
   #tabs { width: 250px; } #vertical { width: 180px; height: 160px; }
@@ -29,6 +31,10 @@ const fixture = `body { margin: 24px; } #app { width: 600px; display: grid; gap:
 
 async function mount(browser, css) {
   const page = await browser.newPage({ viewport: { width: 900, height: 1000 }, reducedMotion: 'reduce' })
+  if (cpuThrottleRate !== 1) {
+    const cdp = await page.context().newCDPSession(page)
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: cpuThrottleRate })
+  }
   await page.setContent(`<style>${assets.css}</style><style>${css}</style><style>${fixture}</style><body class="qds-ui"><div id="app" class="qds-ui qds-grammar-pilot"></div><aside class="qds-compatibility-host"><div id="legacy" class="qds-ui"></div></aside></body>`)
   await page.addScriptTag({ content: assets.vue })
   await page.addScriptTag({ content: assets.quasar })
@@ -72,12 +78,88 @@ async function mount(browser, css) {
     legacy.mount('#legacy')
     window.pilot = { state, async set(values) { Object.assign(state, values); await nextTick() }, dispose() { app.unmount(); legacy.unmount() } }
   }, iconData)
-  await settle(page)
+  await settle(page, 'mount')
   return page
 }
 
-async function settle(page) {
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+async function settle(page, state, timeoutMs = 5000) {
+  // QTabs.animate() applies a JS FLIP transform and clears it in a 70ms timer.
+  // CSS transition:none does not cancel that timer. Wait for its actual DOM
+  // endpoint AND stable geometry; never normalize transform/position in samples.
+  return page.evaluate(({ state, timeoutMs }) => new Promise((resolve, reject) => {
+    let previous, stableFrames = 0, frame, last
+    const timer = setTimeout(() => {
+      cancelAnimationFrame(frame)
+      reject(new Error(`${state}: native indicator settlement timed out after ${timeoutMs}ms; ${JSON.stringify(last)}`))
+    }, timeoutMs)
+    const poll = () => {
+      const active = [...document.querySelectorAll('.q-tab--active .q-tab__indicator')]
+        .filter((el) => el.getClientRects().length && getComputedStyle(el).visibility === 'visible')
+      const indicators = active.map((el) => {
+        const rect = el.getBoundingClientRect()
+        return {
+          root: el.closest('.q-tabs').id, label: el.closest('.q-tab').querySelector('.q-tab__label')?.textContent,
+          inlineTransform: el.style.transform, transform: getComputedStyle(el).transform,
+          rect: [rect.x, rect.y, rect.width, rect.height],
+          animations: el.getAnimations().map((animation) => animation.playState),
+        }
+      })
+      const selected = ['tabs', 'vertical'].every((root) => indicators.some((entry) =>
+        entry.root === root && entry.label === `Native ${pilot.state[root === 'tabs' ? 'tab' : 'vertical']}`))
+      const endpoint = indicators.length === 3 && selected && indicators.every((entry) =>
+        entry.transform === 'none' && ['', 'none'].includes(entry.inlineTransform) &&
+        entry.animations.every((playState) => ['finished', 'idle'].includes(playState)))
+      last = { visibility: document.visibilityState, endpoint, indicators }
+      const key = JSON.stringify(indicators)
+      stableFrames = endpoint && key === previous ? stableFrames + 1 : 0
+      previous = key
+      if (stableFrames >= 3) {
+        clearTimeout(timer)
+        resolve(last)
+      } else frame = requestAnimationFrame(poll)
+    }
+    frame = requestAnimationFrame(poll)
+  }), { state, timeoutMs })
+}
+
+function assertSnapshot(actual, expected, context) {
+  const difference = (a, b, path = '') => {
+    if (Object.is(a, b)) return null
+    if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return { path, actual: a, expected: b }
+    for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) {
+      const found = difference(a[key], b[key], path ? `${path}.${key}` : key)
+      if (found) return found
+    }
+    return null
+  }
+  const first = difference(actual, expected)
+  assert.deepEqual(actual, expected, `${context}: ${first ? `${first.path}: expected ${JSON.stringify(first.expected)}, actual ${JSON.stringify(first.actual)}` : 'all native paint/geometry/subelements unchanged'}`)
+}
+
+async function holdNativeIndicatorEndpoints(page) {
+  // Control-only interception of the native 70ms endpoint callbacks. Keep the
+  // native FLIP start and callback body intact; positive proofs never use this.
+  await page.evaluate(() => {
+    const originalSet = window.setTimeout
+    const originalClear = window.clearTimeout
+    const tasks = []
+    let released = false
+    const run = (task) => {
+      if (!task.ran) { task.ran = true; task.callback(...task.args) }
+    }
+    window.setTimeout = (callback, delay, ...args) => {
+      if (delay !== 70 || !document.querySelector('#app .q-tab__indicator[style*="translate"]')) return originalSet(callback, delay, ...args)
+      const task = { callback, args, ready: false, ran: false }
+      task.id = originalSet(() => { task.ready = true; if (released) run(task) }, delay)
+      tasks.push(task)
+      return task.id
+    }
+    window.indicatorGate = {
+      status: () => tasks.map(({ ready, ran }) => ({ ready, ran })),
+      release() { window.setTimeout = originalSet; released = true; tasks.filter((task) => task.ready).forEach(run) },
+      cleanup() { window.setTimeout = originalSet; tasks.forEach((task) => originalClear(task.id)) },
+    }
+  })
 }
 
 async function assertNativeIcons(page, state) {
@@ -246,7 +328,7 @@ const states = [
 let browser
 try { browser = await chromium.launch({ headless: true }) }
 catch (cause) { throw new Error('Grammar browser proof cannot launch Chromium. After a full pnpm install --frozen-lockfile, run pnpm -C examples/gallery exec playwright install chromium (install system dependencies as required). This mandatory gate never skips.', { cause }) }
-console.log(JSON.stringify({ proof: 'grammar-pilot', pid: process.pid, browser: browser.version(), workers: 1, server: null, states: states.map(([name]) => name) }))
+console.log(JSON.stringify({ proof: 'grammar-pilot', pid: process.pid, browser: browser.version(), workers: 1, server: null, cpuThrottleRate, states: states.map(([name]) => name) }))
 console.log(JSON.stringify({ evidenceSha256: Object.fromEntries([
   ['tests/runtime/grammar-fixture-browser.mjs', readFileSync(new URL(import.meta.url))],
   ['dist/icons/quasar-icon-set.js', readFileSync(new URL('dist/icons/quasar-icon-set.js', root))],
@@ -280,22 +362,58 @@ try {
         assert.notDeepEqual(legacy, legacyReference, 'removing compatibility must visibly change the mounted legacy sentinel')
         assert.equal(legacy.labelAbove, false, 'legacy sentinel returns to native label grammar')
       }
-      for (const [state, act] of states) {
+      for (const [index, [state, act]] of states.entries()) {
         await act(page)
-        await settle(page)
+        const settled = await settle(page, `${name}/${state}`)
+        if (state === 'selected') console.log(`${name}/selected native endpoints: ${JSON.stringify(settled)}`)
         iconObservations += await assertNativeIcons(page, state)
         const actual = await sample(page)
         assertOwned(actual, state)
+        if (reference) assertSnapshot(actual, reference[index], `${name}/${state}`)
         snapshots.push(actual)
         if (state === 'menu') assert.equal(actual.item.styles.backgroundColor, 'rgb(211, 238, 229)')
       }
       assert.deepEqual(errors, [])
-      if (reference) assert.deepEqual(snapshots, reference, `${name}: actual native paint/geometry/subelements must survive removal`)
-      else reference = snapshots
+      if (!reference) reference = snapshots
       console.log(`${name}: ${states.length} native states PASS; ${iconObservations} native SVG icon observations PASS (clear/error/dropdown/horizontal+vertical arrows and explicit content mappings)`)
     } finally {
       await page.evaluate(() => pilot.dispose())
       assert.equal(await page.locator('.q-menu').count(), 0)
+      await page.close()
+    }
+  }
+  for (const control of ['late-endpoint', 'nonsettling-endpoint']) {
+    const page = await mount(browser, compilePilot({ removed: true }))
+    try {
+      await holdNativeIndicatorEndpoints(page)
+      await states.find(([name]) => name === 'selected')[1](page)
+      await page.waitForFunction(() => indicatorGate.status().length === 2 && indicatorGate.status().every((task) => task.ready && !task.ran))
+      const transient = await sample(page)
+      assert.notEqual(transient.indicator.styles.transform, 'none', 'control must retain the real native horizontal FLIP')
+      assert.notEqual(transient.verticalIndicator.styles.transform, 'none', 'control must retain the real native vertical FLIP')
+      if (control === 'late-endpoint') {
+        let completed = false
+        const waiting = settle(page, control).then((result) => { completed = true; return result })
+        await page.evaluate(() => new Promise((resolve) => {
+          let frames = 0
+          const tick = () => { if (++frames === 6) resolve(); else requestAnimationFrame(tick) }
+          requestAnimationFrame(tick)
+        }))
+        assert.equal(completed, false, 'waiter must not accept a stable but transient native FLIP')
+        await page.evaluate(() => indicatorGate.release())
+        await waiting
+      } else {
+        await assert.rejects(settle(page, control, 250), /nonsettling-endpoint: native indicator settlement timed out.*inlineTransform.*translate/)
+        await page.evaluate(() => indicatorGate.release())
+        await settle(page, `${control}/released`)
+      }
+      const endpoint = await sample(page)
+      assertOwned(endpoint, 'selected')
+      assert.equal(endpoint.indicator.styles.transform, 'none')
+      assert.equal(endpoint.verticalIndicator.styles.transform, 'none')
+      console.log(`native lifecycle control ${control} PASS: ${JSON.stringify({ horizontalStart: transient.indicator.styles.transform, verticalStart: transient.verticalIndicator.styles.transform, horizontalEnd: endpoint.indicator.styles.transform, verticalEnd: endpoint.verticalIndicator.styles.transform })}`)
+    } finally {
+      await page.evaluate(() => { window.indicatorGate?.cleanup(); pilot.dispose() })
       await page.close()
     }
   }
