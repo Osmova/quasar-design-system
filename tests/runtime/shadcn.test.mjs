@@ -60,7 +60,10 @@ test('existing default-theme values stay byte-identical with only the two static
   const root = new URL('../../', import.meta.url)
   const path = new URL('src/themes/default.scss', root)
   const source = readFileSync(path, 'utf8')
+  // Folio is removed the same way shadcn is, so the frozen hash below still
+  // verifies every pre-Folio declaration and its emission order byte for byte.
   const old = source.replace("@use 'shadcn';\n", '').replace('\n@include shadcn.scopes;\n', '\n')
+    .replace('@include qds-folio-scopes;\n', '')
   const options = { url: path, loadPaths: [root.pathname], silenceDeprecations: ['if-function'] }
   const baseline = sass.compileString(old, options).css
   const current = sass.compile(path.pathname, options).css
