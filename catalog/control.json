@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "title": "QDS shared catalog control semantics (single source of control defaults for both preview hosts)",
+  "note": "Both adapters build controls/defaults from these rows at runtime; demo prop defaults are intentionally absent so the control table stays the single source.",
+  "kinds": ["toggle", "select", "number", "text"],
+  "cases": {
+    "actions/button": [
+      { "key": "label", "kind": "text", "default": "Neutral", "subelement": "content", "semantics": "v-model free prop; drives the visible QBtn/QBtnDropdown label" },
+      { "key": "icon", "kind": "select", "default": "", "options": ["", "plus", "close", "edit"], "subelement": "icons", "semantics": "empty clears the icon; named options map onto qdsPhosphor line SVG paths (no removed material fonts involved)" },
+      { "key": "dense", "kind": "toggle", "default": false, "subelement": "shape", "semantics": "native QBtn dense sizing" },
+      { "key": "loading", "kind": "toggle", "default": false, "subelement": "spinner", "semantics": "native QBtn loading spinner replaces content while true" },
+      { "key": "disable", "kind": "toggle", "default": false, "subelement": "disabled", "semantics": "native disable state incl. opacity/dim" },
+      { "key": "split", "kind": "toggle", "default": false, "subelement": "dropdown-arrow", "semantics": "renders a split QBtnDropdown (arrow + popover) instead of the plain QBtn" }
+    ],
+    "forms/field": [
+      { "key": "label", "kind": "text", "default": "Display name", "subelement": "label", "semantics": "QField label text" },
+      { "key": "dense", "kind": "toggle", "default": false, "subelement": "shape", "semantics": "dense field geometry" },
+      { "key": "stackLabel", "kind": "toggle", "default": false, "subelement": "stack-float", "semantics": "keeps the label floated above the control even when empty" },
+      { "key": "marginals", "kind": "toggle", "default": false, "subelement": "prefix-suffix", "semantics": "adds prefix/suffix text plus prepend/append icons" },
+      { "key": "hint", "kind": "toggle", "default": false, "subelement": "hint", "semantics": "shows the fixed helper hint line" },
+      { "key": "counter", "kind": "toggle", "default": false, "subelement": "counter", "semantics": "shows the value counter (maxlength 24) for the local model" },
+      { "key": "clearable", "kind": "toggle", "default": false, "subelement": "clear", "semantics": "native clear icon and clear affordance" },
+      { "key": "error", "kind": "toggle", "default": false, "subelement": "error", "semantics": "error state + fixed error message" },
+      { "key": "loading", "kind": "toggle", "default": false, "subelement": "loading", "semantics": "field loading spinner" },
+      { "key": "disable", "kind": "toggle", "default": false, "subelement": "disabled", "semantics": "disabled field" },
+      { "key": "readonly", "kind": "toggle", "default": false, "subelement": "readonly", "semantics": "readonly field (still focusable)" }
+    ],
+    "navigation/tabs": [
+      { "key": "dense", "kind": "toggle", "default": false, "subelement": "shape", "semantics": "dense tab height" },
+      { "key": "tabCount", "kind": "select", "default": "6", "options": ["3", "6", "9", "12"], "subelement": "scroll-arrows", "semantics": "with the constrained tabs row, larger counts overflow and reveal the native scroll arrows" },
+      { "key": "disabledTab", "kind": "select", "default": "none", "options": ["none", "second", "last"], "subelement": "disabled", "semantics": "marks one QTab disabled natively" }
+    ],
+    "overlays/menu": [
+      { "key": "dense", "kind": "toggle", "default": false, "subelement": "shape", "semantics": "dense menu geometry" },
+      { "key": "persistent", "kind": "toggle", "default": false, "subelement": "menu-portal", "semantics": "persistent menu ignores outside clicks and Escape by design (documented native semantics)" },
+      { "key": "checkable", "kind": "toggle", "default": false, "subelement": "checks", "semantics": "items toggle check marks (left section) in the teleported portal" }
+    ]
+  }
+}

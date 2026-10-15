@@ -1,0 +1,40 @@
+{
+  "case": "overlays/menu",
+  "fixtures": {
+    "assertedSubelements": [
+      "checks",
+      "escape-dismiss",
+      "focus-return",
+      "items",
+      "menu-portal",
+      "reset-teardown",
+      "separator"
+    ],
+    "controls": [
+      {
+        "key": "dense",
+        "kind": "toggle",
+        "semantics": "dense menu geometry",
+        "subelement": "shape"
+      },
+      {
+        "key": "persistent",
+        "kind": "toggle",
+        "semantics": "persistent menu ignores outside clicks and Escape by design (documented native semantics)",
+        "subelement": "menu-portal"
+      },
+      {
+        "key": "checkable",
+        "kind": "toggle",
+        "semantics": "items toggle check marks (left section) in the teleported portal",
+        "subelement": "checks"
+      }
+    ],
+    "defaults": {
+      "checkable": false,
+      "dense": false,
+      "persistent": false
+    },
+    "freshStateGuarantee": "hosts re-init this exact defaults object per variant/story mount; a running story never shares mutable state with another case"
+  }
+}

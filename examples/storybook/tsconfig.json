@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@qds-catalog/*": ["../../catalog/*"]
+    }
+  },
+  "include": [
+    ".storybook/**/*.ts",
+    "stories/**/*.ts",
+    "playwright.proof.config.ts",
+    "tests/**/*.ts",
+    "../../catalog/manifest.json",
+    "../../catalog/control.json"
+  ]
+}

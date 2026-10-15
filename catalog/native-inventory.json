@@ -1,0 +1,1366 @@
+{
+  "counts": {
+    "compositeChildren": 19,
+    "core": 73,
+    "exports": 123,
+    "helpers": 7,
+    "mixins": 1,
+    "optionalModules": 1,
+    "pluginsVisual": 5,
+    "spinners": 23
+  },
+  "coveredByImplementedCases": [
+    "QBtn",
+    "QBtnDropdown",
+    "QField",
+    "QIcon",
+    "QItem",
+    "QItemSection",
+    "QList",
+    "QMenu",
+    "QSeparator",
+    "QTab",
+    "QTabPanel",
+    "QTabPanels",
+    "QTabs"
+  ],
+  "exports": [
+    {
+      "disposition": "core",
+      "name": "QAjaxBar",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/ajax-bar/QAjaxBar.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QAvatar",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/avatar/QAvatar.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBadge",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/badge/QBadge.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBanner",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/banner/QBanner.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBar",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/bar/QBar.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBreadcrumbs",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/breadcrumbs/QBreadcrumbs.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QBreadcrumbsEl",
+      "parent": "QBreadcrumbs",
+      "proofStatus": "planned",
+      "reason": "Composite child of QBreadcrumbs; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/breadcrumbs/QBreadcrumbsEl.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBtn",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/btn/QBtn.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBtnDropdown",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/btn-dropdown/QBtnDropdown.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBtnGroup",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/btn-group/QBtnGroup.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QBtnToggle",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/btn-toggle/QBtnToggle.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QCard",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/card/QCard.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QCardActions",
+      "parent": "QCard",
+      "proofStatus": "planned",
+      "reason": "Composite child of QCard; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/card/QCardActions.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QCardSection",
+      "parent": "QCard",
+      "proofStatus": "planned",
+      "reason": "Composite child of QCard; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/card/QCardSection.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QCarousel",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/carousel/QCarousel.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QCarouselControl",
+      "parent": "QCarousel",
+      "proofStatus": "planned",
+      "reason": "Composite child of QCarousel; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/carousel/QCarouselControl.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QCarouselSlide",
+      "parent": "QCarousel",
+      "proofStatus": "planned",
+      "reason": "Composite child of QCarousel; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/carousel/QCarouselSlide.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QChatMessage",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/chat/QChatMessage.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QCheckbox",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/checkbox/QCheckbox.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QChip",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/chip/QChip.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QCircularProgress",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/circular-progress/QCircularProgress.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QColor",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/color/QColor.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QDate",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/date/QDate.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QDialog",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/dialog/QDialog.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QDrawer",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/drawer/QDrawer.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QEditor",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/editor/QEditor.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QExpansionItem",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/expansion-item/QExpansionItem.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QFab",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/fab/QFab.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QFabAction",
+      "parent": "QFab",
+      "proofStatus": "planned",
+      "reason": "Composite child of QFab; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/fab/QFabAction.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QField",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/field/QField.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QFile",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/file/QFile.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QFooter",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/footer/QFooter.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QForm",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/form/QForm.js"
+    },
+    {
+      "disposition": "mixin",
+      "name": "QFormChildMixin",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Quasar internal form child mixin; consumes native QForm semantics, no visual surface.",
+      "role": "mixin",
+      "sourcePath": "./components/form/QFormChildMixin.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QHeader",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/header/QHeader.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QIcon",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/icon/QIcon.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QImg",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/img/QImg.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QInfiniteScroll",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/infinite-scroll/QInfiniteScroll.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QInnerLoading",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/inner-loading/QInnerLoading.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QInput",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/input/QInput.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QIntersection",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/intersection/QIntersection.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QItem",
+      "parent": "QList",
+      "proofStatus": "covered",
+      "reason": "Composite child of QList; requires an explicit rendered export in an implemented case, not inferred parent coverage. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/item/QItem.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QItemLabel",
+      "parent": "QList",
+      "proofStatus": "planned",
+      "reason": "Composite child of QList; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/item/QItemLabel.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QItemSection",
+      "parent": "QItem",
+      "proofStatus": "covered",
+      "reason": "Composite child of QItem; requires an explicit rendered export in an implemented case, not inferred parent coverage. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/item/QItemSection.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QKnob",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/knob/QKnob.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QLayout",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/layout/QLayout.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QLinearProgress",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/linear-progress/QLinearProgress.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QList",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/item/QList.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QMarkupTable",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/markup-table/QMarkupTable.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QMenu",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/menu/QMenu.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QNoSsr",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/no-ssr/QNoSsr.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QOptionGroup",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/option-group/QOptionGroup.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPage",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/page/QPage.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPageContainer",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/page/QPageContainer.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPageScroller",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/page-scroller/QPageScroller.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPageSticky",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/page-sticky/QPageSticky.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPagination",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/pagination/QPagination.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QParallax",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/parallax/QParallax.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPopupEdit",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/popup-edit/QPopupEdit.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPopupProxy",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/popup-proxy/QPopupProxy.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QPullToRefresh",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/pull-to-refresh/QPullToRefresh.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QRadio",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/radio/QRadio.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QRange",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/range/QRange.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QRating",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/rating/QRating.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QResizeObserver",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/resize-observer/QResizeObserver.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QResponsive",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/responsive/QResponsive.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QRouteTab",
+      "parent": "QTabs",
+      "proofStatus": "planned",
+      "reason": "Composite child of QTabs; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/tabs/QRouteTab.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QScrollArea",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/scroll-area/QScrollArea.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QScrollObserver",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/scroll-observer/QScrollObserver.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QSelect",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/select/QSelect.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QSeparator",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/separator/QSeparator.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QSkeleton",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/skeleton/QSkeleton.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QSlideItem",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/slide-item/QSlideItem.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QSlider",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/slider/QSlider.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QSlideTransition",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/slide-transition/QSlideTransition.js"
+    },
+    {
+      "disposition": "helper",
+      "name": "QSpace",
+      "parent": null,
+      "proofStatus": "helper-no-op",
+      "reason": "Structural/behavior helper with no independent visual skin; QResponsive owns aspect-ratio layout, QIntersection visibility, transitions/observers/spacing retain native behavior. Not visual coverage.",
+      "role": "component",
+      "sourcePath": "./components/space/QSpace.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinner",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinner.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerAudio",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerAudio.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerBall",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerBall.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerBars",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerBars.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerBox",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerBox.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerClock",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerClock.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerComment",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerComment.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerCube",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerCube.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerDots",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerDots.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerFacebook",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerFacebook.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerGears",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerGears.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerGrid",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerGrid.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerHearts",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerHearts.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerHourglass",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerHourglass.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerInfinity",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerInfinity.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerIos",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerIos.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerOrbit",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerOrbit.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerOval",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerOval.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerPie",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerPie.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerPuff",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerPuff.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerRadio",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerRadio.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerRings",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerRings.js"
+    },
+    {
+      "disposition": "spinner",
+      "name": "QSpinnerTail",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Member of the QSpinner family grid (deliberate single-grid disposition; one family case).",
+      "role": "component",
+      "sourcePath": "./components/spinner/QSpinnerTail.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QSplitter",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/splitter/QSplitter.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QStep",
+      "parent": "QStepper",
+      "proofStatus": "planned",
+      "reason": "Composite child of QStepper; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/stepper/QStep.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QStepper",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/stepper/QStepper.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QStepperNavigation",
+      "parent": "QStepper",
+      "proofStatus": "planned",
+      "reason": "Composite child of QStepper; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/stepper/QStepperNavigation.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QTab",
+      "parent": "QTabs",
+      "proofStatus": "covered",
+      "reason": "Composite child of QTabs; requires an explicit rendered export in an implemented case, not inferred parent coverage. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/tabs/QTab.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTable",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/table/QTable.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QTabPanel",
+      "parent": "QTabPanels",
+      "proofStatus": "covered",
+      "reason": "Composite child of QTabPanels; requires an explicit rendered export in an implemented case, not inferred parent coverage. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/tab-panels/QTabPanel.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTabPanels",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/tab-panels/QTabPanels.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTabs",
+      "parent": null,
+      "proofStatus": "covered",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered. Covered directly by an implemented proof case.",
+      "role": "component",
+      "sourcePath": "./components/tabs/QTabs.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QTd",
+      "parent": "QTable",
+      "proofStatus": "planned",
+      "reason": "Composite child of QTable; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/table/QTd.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QTh",
+      "parent": "QTable",
+      "proofStatus": "planned",
+      "reason": "Composite child of QTable; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/table/QTh.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTime",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/time/QTime.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTimeline",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/timeline/QTimeline.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QTimelineEntry",
+      "parent": "QTimeline",
+      "proofStatus": "planned",
+      "reason": "Composite child of QTimeline; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/timeline/QTimelineEntry.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QToggle",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/toggle/QToggle.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QToolbar",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/toolbar/QToolbar.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QToolbarTitle",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/toolbar/QToolbarTitle.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTooltip",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/tooltip/QTooltip.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QTr",
+      "parent": "QTable",
+      "proofStatus": "planned",
+      "reason": "Composite child of QTable; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/table/QTr.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QTree",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/tree/QTree.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QUploader",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/uploader/QUploader.js"
+    },
+    {
+      "disposition": "composite-child",
+      "name": "QUploaderAddTrigger",
+      "parent": "QUploader",
+      "proofStatus": "planned",
+      "reason": "Composite child of QUploader; requires an explicit rendered export in an implemented case, not inferred parent coverage.",
+      "role": "component",
+      "sourcePath": "./components/uploader/QUploaderAddTrigger.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QVideo",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/video/QVideo.js"
+    },
+    {
+      "disposition": "core",
+      "name": "QVirtualScroll",
+      "parent": null,
+      "proofStatus": "planned",
+      "reason": "Core visual component awaiting its named case; honestly planned, not pretended covered.",
+      "role": "component",
+      "sourcePath": "./components/virtual-scroll/QVirtualScroll.js"
+    }
+  ],
+  "optionalModules": [
+    {
+      "name": "QWindow",
+      "package": "@quasar/quasar-ui-qwindow",
+      "proofStatus": "optional-separate",
+      "reason": "Optional opt-in module shipped through the ./qwindow export; intentionally excluded from the native export count and proven separately."
+    }
+  ],
+  "pendingClassificationNotes": [
+    "Non-visual directives/plugins (Ripple, AppFullscreen, LocalStorage, Screen, ...) are outside the bounded proof and NOT presented as covered."
+  ],
+  "plannedByFamily": {
+    "composite-children-of:QBreadcrumbs": [
+      "QBreadcrumbsEl"
+    ],
+    "composite-children-of:QCard": [
+      "QCardActions",
+      "QCardSection"
+    ],
+    "composite-children-of:QCarousel": [
+      "QCarouselControl",
+      "QCarouselSlide"
+    ],
+    "composite-children-of:QFab": [
+      "QFabAction"
+    ],
+    "composite-children-of:QList": [
+      "QItemLabel"
+    ],
+    "composite-children-of:QStepper": [
+      "QStep",
+      "QStepperNavigation"
+    ],
+    "composite-children-of:QTable": [
+      "QTd",
+      "QTh",
+      "QTr"
+    ],
+    "composite-children-of:QTabs": [
+      "QRouteTab"
+    ],
+    "composite-children-of:QTimeline": [
+      "QTimelineEntry"
+    ],
+    "composite-children-of:QUploader": [
+      "QUploaderAddTrigger"
+    ],
+    "core-components": [
+      "QAjaxBar",
+      "QAvatar",
+      "QBadge",
+      "QBanner",
+      "QBar",
+      "QBreadcrumbs",
+      "QBtnGroup",
+      "QBtnToggle",
+      "QCard",
+      "QCarousel",
+      "QChatMessage",
+      "QCheckbox",
+      "QChip",
+      "QCircularProgress",
+      "QColor",
+      "QDate",
+      "QDialog",
+      "QDrawer",
+      "QEditor",
+      "QExpansionItem",
+      "QFab",
+      "QFile",
+      "QFooter",
+      "QForm",
+      "QHeader",
+      "QImg",
+      "QInfiniteScroll",
+      "QInnerLoading",
+      "QInput",
+      "QKnob",
+      "QLayout",
+      "QLinearProgress",
+      "QMarkupTable",
+      "QOptionGroup",
+      "QPage",
+      "QPageContainer",
+      "QPageScroller",
+      "QPageSticky",
+      "QPagination",
+      "QParallax",
+      "QPopupEdit",
+      "QPopupProxy",
+      "QPullToRefresh",
+      "QRadio",
+      "QRange",
+      "QRating",
+      "QScrollArea",
+      "QSelect",
+      "QSkeleton",
+      "QSlideItem",
+      "QSlider",
+      "QSplitter",
+      "QStepper",
+      "QTable",
+      "QTime",
+      "QTimeline",
+      "QToggle",
+      "QToolbar",
+      "QToolbarTitle",
+      "QTooltip",
+      "QTree",
+      "QUploader",
+      "QVideo",
+      "QVirtualScroll"
+    ],
+    "spinner-family-grid": [
+      "QSpinner",
+      "QSpinnerAudio",
+      "QSpinnerBall",
+      "QSpinnerBars",
+      "QSpinnerBox",
+      "QSpinnerClock",
+      "QSpinnerComment",
+      "QSpinnerCube",
+      "QSpinnerDots",
+      "QSpinnerFacebook",
+      "QSpinnerGears",
+      "QSpinnerGrid",
+      "QSpinnerHearts",
+      "QSpinnerHourglass",
+      "QSpinnerInfinity",
+      "QSpinnerIos",
+      "QSpinnerOrbit",
+      "QSpinnerOval",
+      "QSpinnerPie",
+      "QSpinnerPuff",
+      "QSpinnerRadio",
+      "QSpinnerRings",
+      "QSpinnerTail"
+    ]
+  },
+  "proofCases": [
+    {
+      "disposition": "implemented",
+      "family": "actions",
+      "id": "actions/button",
+      "nativeExports": [
+        "QBtn",
+        "QBtnDropdown"
+      ]
+    },
+    {
+      "disposition": "implemented",
+      "family": "forms",
+      "id": "forms/field",
+      "nativeExports": [
+        "QField",
+        "QIcon"
+      ]
+    },
+    {
+      "disposition": "implemented",
+      "family": "navigation",
+      "id": "navigation/tabs",
+      "nativeExports": [
+        "QTab",
+        "QTabPanel",
+        "QTabPanels",
+        "QTabs"
+      ]
+    },
+    {
+      "disposition": "implemented",
+      "family": "overlays",
+      "id": "overlays/menu",
+      "nativeExports": [
+        "QItem",
+        "QItemSection",
+        "QList",
+        "QMenu",
+        "QSeparator"
+      ]
+    }
+  ],
+  "references": {
+    "atlasHookInventory": {
+      "file": "examples/gallery/tests/visual/atlas-families.ts",
+      "role": "Gallery atlas visual hooks are a different inventory from native exports; recorded for drift observability only, never equated with the native count.",
+      "uniqueHookIds": 112
+    }
+  },
+  "schemaVersion": 1,
+  "source": {
+    "file": "node_modules/quasar/src/components.js",
+    "module": "quasar",
+    "parsingRule": "every `export { default as X }` line is one entry; each line is unique",
+    "sourceSha256": "451b8bd9f75850925a924a45b1e10f437cbe9682dbec347d817b4f5d0ec8b1cd",
+    "version": "2.35.0"
+  },
+  "title": "QDS native export inventory (bounded proof)",
+  "visualPlugins": [
+    {
+      "disposition": "visual-plugin",
+      "name": "Dialog",
+      "proofStatus": "planned",
+      "reason": "Visual plugin outside the native component exports; portal/plugin families require explicit cases in the full catalog, not in this proof."
+    },
+    {
+      "disposition": "visual-plugin",
+      "name": "Notify",
+      "proofStatus": "planned",
+      "reason": "Visual plugin outside the native component exports; portal/plugin families require explicit cases in the full catalog, not in this proof."
+    },
+    {
+      "disposition": "visual-plugin",
+      "name": "BottomSheet",
+      "proofStatus": "planned",
+      "reason": "Visual plugin outside the native component exports; portal/plugin families require explicit cases in the full catalog, not in this proof."
+    },
+    {
+      "disposition": "visual-plugin",
+      "name": "Loading",
+      "proofStatus": "planned",
+      "reason": "Visual plugin outside the native component exports; portal/plugin families require explicit cases in the full catalog, not in this proof."
+    },
+    {
+      "disposition": "visual-plugin",
+      "name": "LoadingBar",
+      "proofStatus": "planned",
+      "reason": "Visual plugin outside the native component exports; portal/plugin families require explicit cases in the full catalog, not in this proof."
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "case": "forms/field",
+  "fixtures": {
+    "assertedSubelements": [
+      "clear",
+      "counter",
+      "disable",
+      "error",
+      "hint",
+      "label",
+      "loading",
+      "prefix-suffix",
+      "prepend-append",
+      "readonly",
+      "stack-float"
+    ],
+    "controls": [
+      {
+        "key": "label",
+        "kind": "text",
+        "semantics": "QField label text",
+        "subelement": "label"
+      },
+      {
+        "key": "dense",
+        "kind": "toggle",
+        "semantics": "dense field geometry",
+        "subelement": "shape"
+      },
+      {
+        "key": "stackLabel",
+        "kind": "toggle",
+        "semantics": "keeps the label floated above the control even when empty",
+        "subelement": "stack-float"
+      },
+      {
+        "key": "marginals",
+        "kind": "toggle",
+        "semantics": "adds prefix/suffix text plus prepend/append icons",
+        "subelement": "prefix-suffix"
+      },
+      {
+        "key": "hint",
+        "kind": "toggle",
+        "semantics": "shows the fixed helper hint line",
+        "subelement": "hint"
+      },
+      {
+        "key": "counter",
+        "kind": "toggle",
+        "semantics": "shows the value counter (maxlength 24) for the local model",
+        "subelement": "counter"
+      },
+      {
+        "key": "clearable",
+        "kind": "toggle",
+        "semantics": "native clear icon and clear affordance",
+        "subelement": "clear"
+      },
+      {
+        "key": "error",
+        "kind": "toggle",
+        "semantics": "error state + fixed error message",
+        "subelement": "error"
+      },
+      {
+        "key": "loading",
+        "kind": "toggle",
+        "semantics": "field loading spinner",
+        "subelement": "loading"
+      },
+      {
+        "key": "disable",
+        "kind": "toggle",
+        "semantics": "disabled field",
+        "subelement": "disabled"
+      },
+      {
+        "key": "readonly",
+        "kind": "toggle",
+        "semantics": "readonly field (still focusable)",
+        "subelement": "readonly"
+      }
+    ],
+    "defaults": {
+      "clearable": false,
+      "counter": false,
+      "dense": false,
+      "disable": false,
+      "error": false,
+      "hint": false,
+      "label": "Display name",
+      "loading": false,
+      "marginals": false,
+      "readonly": false,
+      "stackLabel": false
+    },
+    "freshStateGuarantee": "hosts re-init this exact defaults object per variant/story mount; a running story never shares mutable state with another case"
+  }
+}

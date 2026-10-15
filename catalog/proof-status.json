@@ -1,0 +1,57 @@
+{
+  "completeGate": {
+    "expectedCurrentOutcome": "catalog-check --complete exits 1 while planned exports remain; passes only once every planned row gains a real case",
+    "plannedExports": 102
+  },
+  "inventory": {
+    "counts": {
+      "compositeChildren": 19,
+      "core": 73,
+      "exports": 123,
+      "helpers": 7,
+      "mixins": 1,
+      "optionalModules": 1,
+      "pluginsVisual": 5,
+      "spinners": 23
+    },
+    "coveredByImplementedCases": [
+      "QBtn",
+      "QBtnDropdown",
+      "QField",
+      "QIcon",
+      "QItem",
+      "QItemSection",
+      "QList",
+      "QMenu",
+      "QSeparator",
+      "QTab",
+      "QTabPanel",
+      "QTabPanels",
+      "QTabs"
+    ],
+    "sourceVersion": "2.35.0"
+  },
+  "proofCases": [
+    {
+      "id": "actions/button",
+      "implemented": true,
+      "note": "Source implementation disposition only, not a browser-mount receipt; remaining exports stay explicitly planned"
+    },
+    {
+      "id": "forms/field",
+      "implemented": true,
+      "note": "Source implementation disposition only, not a browser-mount receipt; remaining exports stay explicitly planned"
+    },
+    {
+      "id": "navigation/tabs",
+      "implemented": true,
+      "note": "Source implementation disposition only, not a browser-mount receipt; remaining exports stay explicitly planned"
+    },
+    {
+      "id": "overlays/menu",
+      "implemented": true,
+      "note": "Source implementation disposition only, not a browser-mount receipt; remaining exports stay explicitly planned"
+    }
+  ],
+  "schemaVersion": 1
+}

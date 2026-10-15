@@ -1,0 +1,201 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "title": "QDS shared catalog \u2014 bounded proof",
+  "scope": {
+    "kind": "development-only",
+    "note": "Catalog demos, manifest and control data are excluded from the published package (not listed in package.json files/exports). They only back the Histoire + Storybook preview proof.",
+    "proofMode": "Four cases only. Every native Quasar export is classified with an explicit disposition; exports outside the implemented cases stay status 'planned' \u2014 never presented as covered.",
+    "inventoryRule": "The native inventory is machine-generated from the installed Quasar source; the case list is separate from the export list."
+  },
+  "runtime": {
+    "package": "@osmova/quasar-design-system",
+    "controllerEntryRule": "The preview controller is configured from the compiled package entrypoint (dist) by each host's setup file and injected once per preview document/app.",
+    "injection": {
+      "key": "DESIGN_SYSTEM_THEME_KEY",
+      "challengeOnRemoval": "catalog/preview/index.ts reads the injected key directly; a broken isolation renders the explicit blocker state instead of silently falling back to the module-global controller."
+    },
+    "persist": false
+  },
+  "hosts": {
+    "histoire": {
+      "adapter": "./stories/catalog-proof.story.vue",
+      "setup": "./histoire.setup.ts",
+      "kind": "variant story with per-variant fresh init state"
+    },
+    "storybook": {
+      "adapter": "examples/storybook/stories/catalog-proof.stories.ts",
+      "setup": "examples/storybook/.storybook/preview.ts",
+      "kind": "static CSF exports rendered by @storybook/vue3-vite"
+    }
+  },
+  "cases": [
+    {
+      "id": "actions/button",
+      "family": "actions",
+      "title": "Native QBtn states",
+      "order": 1,
+      "demo": "./demos/QdsButtonDemo.vue",
+      "nativeExports": [
+        "QBtn",
+        "QBtnDropdown"
+      ],
+      "controls": [
+        "label",
+        "icon",
+        "dense",
+        "loading",
+        "disable",
+        "split"
+      ],
+      "fixtures": "./fixtures/actions-button.fixture.json",
+      "subelements": [
+        "content",
+        "icons",
+        "spinner",
+        "dropdown-arrow",
+        "focus",
+        "disabled"
+      ],
+      "interaction": {
+        "portal": false,
+        "focus": "keyboard"
+      },
+      "viewport": null,
+      "optionalPeers": null,
+      "hostIdMap": {
+        "histoireVariantTitle": "actions/button",
+        "storybookExport": "buttonProof"
+      },
+      "disposition": "implemented"
+    },
+    {
+      "id": "forms/field",
+      "family": "forms",
+      "title": "Native QField marginals and states",
+      "order": 2,
+      "demo": "./demos/QdsFieldDemo.vue",
+      "nativeExports": [
+        "QField",
+        "QIcon"
+      ],
+      "controls": [
+        "label",
+        "dense",
+        "stackLabel",
+        "marginals",
+        "hint",
+        "counter",
+        "clearable",
+        "error",
+        "loading",
+        "disable",
+        "readonly"
+      ],
+      "fixtures": "./fixtures/forms-field.fixture.json",
+      "subelements": [
+        "label",
+        "prefix-suffix",
+        "prepend-append",
+        "hint",
+        "counter",
+        "error",
+        "clear",
+        "loading",
+        "disable",
+        "readonly",
+        "stack-float"
+      ],
+      "interaction": {
+        "portal": false,
+        "focus": "keyboard"
+      },
+      "viewport": null,
+      "optionalPeers": null,
+      "hostIdMap": {
+        "histoireVariantTitle": "forms/field",
+        "storybookExport": "fieldProof"
+      },
+      "disposition": "implemented"
+    },
+    {
+      "id": "navigation/tabs",
+      "family": "navigation",
+      "title": "Native QTabs, arrows and disabled state",
+      "order": 3,
+      "demo": "./demos/QdsTabsDemo.vue",
+      "nativeExports": [
+        "QTabs",
+        "QTab",
+        "QTabPanels",
+        "QTabPanel"
+      ],
+      "controls": [
+        "dense",
+        "tabCount",
+        "disabledTab"
+      ],
+      "fixtures": "./fixtures/navigation-tabs.fixture.json",
+      "subelements": [
+        "indicator",
+        "scroll-arrows",
+        "panels",
+        "disabled"
+      ],
+      "interaction": {
+        "portal": false,
+        "focus": "keyboard"
+      },
+      "viewport": {
+        "note": "The tabs row is constrained to a fixed-ish inner width so scroll arrows appear deterministically with the default tab count."
+      },
+      "optionalPeers": null,
+      "hostIdMap": {
+        "histoireVariantTitle": "navigation/tabs",
+        "storybookExport": "tabsProof"
+      },
+      "disposition": "implemented"
+    },
+    {
+      "id": "overlays/menu",
+      "family": "overlays",
+      "title": "Native QMenu portal lifecycle",
+      "order": 4,
+      "demo": "./demos/QdsMenuDemo.vue",
+      "nativeExports": [
+        "QMenu",
+        "QList",
+        "QItem",
+        "QItemSection",
+        "QSeparator"
+      ],
+      "controls": [
+        "dense",
+        "persistent",
+        "checkable"
+      ],
+      "fixtures": "./fixtures/overlays-menu.fixture.json",
+      "subelements": [
+        "menu-portal",
+        "items",
+        "checks",
+        "separator",
+        "escape-dismiss",
+        "focus-return",
+        "reset-teardown"
+      ],
+      "interaction": {
+        "portal": true,
+        "keyboard": "Escape closes the menu; focus returns to the anchor on hide",
+        "teardown": "unmount removes the teleported portal node from document.body and drops listeners"
+      },
+      "viewport": null,
+      "optionalPeers": null,
+      "hostIdMap": {
+        "histoireVariantTitle": "overlays/menu",
+        "storybookExport": "menuProof"
+      },
+      "disposition": "implemented"
+    }
+  ]
+}

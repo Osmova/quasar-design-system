@@ -37,10 +37,17 @@ jobs:
       - name: Package build, types, runtime, CSS budgets, and pack dry-run
         run: pnpm verify:publish
 
+      - name: Verify bounded shared catalog contracts
+        run: pnpm catalog:test && pnpm catalog:check
+
       - run: pnpm gallery:build
       - name: Verify emitted consumer CSS adoption order
         run: node examples/gallery/scripts/test-consumer-css-order.mjs
       - run: pnpm stories:build
+      - run: pnpm catalog:storybook:typecheck
+      - run: pnpm catalog:storybook:build
+      - name: Verify both production catalog previews
+        run: pnpm catalog:browser:test
 
       - run: pnpm gallery:test
 

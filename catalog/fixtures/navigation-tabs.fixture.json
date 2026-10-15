@@ -1,0 +1,37 @@
+{
+  "case": "navigation/tabs",
+  "fixtures": {
+    "assertedSubelements": [
+      "disabled",
+      "indicator",
+      "panels",
+      "scroll-arrows"
+    ],
+    "controls": [
+      {
+        "key": "dense",
+        "kind": "toggle",
+        "semantics": "dense tab height",
+        "subelement": "shape"
+      },
+      {
+        "key": "tabCount",
+        "kind": "select",
+        "semantics": "with the constrained tabs row, larger counts overflow and reveal the native scroll arrows",
+        "subelement": "scroll-arrows"
+      },
+      {
+        "key": "disabledTab",
+        "kind": "select",
+        "semantics": "marks one QTab disabled natively",
+        "subelement": "disabled"
+      }
+    ],
+    "defaults": {
+      "dense": false,
+      "disabledTab": "none",
+      "tabCount": "6"
+    },
+    "freshStateGuarantee": "hosts re-init this exact defaults object per variant/story mount; a running story never shares mutable state with another case"
+  }
+}

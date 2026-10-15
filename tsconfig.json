@@ -12,5 +12,12 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "stories/**/*.vue", "histoire.config.ts", "histoire.setup.ts"]
+  "include": [
+    "src/**/*.ts",
+    "catalog/**/*.ts",
+    "catalog/**/*.vue",
+    "stories/**/*.vue",
+    "histoire.config.ts",
+    "histoire.setup.ts"
+  ]
 }

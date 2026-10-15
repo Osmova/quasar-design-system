@@ -1,0 +1,29 @@
+{
+  "name": "@osmova/qds-storybook",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Development-only Storybook proof workspace for the shared QDS catalog. Not part of the published package.",
+  "scripts": {
+    "storybook": "pnpm -C ../.. build && storybook dev -p 6006 --host 127.0.0.1",
+    "build-storybook": "pnpm -C ../.. build && storybook build",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@osmova/quasar-design-system": "workspace:*",
+    "quasar": "^2.35.0",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.0",
+    "@storybook/addon-docs": "10.6.1",
+    "@storybook/vue3-vite": "10.6.1",
+    "@types/node": "^24.19.1",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "sass": "^1.105.1",
+    "storybook": "10.6.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vue-tsc": "^3.3.12"
+  }
+}

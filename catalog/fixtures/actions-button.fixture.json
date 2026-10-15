@@ -1,0 +1,60 @@
+{
+  "case": "actions/button",
+  "fixtures": {
+    "assertedSubelements": [
+      "content",
+      "disabled",
+      "dropdown-arrow",
+      "focus",
+      "icons",
+      "spinner"
+    ],
+    "controls": [
+      {
+        "key": "label",
+        "kind": "text",
+        "semantics": "v-model free prop; drives the visible QBtn/QBtnDropdown label",
+        "subelement": "content"
+      },
+      {
+        "key": "icon",
+        "kind": "select",
+        "semantics": "empty clears the icon; named options map onto qdsPhosphor line SVG paths (no removed material fonts involved)",
+        "subelement": "icons"
+      },
+      {
+        "key": "dense",
+        "kind": "toggle",
+        "semantics": "native QBtn dense sizing",
+        "subelement": "shape"
+      },
+      {
+        "key": "loading",
+        "kind": "toggle",
+        "semantics": "native QBtn loading spinner replaces content while true",
+        "subelement": "spinner"
+      },
+      {
+        "key": "disable",
+        "kind": "toggle",
+        "semantics": "native disable state incl. opacity/dim",
+        "subelement": "disabled"
+      },
+      {
+        "key": "split",
+        "kind": "toggle",
+        "semantics": "renders a split QBtnDropdown (arrow + popover) instead of the plain QBtn",
+        "subelement": "dropdown-arrow"
+      }
+    ],
+    "defaults": {
+      "dense": false,
+      "disable": false,
+      "icon": "",
+      "label": "Neutral",
+      "loading": false,
+      "split": false
+    },
+    "freshStateGuarantee": "hosts re-init this exact defaults object per variant/story mount; a running story never shares mutable state with another case"
+  }
+}
