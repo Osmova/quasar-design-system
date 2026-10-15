@@ -2,6 +2,7 @@
 @use 'sass:map';
 @use '../materials';
 @use '../importance';
+@use 'variants/mechanics';
 
 $roles: (
   primary: (hover: var(--qds-color-primary-hover), pressed: var(--qds-color-primary-pressed)),
@@ -43,7 +44,14 @@ $role-texts: ();
   $role-texts: list.append($role-texts, '.text-#{$role}', comma);
 }
 
-@mixin styles {
+// Legacy profiles still share Fluent grammar. Only the independent hook omits it.
+@mixin styles($grammar: compatibility) {
+  @if $grammar == compatibility { @include compatibility-styles; }
+  @else if $grammar == independent { @include mechanics.button; @content; }
+  @else { @error 'Unknown button grammar: #{$grammar}'; }
+}
+
+@mixin compatibility-styles {
   .qds-ui .q-btn {
     border: var(--qds-border-width-control) solid transparent;
     border-radius: var(--qds-button-radius);

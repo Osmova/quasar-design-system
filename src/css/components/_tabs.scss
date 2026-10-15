@@ -1,7 +1,16 @@
+@use 'variants/mechanics';
+
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
-@mixin styles {
+// Rails, segmented paint and density remain compatibility grammar, not mechanics.
+@mixin styles($grammar: compatibility) {
+  @if $grammar == compatibility { @include compatibility-styles; }
+  @else if $grammar == independent { @include mechanics.tabs; @content; }
+  @else { @error 'Unknown tabs grammar: #{$grammar}'; }
+}
+
+@mixin compatibility-styles {
   .qds-ui .q-tabs { color: var(--qds-fg-default); }
 
   .qds-ui .q-tab {

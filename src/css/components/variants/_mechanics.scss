@@ -1,0 +1,22 @@
+// Internal hooks supplement native Quasar layout, not its behavior. No paint,
+// density, label placement, focus treatment, rail or motion belongs here.
+// Compatibility deliberately retains its original emission until migrated.
+@mixin button {
+  .qds-ui .q-btn__content { min-width: 0; }
+  .qds-ui .q-btn__content > .q-spinner { flex-shrink: 0; }
+}
+
+@mixin field {
+  .qds-ui .q-field__control-container { min-width: 0; }
+  .qds-ui .q-field__messages { overflow-wrap: anywhere; }
+}
+
+@mixin tabs {
+  .qds-ui .q-tabs__content { min-width: 0; }
+  .qds-ui .q-tab-panels .q-panel--inactive { pointer-events: none; }
+}
+
+@mixin menu {
+  .qds-ui .q-menu { overflow: auto; overscroll-behavior: contain; }
+  .qds-ui .q-menu .q-item__section--main { min-width: 0; }
+}
