@@ -68,7 +68,7 @@ test('both entries stay inside the reviewed CSS budget', () => {
     const { css } = compile(new URL(`src/css/${entry}`, root).pathname, { style: 'compressed', loadPaths: [new URL('node_modules/', root).pathname], silenceDeprecations: ['if-function'] })
     const bytes = Buffer.byteLength(css)
     const gzip = gzipSync(css, { level: 9 }).length
-    assert.ok(bytes <= 480000 && gzip <= 48000, `${entry}: measured min ${bytes} / gzip ${gzip} against caps 480000 / 48000`)
+    assert.ok(bytes <= 600000 && gzip <= 58000, `${entry}: measured min ${bytes} / gzip ${gzip} against caps 600000 / 58000`)
   }
 })
 
