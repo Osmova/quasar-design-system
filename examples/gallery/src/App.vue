@@ -394,7 +394,7 @@ watch(tab, revealActiveGalleryTab)
   padding: 0.25rem 0.75rem;
 }
 
-.gallery-burger {
+.gallery-burger.gallery-burger.gallery-burger {
   display: none;
   width: 36px;
   min-width: 36px;
@@ -484,7 +484,7 @@ watch(tab, revealActiveGalleryTab)
   gap: 0.3rem;
 }
 
-.gallery-theme {
+.gallery-theme.gallery-theme.gallery-theme {
   width: 36px;
   min-width: 36px;
   height: 36px;
@@ -551,7 +551,7 @@ watch(tab, revealActiveGalleryTab)
 }
 
 @media (max-width: 1023px) {
-  .gallery-burger {
+  .gallery-burger.gallery-burger.gallery-burger {
     display: inline-flex;
   }
 }
