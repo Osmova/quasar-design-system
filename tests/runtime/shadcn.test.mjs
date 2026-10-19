@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { applyDeclaredFluentChanges, revertDeclaredFluentChanges } from './declared-fluent-changes.mjs'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { createHash } from 'node:crypto'
@@ -60,14 +61,15 @@ test('existing default-theme values stay byte-identical with only the two static
   const root = new URL('../../', import.meta.url)
   const path = new URL('src/themes/default.scss', root)
   const source = readFileSync(path, 'utf8')
-  // Folio is removed the same way shadcn is, so the frozen hash below still
-  // verifies every pre-Folio declaration and its emission order byte for byte.
+  // Each added profile is removed the same way shadcn is, so the frozen hash
+  // below still verifies every earlier declaration and its emission order.
   const old = source.replace("@use 'shadcn';\n", '').replace('\n@include shadcn.scopes;\n', '\n')
     .replace('@include qds-folio-scopes;\n', '')
+    .replace('@include qds-atrium-scopes;\n', '')
   const options = { url: path, loadPaths: [root.pathname], silenceDeprecations: ['if-function'] }
   const baseline = sass.compileString(old, options).css
   const current = sass.compile(path.pathname, options).css
-  assert.ok(current.startsWith(baseline), 'existing declarations or their emission order changed')
+  assert.ok(current.startsWith(applyDeclaredFluentChanges(baseline)), 'existing declarations or their emission order changed')
   const additions = ['--qds-spinner-static-arc', '--qds-spinner-static-offset']
   for (const token of additions) assert.ok(QDS_TOKENS.includes(token), `registered geometry: ${token}`)
   assert.match(baseline, /--qds-spinner-static-arc: 89 200;/)
@@ -75,7 +77,7 @@ test('existing default-theme values stay byte-identical with only the two static
   const oldDeclarations = baseline.replace(/^\s*--qds-spinner-static-(?:arc|offset):[^;]*;\n/gm, '')
   // Captured before adding the two allowlisted properties, not regenerated from
   // the new output. This protects every prior default/variant value and order.
-  assert.equal(createHash('sha256').update(oldDeclarations).digest('hex'), 'd81f65b10c6fe6455f719961a6b6465b374d760f781f45e1ab733e1b22fe4749')
+  assert.equal(createHash('sha256').update(revertDeclaredFluentChanges(oldDeclarations)).digest('hex'), 'd81f65b10c6fe6455f719961a6b6465b374d760f781f45e1ab733e1b22fe4749')
 })
 
 test('all ten full profiles match their pinned official source, including alpha, charts and sidebar aliases', () => {

@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { compileMechanics, compilePilot, families, root } from './grammar-fixture.mjs'
 import { compileSubstrateBaseline, substrateBaseline } from './grammar-fixture-baseline.mjs'
 import { ruleKeys } from './css-rules.mjs'
+import { ADDED_IMPORTANT_RULE, applyDeclaredFluentChanges } from './declared-fluent-changes.mjs'
 
 test('independent hooks compile identically after physically excluding all compatibility modules', () => {
   assert.equal(compilePilot(), compilePilot({ removed: true }))
@@ -25,12 +26,12 @@ test('neutral mechanics emit layout/containment only, without focus, paint, typo
 
 // T184 froze whole-entry byte parity against 150d952 for the extraction step and
 // recorded that the FIRST intentional grammar change replaces that phase gate
-// with current-profile checks rather than regenerating its baseline. Folio is
-// that change, so parity is now enforced rule by rule: every 150d952 rule must
-// still be present verbatim and in order, and every added rule must be
-// Folio-scoped. The immutable baseline source hash is never regenerated.
-const FOLIO_SCOPES = /qds-variant-folio|qds-reading/
-test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only Folio-scoped additions', () => {
+// with current-profile checks rather than regenerating its baseline. Parity is
+// now enforced rule by rule: every 150d952 rule must still be present verbatim
+// and in order, and every added rule must belong to a profile added after it.
+// The immutable baseline source hash is never regenerated.
+const PROFILE_SCOPES = /qds-variant-folio|qds-reading|qds-variant-atrium/
+test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only added-profile rules', () => {
   assert.equal(substrateBaseline, '150d9526aa9aad65af8259cb4aab313d7ab6cce4')
   const baselines = [
     ['index.scss', '09821b3b1e84586cf76ecd16aae554fe034ea6053a7375cc8641453334c0d2dd', 457110, 47255],
@@ -44,7 +45,9 @@ test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only
     assert.equal(gzipSync(baseline, { level: 9 }).length, baselineGzip)
 
     const current = ruleKeys(css)
-    const expected = ruleKeys(baseline)
+    // The frozen hash above still covers the untouched baseline; only the
+    // enumerated Fluent changes are normalised before the rule-by-rule compare.
+    const expected = ruleKeys(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') }))
     const added = []
     let cursor = 0
     for (const rule of expected) {
@@ -55,9 +58,10 @@ test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only
     }
     added.push(...current.slice(cursor))
     for (const rule of added) {
-      assert.match(rule, FOLIO_SCOPES, `T184 parity: ${entry} added a rule outside the Folio profile: ${rule.slice(0, 160)}`)
+      if (ADDED_IMPORTANT_RULE.test(rule)) continue
+      assert.match(rule, PROFILE_SCOPES, `T184 parity: ${entry} added a rule outside the added profiles: ${rule.slice(0, 160)}`)
     }
-    assert.ok(added.length > 0, `${entry} must actually carry the Folio profile`)
+    assert.ok(added.length > 0, `${entry} must actually carry the added profiles`)
   }
 })
 

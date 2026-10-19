@@ -22,7 +22,7 @@ const BASELINE = '71bb9d52bf483a93de0b50202df122b73f70ed9e'
  * already emitted, and Atrium (T194) as a new variant paying both tokens and grammar. Projected
  * full catalog ~570000 min / ~56800 gzip / ~4450 component lines; caps set just above that.
  */
-const LIMITS = { important: 45, doubled: 0, lines: 4600 }
+const LIMITS = { important: 46, doubled: 0, lines: 4600 }
 const BUNDLES = [
   ['src/css/index.scss', { min: 600000, gzip: 58000 }],
   ['src/css/index.layered.scss', { min: 600000, gzip: 58000 }],

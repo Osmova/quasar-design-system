@@ -406,7 +406,10 @@ $one-field: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one) :is(.q-field
     .q-field .q-field__input { color: var(--qds-fg-default); font: inherit; }
     .q-field :is(.q-field__native, .q-field__input)::selection { color: var(--qds-text-on-primary); background: var(--qds-color-primary); }
     .q-field .q-field__focusable-action { opacity: 1; border-radius: var(--qds-radius-xs); }
-    .q-field .q-field__focusable-action:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); }
+    .q-field .q-field__focusable-action:focus-visible {
+      @include importance.declarations { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus) !important; }
+      outline-offset: var(--qds-focus-ring-offset);
+    }
     .q-field .q-field__counter { color: var(--qds-fg-muted); font-variant-numeric: tabular-nums; }
     .q-field--error .q-field__label { color: var(--qds-fg-negative); }
     .q-field--error:is(.qds-field--positive, .qds-field--warning) .q-field__control::before { border-color: var(--qds-stroke-error); }

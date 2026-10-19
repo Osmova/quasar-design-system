@@ -158,7 +158,7 @@ $typography: map.merge((
 $motion: (duration-fast: 100ms, duration-medium: 150ms, duration-base: 200ms, duration-slow: 250ms, ease-out: cubic-bezier(0, 0, 0, 1), ease-in-out: cubic-bezier(0.33, 0, 0.67, 1), fast: 100ms cubic-bezier(0, 0, 0, 1), base: 200ms cubic-bezier(0.33, 0, 0.67, 1)) !default;
 $state-opacity: (hover: 0.08, focus: 0.12, press: 0.16, disabled: 0.5, tonal-bg: 0.12, tonal-hover: 0.18, tonal-border: 0.2, tonal-text-mix: 72%) !default;
 // Solid role fills: WinUI lightens toward the layer, capped by WCAG; variants darken toward strong text.
-$fill-state: (hover-mix: 95%, pressed-mix: 90%, on-pressed-mix: 90%, variant-hover-mix: 88%, variant-pressed-mix: 76%) !default;
+$fill-state: (hover-mix: 95%, pressed-mix: 90%, on-pressed-mix: 100%, variant-hover-mix: 88%, variant-pressed-mix: 76%) !default;
 $border-width: (control: 1px) !default;
 // Coarse pointers: 32/40/48px controls, 44px rows and tabs.
 $touch: (control-size-sm: 2rem, control-size-md: 2.5rem, control-size-lg: 3rem, row-min-height: 2.75rem, tab-min-height: 2.75rem) !default;
