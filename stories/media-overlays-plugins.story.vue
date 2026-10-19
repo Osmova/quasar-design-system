@@ -12,6 +12,9 @@ import {
   QItemLabel,
   QItemSection,
   QList,
+  QLayout,
+  QPage,
+  QPageContainer,
   QPageSticky,
   QParallax,
   QPopupProxy,
@@ -152,11 +155,16 @@ function openDialog() {
 
           <section class="qds-story-section">
             <h2>QPageSticky</h2>
-            <div class="qds-story-pane" style="position: relative; height: 140px">
-              <QPageSticky position="bottom-right" :offset="[12, 12]">
-                <QBtn fab color="primary" aria-label="Add"><PhPlus :size="20" weight="bold" /></QBtn>
-              </QPageSticky>
-            </div>
+            <QLayout view="hHh lpR fFf" container style="height: 160px">
+              <QPageContainer>
+                <QPage class="qds-story-pane">
+                  Sticky affordances need a layout host.
+                  <QPageSticky position="bottom-right" :offset="[12, 12]">
+                    <QBtn fab color="primary" aria-label="Add"><PhPlus :size="20" weight="bold" /></QBtn>
+                  </QPageSticky>
+                </QPage>
+              </QPageContainer>
+            </QLayout>
           </section>
 
           <section class="qds-story-section">
