@@ -359,7 +359,7 @@ watch(tab, revealActiveGalleryTab)
 /* The shell repaints with the active variant but must never resize with it, so the
    control tokens the shipped rules read are pinned locally to literals. */
 .gallery-header,
-.gallery-drawer {
+.gallery-nav {
   --gallery-chrome-font: 'Inter Variable', Inter, system-ui, sans-serif;
   --qds-button-min-height: 32px;
   --qds-button-size-sm: 32px;
@@ -499,18 +499,18 @@ watch(tab, revealActiveGalleryTab)
   width: 11rem;
 }
 
-.gallery-drawer :deep(.q-drawer) {
-  background: var(--qds-surface-1);
-}
-
 .gallery-nav {
   padding-block: 0.25rem 0.75rem;
   font-family: var(--gallery-chrome-font);
   color: var(--qds-text);
 }
 
-.gallery-nav :deep(.q-tabs__content) {
+.gallery-nav.gallery-nav.gallery-nav :deep(.q-tabs__content) {
   align-items: stretch;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .gallery-nav__header {
@@ -527,6 +527,7 @@ watch(tab, revealActiveGalleryTab)
   justify-content: flex-start;
   height: 34px;
   min-height: 34px;
+  font-family: var(--gallery-chrome-font);
   margin-inline: 0.5rem;
   padding: 0 0.625rem;
   border-radius: 6px;

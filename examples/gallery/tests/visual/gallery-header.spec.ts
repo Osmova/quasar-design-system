@@ -101,7 +101,7 @@ test('wordmark renders in the loaded Inter face with weight contrast, not a sepa
   for (const url of fontRequests) expect(new URL(url).origin).toBe(new URL(page.url()).origin)
 })
 
-test('header chrome keeps identical geometry across every variant', async ({ page }) => {
+test('shell chrome keeps identical geometry and type across every variant and mode', async ({ page }) => {
   await page.goto('/')
   await waitForThemePaint(page)
   const measure = async () => page.evaluate(() => {
@@ -109,14 +109,23 @@ test('header chrome keeps identical geometry across every variant', async ({ pag
       const r = document.querySelector(selector)!.getBoundingClientRect()
       return { x: Math.round(r.x), width: Math.round(r.width), height: Math.round(r.height) }
     }
-    return { switcher: rect('.gallery-switcher'), links: rect('.gallery-links'), theme: rect('.gallery-theme'), toolbar: rect('.q-toolbar') }
+    const tab = document.querySelector('.gallery-nav .q-tab')!
+    const track = document.querySelector('.gallery-nav .q-tabs__content')!
+    return {
+      switcher: rect('.gallery-switcher'), links: rect('.gallery-links'),
+      theme: rect('.gallery-theme'), toolbar: rect('.q-toolbar'), nav: rect('.gallery-nav'),
+      navTab: { ...rect('.gallery-nav .q-tab'), font: getComputedStyle(tab).fontFamily, size: getComputedStyle(tab).fontSize },
+      navTrack: { radius: getComputedStyle(track).borderRadius, background: getComputedStyle(track).backgroundColor },
+    }
   })
   let baseline: Awaited<ReturnType<typeof measure>> | null = null
-  for (const variant of CANONICAL_VARIANTS) {
-    await applyTheme(page, 'light', variant)
-    const geometry = await measure()
-    if (!baseline) baseline = geometry
-    else expect(geometry, `${variant} must not resize the gallery shell`).toEqual(baseline)
+  for (const mode of ['light', 'dark'] as const) {
+    for (const variant of CANONICAL_VARIANTS) {
+      await applyTheme(page, mode, variant)
+      const geometry = await measure()
+      if (!baseline) baseline = geometry
+      else expect(geometry, `${mode}/${variant} must not restyle the gallery shell`).toEqual(baseline)
+    }
   }
 })
 
