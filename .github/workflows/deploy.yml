@@ -106,7 +106,8 @@ jobs:
           release = json.loads(get('/release.json?sha=' + os.environ['RELEASE_SHA']))
           assert release == {'sha': os.environ['RELEASE_SHA'], 'run_id': os.environ['SOURCE_RUN_ID'],
                              'repository': os.environ['GH_REPO']}, release
-          for path in ('/index.html', '/histoire/index.html', '/conformance.html', '/conformance-layered.html'):
+          for path in ('/index.html', '/histoire/index.html', '/storybook/index.html',
+                       '/conformance.html', '/conformance-layered.html'):
               html = verified_file(path).decode('utf-8')
               assert '<html' in html.lower(), path
               assets = re.findall(r'(?:src|href)=["\']([^"\']+\.(?:js|css)(?:\?[^"\']*)?)["\']', html)
@@ -119,13 +120,14 @@ jobs:
           class NoRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self, req, fp, code, msg, headers, newurl):
                   return None
-          try:
-              urllib.request.build_opener(NoRedirect).open(base + '/histoire', timeout=30)
-              raise RuntimeError('/histoire must redirect')
-          except urllib.error.HTTPError as error:
-              assert error.code in (301, 302, 307, 308), error.code
-              assert urljoin(base + '/histoire', error.headers['Location']) == base + '/histoire/'
-          for prefix in ('/assets/', '/histoire/assets/'):
+          for directory in ('/histoire', '/storybook'):
+              try:
+                  urllib.request.build_opener(NoRedirect).open(base + directory, timeout=30)
+                  raise RuntimeError(directory + ' must redirect')
+              except urllib.error.HTTPError as error:
+                  assert error.code in (301, 302, 307, 308), error.code
+                  assert urljoin(base + directory, error.headers['Location']) == base + directory + '/'
+          for prefix in ('/assets/', '/histoire/assets/', '/storybook/assets/'):
               try:
                   get(prefix + 'qds-missing-' + os.environ['RELEASE_SHA'] + '.js')
                   raise RuntimeError('Missing asset returned success')

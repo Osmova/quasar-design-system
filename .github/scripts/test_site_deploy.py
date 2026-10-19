@@ -211,7 +211,7 @@ class ReceiverTests(unittest.TestCase):
         old = self.receive(previous)
         incoming = fixture(sha="b" * 40, run_id="124")
         incoming_bytes = sum(len(data) for data in incoming.values())
-        incoming_entries = len(incoming) + 4 # Site root, assets, histoire, histoire/assets.
+        incoming_entries = len(incoming) + 5 # Site root, assets, histoire, histoire/assets, storybook.
         # This artifact fits each budget by itself; adding the old file (and its
         # implicit directory) exceeds it. No old bytes may be read/copied first.
         for constant, limit in (("SITE_BYTE_LIMIT", incoming_bytes + len(b"old bytes") - 1),
@@ -281,18 +281,25 @@ class AssemblyTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.gallery = self.root / "gallery"
         self.histoire = self.root / "catalog"
-        self.gallery.mkdir()
-        self.histoire.mkdir()
+        self.storybook = self.root / "book"
+        for source in (self.gallery, self.histoire, self.storybook):
+            source.mkdir()
         for name, data in fixture().items():
             if name in ("release.json", "SHA256SUMS"):
                 continue
-            target = self.histoire / name.removeprefix("histoire/") if name.startswith("histoire/") else self.gallery / name
+            if name.startswith("histoire/"):
+                target = self.histoire / name.removeprefix("histoire/")
+            elif name.startswith("storybook/"):
+                target = self.storybook / name.removeprefix("storybook/")
+            else:
+                target = self.gallery / name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
         self.output = self.root / "site"
 
     def assemble(self):
-        assembler.assemble(self.gallery, self.histoire, self.output, SHA, RUN, receiver.REPOSITORY)
+        assembler.assemble(self.gallery, self.histoire, self.storybook, self.output,
+                           SHA, RUN, receiver.REPOSITORY)
 
     def test_exact_build_and_receiver_round_trip(self):
         self.assemble()
@@ -307,7 +314,7 @@ class AssemblyTests(unittest.TestCase):
         self.assertTrue((base / "current/index.html").is_file())
 
     def test_symlink_hidden_and_reserved_build_paths(self):
-        for name in (".secret", "release.json", "SHA256SUMS", "histoire"):
+        for name in (".secret", "release.json", "SHA256SUMS", "histoire", "storybook"):
             path = self.gallery / name
             path.write_bytes(b"unexpected")
             with self.subTest(name=name), self.assertRaises(ValueError):
@@ -323,6 +330,20 @@ class AssemblyTests(unittest.TestCase):
             self.assemble()
         with self.assertRaises(ValueError):
             self.assemble()
+
+    def test_missing_storybook_surface_is_rejected(self):
+        (self.storybook / "index.html").unlink()
+        with self.assertRaises(ValueError):
+            self.assemble()
+
+    def test_receiver_rejects_archive_without_storybook(self):
+        files = fixture()
+        del files["storybook/index.html"]
+        manifest(files)
+        base = self.root / "server"
+        (base / "releases").mkdir(parents=True)
+        with self.assertRaises(ValueError):
+            receiver.receive(COMMAND, archive(files), base)
 
 
 if __name__ == "__main__":

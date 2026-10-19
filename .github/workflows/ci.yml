@@ -63,6 +63,8 @@ jobs:
         run: >-
           python3 .github/scripts/assemble-site.py
           --sha "$RELEASE_SHA" --run-id "$SOURCE_RUN_ID" --repository "$SOURCE_REPOSITORY"
+          --gallery examples/gallery/dist --histoire .histoire/dist
+          --storybook examples/storybook/storybook-static
 
       - name: Upload verified production site
         if: github.ref == 'refs/heads/production'

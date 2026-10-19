@@ -26,7 +26,7 @@ MEMBER_LIMIT = 10000
 SITE_BYTE_LIMIT = 256 * 1024 * 1024
 SITE_ENTRY_LIMIT = 10000
 REPOSITORY = "Osmova/quasar-design-system"
-REQUIRED = {"index.html", "histoire/index.html", "conformance.html", "conformance-layered.html"}
+REQUIRED = {"index.html", "histoire/index.html", "storybook/index.html", "conformance.html", "conformance-layered.html"}
 
 
 def parse_command(command):
@@ -172,6 +172,7 @@ def preserve_assets(previous, stage):
     planned = []
     # The previous artifact manifest excludes inherited assets, bounding retention
     # to the incoming and immediately previous artifact rather than a growing union.
+    # Storybook is absent on purpose: it emits unhashed names inside its own assets/.
     for name, digest in read_manifest(previous).items():
         if not name.startswith(("assets/", "histoire/assets/")):
             continue
