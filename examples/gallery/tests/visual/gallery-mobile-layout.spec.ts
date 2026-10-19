@@ -55,7 +55,7 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
     await page.goto('/#variants')
     await applyTheme(page, mode, variant)
     const section = page.locator('[data-test="qds-variants-section"]')
-    await expect(section.locator('.variant-card')).toHaveCount(5)
+    await expect(section.locator('.variant-card')).toHaveCount(CANONICAL_VARIANTS.length)
     const initial = await boundedContents(section)
     const columns = await section.locator('.variants-grid').evaluate(e => getComputedStyle(e).gridTemplateColumns.split(' ').length)
     expect(columns).toBe(info.project.name === 'mobile' ? 1 : 2)

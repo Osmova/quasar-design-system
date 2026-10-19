@@ -1,14 +1,14 @@
 import { expect, test, type Page } from '@playwright/test'
-import { applyTheme, computed, resolvedColor } from './helpers'
+import { applyTheme, computed, gotoGalleryPage, resolvedColor } from './helpers'
 
 async function openComponents(page: Page) {
   await page.goto('/#components')
-  await page.getByRole('tab', { name: 'Components' }).click()
+  await gotoGalleryPage(page, 'Components')
 }
 
 async function openCatalog(page: Page) {
   await page.goto('/#catalog')
-  await page.getByRole('tab', { name: 'Catalog' }).click()
+  await gotoGalleryPage(page, 'Catalog')
 }
 
 async function resolvedRadius(page: Page, token: string): Promise<string> {

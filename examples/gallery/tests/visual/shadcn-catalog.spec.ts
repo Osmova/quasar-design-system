@@ -13,10 +13,14 @@ for (const variant of CANONICAL_VARIANTS) {
   test(`shared switcher/native DOM invariants ${variant}`, async ({ page }) => {
     await page.goto('/#components')
     await applyTheme(page, 'light', variant)
-    await expect(page.getByRole('group', { name: 'Variant', exact: true }).locator('.q-btn')).toHaveCount(5)
+    await expect(page.getByRole('group', { name: 'Variant', exact: true }).locator('.q-btn')).toHaveCount(CANONICAL_VARIANTS.length)
     await expect(page.locator('[data-test="qds-control-standard-button"] .q-btn__content')).toHaveText('Standard')
     await expect(page.locator('[data-test="qds-control-standard-button"]')).toHaveAttribute('type', 'button')
+    // The palette picker lives in the theme menu so the header keeps one footprint.
+    await expect(page.locator('[data-test="qds-shadcn-palette"]')).toHaveCount(0)
+    await page.locator('.gallery-theme').click()
     await expect(page.locator('[data-test="qds-shadcn-palette"]')).toHaveCount(variant === 'shadcn' ? 1 : 0)
+    await page.keyboard.press('Escape')
     await assertNoPageOverflow(page)
   })
 }

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { MATRIX_VARIANTS, coarsePointer, customProperty, resolvedColor, resolvedShadow } from './helpers'
+import { MATRIX_VARIANTS, coarsePointer, customProperty, gotoGalleryPage, resolvedColor, resolvedShadow } from './helpers'
 
 type Mode = 'light' | 'dark'
 type Variant = 'fluent' | 'ink' | 'one'
@@ -32,7 +32,7 @@ async function computed(page: Page, selector: string, prop: string, pseudo: stri
 test.describe('QDS catalog data display gate', () => {
   test('catalog coverage tab skins remaining Quasar primitives', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
     const expectVisible = async (selector: string) => {
       await expect(page.locator(selector).first(), selector).toBeVisible()
@@ -97,7 +97,7 @@ test.describe('QDS catalog data display gate', () => {
 
   test('QExpansionItem and QTree expose deterministic deep states', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
 
     const expandedExpansion = page.locator('[data-test="qds-expansion-expanded"]')

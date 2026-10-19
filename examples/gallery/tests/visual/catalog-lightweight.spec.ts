@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { applyTheme, computed, customProperty, resolvedColor } from './helpers'
+import { applyTheme, computed, customProperty, expectGalleryPage, resolvedColor } from './helpers'
 
 function durationMs(value: string): number {
   return Math.max(
@@ -28,7 +28,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#catalog')
     await page.waitForFunction(() => Boolean((window as unknown as { __qdsGallery?: unknown }).__qdsGallery))
-    await expect(page.getByRole('tab', { name: 'Catalog' })).toHaveAttribute('aria-selected', 'true')
+    await expectGalleryPage(page, 'Catalog')
   })
 
   test('renders accessible QRating inactive, selected, half, readonly, and disabled states', async ({ page }) => {

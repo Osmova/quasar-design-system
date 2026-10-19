@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { applyTheme, coarsePointer, computed, customProperty, resolvedColor } from './helpers'
+import { applyTheme, coarsePointer, computed, customProperty, gotoGalleryPage, resolvedColor } from './helpers'
 
 type Mode = 'light' | 'dark'
 
@@ -332,7 +332,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
     const [expansionRowBounds, expansionIconBounds] = await Promise.all([bounds(expansionRow), bounds(expansionIcon)])
     expect.soft(Math.abs((expansionRowBounds.top + (expansionRowBounds.height / 2)) - (expansionIconBounds.top + (expansionIconBounds.height / 2))), 'expansion chevron centres on its row').toBeLessThanOrEqual(1)
 
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     for (const hook of ['qds-rating-sm', 'qds-rating-md', 'qds-rating-lg']) {
       const rating = page.locator(`[data-test="${hook}"]`)
       const ratingIcon = rating.locator('.q-rating__icon-container').first()

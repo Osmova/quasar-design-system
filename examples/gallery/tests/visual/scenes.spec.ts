@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
-import { applyTheme, computed, customProperty } from './helpers'
+import { applyTheme, computed, customProperty, expectGalleryPage } from './helpers'
 
 test.describe('QDS scene gallery', () => {
   test('mounts the four owned canonical scenes and their readable cards', async ({ page }) => {
     await page.goto('/#scenes')
     await applyTheme(page, 'light', 'fluent')
-    await expect(page.getByRole('tab', { name: 'Scenes' })).toHaveClass(/q-tab--active/)
+    await expectGalleryPage(page, 'Scenes')
 
     for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
       const scene = page.locator(`[data-test="qds-scene-${variant}"]`)

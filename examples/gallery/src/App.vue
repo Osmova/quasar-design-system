@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Component } from 'vue'
+import { useQuasar } from 'quasar'
 import {
+  PhBookOpenText,
+  PhBooks,
   PhDeviceMobile,
   PhMoonStars,
   PhMonitor,
   PhPalette,
   PhPenNib,
+  PhSidebarSimple,
   PhSun,
   PhTerminal,
   PhSquaresFour,
+  PhSquareSplitHorizontal,
 } from '@phosphor-icons/vue'
 import {
   useDesignSystem,
@@ -32,8 +37,10 @@ import PluginsSection from './sections/PluginsSection.vue'
 import ScenesSection from './sections/ScenesSection.vue'
 import VariantsSection from './sections/VariantsSection.vue'
 import WindowSection from './sections/WindowSection.vue'
+import { catalogLinks } from './catalog-links'
 import { galleryHash, parseGalleryHash, type GalleryTab } from './gallery-url'
 
+const $q = useQuasar()
 const ds = useDesignSystem()
 
 const tab = ref<GalleryTab>(parseGalleryHash(typeof window === 'undefined' ? '' : window.location.hash).tab)
@@ -52,8 +59,48 @@ const variantIcons: Record<string, Component> = {
   one: PhDeviceMobile,
   term: PhTerminal,
   shadcn: PhSquaresFour,
+  atrium: PhSquareSplitHorizontal,
+}
+const linkIcons: Record<string, Component> = {
+  histoire: PhBooks,
+  storybook: PhBookOpenText,
 }
 
+const navGroups: { label: string, tabs: { name: GalleryTab, label: string }[] }[] = [
+  {
+    label: 'Foundations',
+    tabs: [
+      { name: 'tokens', label: 'Tokens' },
+      { name: 'typography', label: 'Typography' },
+      { name: 'icons', label: 'Icons' },
+      { name: 'fonts', label: 'Fonts' },
+    ],
+  },
+  {
+    label: 'Components',
+    tabs: [
+      { name: 'components', label: 'Components' },
+      { name: 'forms', label: 'Forms' },
+      { name: 'catalog', label: 'Catalog' },
+      { name: 'plugins', label: 'Plugins' },
+      { name: 'window', label: 'Window' },
+    ],
+  },
+  {
+    label: 'Systems',
+    tabs: [
+      { name: 'variants', label: 'Variants' },
+      { name: 'scenes', label: 'Scenes' },
+      { name: 'compare', label: 'Compare' },
+    ],
+  },
+  {
+    label: 'Patterns',
+    tabs: [{ name: 'apps', label: 'Apps' }],
+  },
+]
+
+const drawerOpen = ref(false)
 const themeMenuOpen = ref(false)
 const modeLabels = { light: 'Light', dark: 'Dark', system: 'System' } as const
 
@@ -111,12 +158,17 @@ function onHashChange() {
   syncUrl()
 }
 
+// The overlay drawer covers the page it just navigated to, including a re-pick.
+function closeOverlayDrawer() {
+  if (!$q.screen.gt.sm) drawerOpen.value = false
+}
+
 function revealActiveGalleryTab() {
   nextTick(() => {
     window.setTimeout(() => {
-      document.querySelector<HTMLElement>('.gallery-tabs .q-tab--active')?.scrollIntoView({
+      document.querySelector<HTMLElement>('.gallery-nav .q-tab--active')?.scrollIntoView({
         block: 'nearest',
-        inline: 'center',
+        inline: 'nearest',
       })
     }, 0)
   })
@@ -139,10 +191,25 @@ watch(tab, revealActiveGalleryTab)
 </script>
 
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh LpR fFf">
     <q-header class="gallery-header">
       <q-toolbar>
-        <q-toolbar-title class="gallery-title">Quasar Design System</q-toolbar-title>
+        <q-btn
+          flat
+          round
+          class="gallery-burger"
+          aria-label="Pages"
+          :aria-expanded="drawerOpen"
+          aria-controls="gallery-nav"
+          @click="drawerOpen = !drawerOpen"
+        >
+          <PhSidebarSimple :size="20" weight="duotone" aria-hidden="true" />
+        </q-btn>
+
+        <q-toolbar-title class="gallery-title">
+          <span class="gallery-title__mark">Quasar</span>
+          <span class="gallery-title__sub">Design System</span>
+        </q-toolbar-title>
 
         <div class="gallery-controls">
           <q-btn-toggle
@@ -160,23 +227,25 @@ watch(tab, revealActiveGalleryTab)
               <span class="gallery-switcher__label">{{ variant.label }}</span>
             </template>
           </q-btn-toggle>
-          <q-select
-            v-if="ds.variant.value === 'shadcn'"
-            :model-value="ds.shadcnBaseColor.value"
-            :options="SHADCN_BASE_COLORS"
-            option-value="name"
-            option-label="label"
-            emit-value
-            map-options
-            dense
-            outlined
-            label="Base palette"
-            aria-label="Shadcn base palette"
-            class="gallery-palette"
-            data-test="qds-shadcn-palette"
-            @update:model-value="onBaseColor"
-          />
         </div>
+
+        <div class="gallery-links">
+          <q-btn
+            v-for="link in catalogLinks"
+            :key="link.name"
+            flat
+            no-caps
+            type="a"
+            class="gallery-link"
+            :href="link.href"
+            :aria-label="link.description"
+            :data-test="`qds-link-${link.name}`"
+          >
+            <component :is="linkIcons[link.name] ?? PhBookOpenText" :size="18" weight="duotone" aria-hidden="true" />
+            <span class="gallery-link__label">{{ link.label }}</span>
+          </q-btn>
+        </div>
+
         <q-btn
           flat
           round
@@ -214,34 +283,55 @@ watch(tab, revealActiveGalleryTab)
                 <q-item-section>{{ modeLabels[mode] }}</q-item-section>
               </q-item>
             </q-list>
+            <template v-if="ds.variant.value === 'shadcn'">
+              <q-separator />
+              <div class="gallery-palette-slot">
+                <q-select
+                  :model-value="ds.shadcnBaseColor.value"
+                  :options="SHADCN_BASE_COLORS"
+                  option-value="name"
+                  option-label="label"
+                  emit-value
+                  map-options
+                  dense
+                  outlined
+                  label="Base palette"
+                  aria-label="Shadcn base palette"
+                  class="gallery-palette"
+                  data-test="qds-shadcn-palette"
+                  @update:model-value="onBaseColor"
+                />
+              </div>
+            </template>
           </q-menu>
         </q-btn>
       </q-toolbar>
+    </q-header>
 
+    <q-drawer
+      id="gallery-nav"
+      v-model="drawerOpen"
+      show-if-above
+      bordered
+      side="left"
+      :width="236"
+      class="gallery-drawer"
+    >
       <q-tabs
         v-model="tab"
-        align="left"
+        vertical
         no-caps
-        inline-label
-        mobile-arrows
-        outside-arrows
-        class="gallery-tabs"
+        align="left"
+        indicator-color="transparent"
+        class="gallery-tabs gallery-nav"
+        @click="closeOverlayDrawer"
       >
-        <q-tab name="tokens" label="Tokens" />
-        <q-tab name="typography" label="Typography" />
-        <q-tab name="compare" label="Compare" />
-        <q-tab name="components" label="Components" />
-        <q-tab name="forms" label="Forms" />
-        <q-tab name="apps" label="Apps" />
-        <q-tab name="catalog" label="Catalog" />
-        <q-tab name="variants" label="Variants" />
-        <q-tab name="scenes" label="Scenes" />
-        <q-tab name="plugins" label="Plugins" />
-        <q-tab name="window" label="Window" />
-        <q-tab name="icons" label="Icons" />
-        <q-tab name="fonts" label="Fonts" />
+        <template v-for="group in navGroups" :key="group.label">
+          <div class="gallery-nav__header">{{ group.label }}</div>
+          <q-tab v-for="page in group.tabs" :key="page.name" :name="page.name" :label="page.label" />
+        </template>
       </q-tabs>
-    </q-header>
+    </q-drawer>
 
     <q-page-container>
       <q-page class="gallery-page">
@@ -266,6 +356,26 @@ watch(tab, revealActiveGalleryTab)
 </template>
 
 <style scoped>
+/* The shell repaints with the active variant but must never resize with it, so the
+   control tokens the shipped rules read are pinned locally to literals. */
+.gallery-header,
+.gallery-drawer {
+  --gallery-chrome-font: 'Inter Variable', Inter, system-ui, sans-serif;
+  --qds-button-min-height: 32px;
+  --qds-button-size-sm: 32px;
+  --qds-button-size-md: 32px;
+  --qds-button-size-lg: 32px;
+  --qds-button-padding-inline: 0px;
+  --qds-button-dense-padding-inline: 0px;
+  --qds-button-radius: 6px;
+  --qds-radius-control: 6px;
+  --qds-control-size-md: 32px;
+  --qds-control-letter-spacing: 0;
+  --qds-control-text-transform: none;
+  --qds-tab-min-height: 34px;
+  --qds-row-min-height: 34px;
+}
+
 .gallery-page {
   min-height: 0;
   padding: var(--qds-space-md);
@@ -276,97 +386,194 @@ watch(tab, revealActiveGalleryTab)
 }
 
 .gallery-header :deep(.q-toolbar) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: var(--qds-space-xs);
-  padding-block: var(--qds-space-xs);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 56px;
+  padding: 0.25rem 0.75rem;
+}
+
+.gallery-burger {
+  display: none;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
 }
 
 .gallery-header .gallery-title {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: baseline;
+  gap: 0.4ch;
   min-width: 0;
-  padding: 0.35rem 0;
-  overflow: visible;
-  white-space: normal;
-  font-family: 'Playwrite FR Moderne', cursive;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 1.8;
+  padding: 0;
+  overflow: hidden;
+  font-family: var(--gallery-chrome-font);
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.021em;
+  white-space: nowrap;
 }
 
-.gallery-controls {
+.gallery-title__mark {
+  font-weight: 640;
+  font-variation-settings: 'wght' 640;
+}
+
+.gallery-title__sub {
+  font-weight: 420;
+  font-variation-settings: 'wght' 420;
+  opacity: 0.62;
+}
+
+.gallery-controls,
+.gallery-links {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: flex-end;
   gap: 0.25rem;
   min-width: 0;
 }
 
-.gallery-switcher {
+.gallery-switcher.gallery-switcher.gallery-switcher {
   flex: 0 1 auto;
+  padding: 0;
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  border-radius: 7px;
 }
 
-.gallery-palette {
-  flex: 0 0 9rem;
-  min-width: 8rem;
-  max-width: 100%;
+.gallery-switcher.gallery-switcher.gallery-switcher :deep(.gallery-switcher__button.gallery-switcher__button) {
+  flex: 0 0 auto;
+  width: 5.25rem;
+  min-width: 5.25rem;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  font-family: var(--gallery-chrome-font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 6px;
 }
 
 .gallery-switcher :deep(.q-btn__content) {
+  flex-wrap: nowrap;
   gap: 0.25rem;
 }
 
-.gallery-tabs {
-  background: transparent;
-  color: var(--qds-text);
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--qds-text) 28%, transparent) transparent;
+.gallery-link.gallery-link.gallery-link {
+  height: 32px;
+  min-height: 32px;
+  padding-inline: 0.5rem;
+  font-family: var(--gallery-chrome-font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
-.gallery-tabs::-webkit-scrollbar {
-  height: 0.1875rem;
-}
-
-.gallery-tabs::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--qds-text) 28%, transparent);
-  border-radius: var(--qds-radius-full);
-}
-
-.gallery-tabs :deep(.q-tabs__content) {
+.gallery-link :deep(.q-btn__content) {
   flex-wrap: nowrap;
+  gap: 0.3rem;
 }
 
-.gallery-tabs :deep(.q-tab) {
-  flex: 0 0 auto;
-  min-width: max-content;
-  padding: 0 0.75rem;
+.gallery-theme {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+}
+
+.gallery-palette-slot {
+  padding: 0.5rem;
+}
+
+.gallery-palette {
+  width: 11rem;
+}
+
+.gallery-drawer :deep(.q-drawer) {
+  background: var(--qds-surface-1);
+}
+
+.gallery-nav {
+  padding-block: 0.25rem 0.75rem;
+  font-family: var(--gallery-chrome-font);
+  color: var(--qds-text);
+}
+
+.gallery-nav :deep(.q-tabs__content) {
+  align-items: stretch;
+}
+
+.gallery-nav__header {
+  padding: 0.85rem 1rem 0.3rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  opacity: 0.56;
+}
+
+.gallery-nav.gallery-nav.gallery-nav :deep(.q-tab) {
+  justify-content: flex-start;
+  height: 34px;
+  min-height: 34px;
+  margin-inline: 0.5rem;
+  padding: 0 0.625rem;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 450;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.gallery-nav :deep(.q-tab__content) {
+  min-width: 0;
+}
+
+.gallery-nav.gallery-nav.gallery-nav :deep(.q-tab--active) {
+  background: color-mix(in srgb, var(--qds-color-primary) 12%, transparent);
+  color: var(--qds-color-primary);
+  font-weight: 560;
 }
 
 .gallery-panels :deep(.q-tab-panel) {
   padding: 0;
 }
 
-@media (max-width: 1100px) {
-  .gallery-header :deep(.q-toolbar) {
-    grid-template-columns: minmax(0, 1fr) auto;
+@media (max-width: 1023px) {
+  .gallery-burger {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 1200px) {
+  .gallery-link__label {
+    display: none;
   }
 
+  .gallery-link {
+    padding-inline: 0.4rem;
+  }
+}
+
+@media (max-width: 920px) {
   .gallery-header .gallery-title {
-    font-size: 22px;
-  }
-
-  .gallery-theme {
-    grid-column: 2;
-    grid-row: 1;
+    font-size: 16px;
   }
 
   .gallery-controls {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    order: 1;
+    flex-basis: 100%;
     justify-content: flex-start;
   }
 }

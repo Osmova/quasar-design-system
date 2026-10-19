@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { customProperty, resolvedColor } from './helpers'
+import { customProperty, gotoGalleryPage, resolvedColor } from './helpers'
 
 type Mode = 'light' | 'dark'
 type Variant = 'fluent' | 'ink' | 'one' | 'term'
@@ -113,7 +113,7 @@ async function expectStepperErrorHalo(page: Page, label: string) {
 test.describe('QDS catalog complex media gate', () => {
   test('skins chat, local media, video, scroll area, and splitter without raw seams', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
 
     const sentBubble = '[data-test="qds-chat-sent"] .q-message-text'
@@ -289,7 +289,7 @@ test.describe('QDS catalog complex media gate', () => {
 
   test('complex media surfaces keep variant and dark proof coverage', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
 
     for (const variant of ['one', 'term'] as const) {
       await applyTheme(page, 'dark', variant)
@@ -330,7 +330,7 @@ test.describe('QDS catalog complex media gate', () => {
     })
     await page.route('**/qds-media-error.svg', route => route.abort())
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
     await expect(page.locator('[data-test="qds-img-loading"]')).toHaveAttribute('aria-label', 'Loading media preview')
     await expect(page.locator('[data-test="qds-img-error"]')).toHaveAttribute('aria-label', 'Unavailable media preview')
@@ -345,7 +345,7 @@ test.describe('QDS catalog complex media gate', () => {
   test('complex media respects RTL direction and reduced-motion preferences', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     const originalRtl = await getComplexMediaRtl(page)
 
     try {
@@ -370,7 +370,7 @@ test.describe('QDS catalog complex media gate', () => {
 
   test('QUploader exposes deterministic queued, progress, error, and uploaded states', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
 
     const uploader = page.locator('[data-test="qds-uploader"]')
@@ -398,7 +398,7 @@ test.describe('QDS catalog complex media gate', () => {
 
   test('QEditor exposes focused and dropdown toolbar states', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
 
     const editor = page.locator('.qds-editor-proof')

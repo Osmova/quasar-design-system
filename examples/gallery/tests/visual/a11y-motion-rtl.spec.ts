@@ -1,3 +1,4 @@
+import { expectGalleryPage } from './helpers'
 import { expect, test, type Page } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
@@ -64,7 +65,7 @@ async function applyLightFluent(page: Page) {
 async function openGalleryTab(page: Page, tab: GalleryTab) {
   await page.goto(`/#${tab}`)
   await applyLightFluent(page)
-  await expect(page.getByRole('tab', { name: TAB_LABEL[tab] })).toHaveAttribute('aria-selected', 'true')
+  await expectGalleryPage(page, TAB_LABEL[tab])
 }
 
 function parseTimeList(value: string): number[] {

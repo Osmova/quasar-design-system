@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { resolvedColor } from './helpers'
+import { expectGalleryPage, resolvedColor } from './helpers'
 
 async function forceTheme(page: Page, mode: 'light' | 'dark' = 'light', variant: 'fluent' | 'ink' | 'one' | 'term' = 'fluent') {
   await page.waitForFunction(() => Boolean((window as unknown as { __qdsGallery?: unknown }).__qdsGallery))
@@ -40,7 +40,7 @@ test.describe('QDS optional QWindow extension', () => {
     await page.goto('/#window')
     await forceTheme(page)
 
-    await expect(page.getByRole('tab', { name: 'Window' })).toHaveAttribute('aria-selected', 'true')
+    await expectGalleryPage(page, 'Window')
 
     const windowShell = page.locator('.qds-window').filter({ hasText: 'QDS window shell' })
     await expect(windowShell).toBeVisible()

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { CANONICAL_VARIANTS, type Variant } from './helpers'
+import { CANONICAL_VARIANTS, gotoGalleryPage, type Variant } from './helpers'
 
 async function expectState(page: Page, tab: string, variant: Variant) {
   await expect(page.locator('body')).toHaveAttribute('data-qds-variant', variant)
@@ -65,7 +65,7 @@ test('UI, page and controller changes replace URL while preserving outer URL, st
   await page.getByRole('group', { name: 'Variant', exact: true }).getByRole('button', { name: 'Ink', exact: true }).click()
   await expectState(page, 'compare', 'ink')
   await expect(page).toHaveURL(/#compare\?keep=a%26b&keep=two&variant=ink$/)
-  await page.getByRole('tab', { name: 'Tokens', exact: true }).click()
+  await gotoGalleryPage(page, 'Tokens')
   await expectState(page, 'tokens', 'ink')
   await expect(page).toHaveURL(/#tokens\?keep=a%26b&keep=two&variant=ink$/)
   await setVariant(page, 'term')

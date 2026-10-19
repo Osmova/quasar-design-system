@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { applyTheme, CANONICAL_VARIANTS, waitForThemePaint } from './helpers'
 
-const labels = ['Fluent', 'Ink', 'One', 'Term', 'Shadcn']
+const labels = ['Fluent', 'Ink', 'One', 'Term', 'Shadcn', 'Atrium']
 
 async function expectThemeMenuClosed(page: Page) {
   // Count the DOM node, including hidden leave-transition content, before reopening.
@@ -61,41 +61,74 @@ test('native Theme menu supports keyboard selection, dismissal and isolated stat
   await expect(page.locator('.gallery-theme')).toBeFocused()
   await expect(page.locator('.gallery-theme')).toHaveAttribute('aria-expanded', 'false')
 
+  await page.locator('.gallery-theme').click()
   await page.getByRole('combobox', { name: 'Shadcn base palette', exact: true }).click()
   await page.getByRole('option', { name: 'Slate', exact: true }).click()
+  await page.keyboard.press('Escape')
   await expect(page.locator('body')).toHaveAttribute('data-qds-shadcn-base-color', 'slate')
   expect(page.url()).toBe(url)
 })
 
-test('title uses loaded self-hosted Latin 400 without changing body or component fonts', async ({ page }) => {
+test('wordmark renders in the loaded Inter face with weight contrast, not a separate display font', async ({ page }) => {
   const fontRequests: string[] = []
   page.on('request', request => { if (request.resourceType() === 'font') fontRequests.push(request.url()) })
   await page.goto('/')
   await waitForThemePaint(page)
   const evidence = await page.evaluate(() => {
     const title = document.querySelector('.gallery-title')!
+    const mark = document.querySelector('.gallery-title__mark')!
+    const sub = document.querySelector('.gallery-title__sub')!
     const button = document.querySelector('.gallery-theme')!
     const style = getComputedStyle(title)
     return {
       family: style.fontFamily,
-      weight: style.fontWeight,
       size: parseFloat(style.fontSize),
-      loaded: document.fonts.check('400 24px "Playwrite FR Moderne"', 'Quasar Design System'),
-      face: Array.from(document.fonts).some(face => face.family.includes('Playwrite FR Moderne') && face.status === 'loaded'),
+      markWeight: parseInt(getComputedStyle(mark).fontWeight, 10),
+      subWeight: parseInt(getComputedStyle(sub).fontWeight, 10),
+      loaded: document.fonts.check('600 18px "Inter Variable"', 'Quasar Design System'),
       body: getComputedStyle(document.body).fontFamily,
       button: getComputedStyle(button).fontFamily,
     }
   })
-  expect(evidence.family).toContain('Playwrite FR Moderne')
-  expect(evidence.weight).toBe('400')
-  expect(evidence.size).toBeGreaterThanOrEqual(22)
-  expect(evidence.size).toBeLessThanOrEqual(26)
-  expect(evidence.loaded && evidence.face).toBe(true)
+  expect(evidence.family).toContain('Inter')
+  expect(evidence.size).toBeGreaterThanOrEqual(16)
+  expect(evidence.size).toBeLessThanOrEqual(20)
+  expect(evidence.markWeight).toBeGreaterThan(evidence.subWeight)
+  expect(evidence.loaded).toBe(true)
   expect(evidence.body).toContain('Inter')
   expect(evidence.button).toContain('Inter')
-  expect(evidence.body + evidence.button).not.toContain('Playwrite')
-  expect(fontRequests.some(url => url.includes('playwrite-fr-moderne-latin-400-normal'))).toBe(true)
+  expect(evidence.family + evidence.body + evidence.button).not.toContain('Playwrite')
   for (const url of fontRequests) expect(new URL(url).origin).toBe(new URL(page.url()).origin)
+})
+
+test('header chrome keeps identical geometry across every variant', async ({ page }) => {
+  await page.goto('/')
+  await waitForThemePaint(page)
+  const measure = async () => page.evaluate(() => {
+    const rect = (selector: string) => {
+      const r = document.querySelector(selector)!.getBoundingClientRect()
+      return { x: Math.round(r.x), width: Math.round(r.width), height: Math.round(r.height) }
+    }
+    return { switcher: rect('.gallery-switcher'), links: rect('.gallery-links'), theme: rect('.gallery-theme'), toolbar: rect('.q-toolbar') }
+  })
+  let baseline: Awaited<ReturnType<typeof measure>> | null = null
+  for (const variant of CANONICAL_VARIANTS) {
+    await applyTheme(page, 'light', variant)
+    const geometry = await measure()
+    if (!baseline) baseline = geometry
+    else expect(geometry, `${variant} must not resize the gallery shell`).toEqual(baseline)
+  }
+})
+
+test('header links reach both deployed catalogs', async ({ page }) => {
+  await page.goto('/')
+  for (const [name, label] of [['histoire', 'Histoire'], ['storybook', 'Storybook']] as const) {
+    const link = page.locator(`[data-test="qds-link-${name}"]`)
+    await expect(link).toBeVisible()
+    await expect(link).toHaveAttribute('href', `${name}/`)
+    expect(await link.evaluate(el => el.tagName)).toBe('A')
+    await expect(link).toContainText(label)
+  }
 })
 
 for (const variant of CANONICAL_VARIANTS) {
@@ -110,7 +143,7 @@ for (const variant of CANONICAL_VARIANTS) {
         await waitForThemePaint(page)
       }
       const group = page.getByRole('group', { name: 'Variant', exact: true })
-      await expect(group.getByRole('button')).toHaveCount(5)
+      await expect(group.getByRole('button')).toHaveCount(labels.length)
       const geometry = await page.evaluate(() => {
         const rect = (selector: string) => {
           const r = document.querySelector(selector)!.getBoundingClientRect()

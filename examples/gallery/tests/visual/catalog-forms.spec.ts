@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { MATRIX_VARIANTS } from './helpers'
+import { MATRIX_VARIANTS, expectGalleryPage, gotoGalleryPage } from './helpers'
 
 type Mode = 'light' | 'dark'
 type Variant = 'fluent' | 'ink' | 'one' | 'term'
@@ -53,7 +53,7 @@ async function resolvedColor(page: Page, name: string): Promise<string> {
 test.describe('QDS catalog form picker gate', () => {
   test('skins form controls, fields, file, slider, and range sub-elements with QDS tokens', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
 
     const primary = await resolvedColor(page, '--qds-color-primary')
@@ -228,7 +228,7 @@ test.describe('QDS catalog form picker gate', () => {
 
   test('skins QColor, QDate, and QTime picker internals with QDS tokens', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('tab', { name: 'Catalog' }).click()
+    await gotoGalleryPage(page, 'Catalog')
     await applyTheme(page, 'light', 'fluent')
 
     const primary = await resolvedColor(page, '--qds-color-primary')
@@ -382,23 +382,11 @@ test.describe('QDS catalog form picker gate', () => {
     await page.goto('/#catalog')
     await applyTheme(page, 'light', 'fluent')
 
-    const activeTabBox = await page.getByRole('tab', { name: 'Catalog' }).boundingBox()
-    const tabsBox = await page.locator('.gallery-tabs').boundingBox()
-    const tabContentBox = await page.locator('.gallery-tabs .q-tabs__content').boundingBox()
-    const leftArrow = page.locator('.gallery-tabs .q-tabs__arrow--left')
-    const rightArrow = page.locator('.gallery-tabs .q-tabs__arrow--right')
-    const leftArrowBox = await leftArrow.isVisible() ? await leftArrow.boundingBox() : null
-    const rightArrowBox = await rightArrow.isVisible() ? await rightArrow.boundingBox() : null
-    if (activeTabBox && tabsBox) {
-      const visibleLeft = leftArrowBox ? leftArrowBox.x + leftArrowBox.width : tabsBox.x
-      const visibleRight = rightArrowBox ? rightArrowBox.x : tabsBox.x + tabsBox.width
-      if (tabContentBox) {
-        expect.soft(tabContentBox.x, 'mobile tab content reserves the left scroll-arrow lane').toBeGreaterThanOrEqual(visibleLeft - 1)
-        expect.soft(tabContentBox.x + tabContentBox.width, 'mobile tab content reserves the right scroll-arrow lane').toBeLessThanOrEqual(visibleRight + 1)
-      }
-      expect.soft(activeTabBox.x, 'deep-linked active tab clears the left scroll arrow').toBeGreaterThanOrEqual(visibleLeft - 1)
-      expect.soft(activeTabBox.x + activeTabBox.width, 'deep-linked active tab clears the right scroll arrow').toBeLessThanOrEqual(visibleRight + 1)
-    }
+    await expectGalleryPage(page, 'Catalog')
+    expect.soft(
+      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      'the collapsed page drawer leaves a deep-linked narrow page free of horizontal scroll',
+    ).toBe(true)
 
     const timePicker = page.locator('[data-test="qds-catalog-time"]')
     await expect(timePicker).toBeVisible()

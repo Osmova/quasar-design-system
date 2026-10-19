@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { applyTheme, LEGACY_VARIANTS as CANONICAL_VARIANTS, coarsePointer, resolvedColor, type Mode, type Variant } from './helpers'
+import { LEGACY_VARIANTS as CANONICAL_VARIANTS, applyTheme, coarsePointer, expectGalleryPage, resolvedColor, type Mode, type Variant } from './helpers'
 
 const MODES: Mode[] = ['light', 'dark']
 const byHook = (hook: string) => `[data-test="${hook}"]`
@@ -48,7 +48,7 @@ async function settle(page: Page) {
 async function openApps(page: Page, mode: Mode = 'light', variant: Variant = 'fluent') {
   await page.goto('./#apps')
   await applyTheme(page, mode, variant)
-  await expect(page.getByRole('tab', { name: 'Apps' })).toHaveAttribute('aria-selected', 'true')
+  await expectGalleryPage(page, 'Apps')
   await settle(page)
 }
 

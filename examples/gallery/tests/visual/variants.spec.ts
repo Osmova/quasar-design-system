@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test'
-import { applyTheme, CANONICAL_VARIANTS, computed, customProperty, resolvedColor } from './helpers'
+import { CANONICAL_VARIANTS, applyTheme, computed, customProperty, expectGalleryPage, resolvedColor } from './helpers'
 
 test.describe('QDS variant distinctiveness lab', () => {
   test('mounts five canonical comparison cards with deliberate visual systems', async ({ page }) => {
     await page.goto('/#variants')
     await applyTheme(page, 'light', 'fluent')
 
-    await expect(page.getByRole('tab', { name: 'Variants' })).toHaveAttribute('aria-selected', 'true')
+    await expectGalleryPage(page, 'Variants')
     for (const variant of CANONICAL_VARIANTS) {
       await expect(page.locator(`[data-test="qds-variant-card-${variant}"]`), `${variant} card`).toBeVisible()
       await expect(page.locator(`[data-test="qds-variant-roles-${variant}"]`), `${variant} role fixtures`).toBeVisible()

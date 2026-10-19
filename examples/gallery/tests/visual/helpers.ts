@@ -1,11 +1,11 @@
 import { expect, type Page } from '@playwright/test'
 
 export type Mode = 'light' | 'dark'
-export type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
+export type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'atrium'
 export type LegacyVariant = Exclude<Variant, 'shadcn'>
 export type BaseColor = 'neutral' | 'gray' | 'zinc' | 'stone' | 'slate'
 
-export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term', 'shadcn']
+export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term', 'shadcn', 'atrium']
 // Existing grammar tests deliberately keep their four-variant expectations.
 export const LEGACY_VARIANTS: LegacyVariant[] = ['fluent', 'ink', 'one', 'term']
 export const MATRIX_VARIANTS: Exclude<LegacyVariant, 'term'>[] = ['fluent', 'ink', 'one']
@@ -91,4 +91,29 @@ export async function resolvedShadow(page: Page, property: string): Promise<stri
 // Touch projects (Pixel 5) match `(pointer: coarse)`, which raises QDS control and row tokens.
 export async function coarsePointer(page: Page): Promise<boolean> {
   return page.evaluate(() => matchMedia('(pointer: coarse)').matches)
+}
+
+// Page navigation lives in a drawer that is collapsed on the touch project.
+export async function gotoGalleryPage(page: Page, label: string) {
+  const tab = page.getByRole('tab', { name: label, exact: true })
+  const collapsed = !(await tab.isVisible())
+  if (collapsed) await page.locator('.gallery-burger').click()
+  await tab.click()
+  await expect(tab).toHaveAttribute('aria-selected', 'true')
+  // The overlay drawer would otherwise intercept pointer events on the page it opened.
+  if (collapsed) await expect(page.locator('.gallery-drawer')).toBeHidden()
+}
+
+// The drawer is unmounted while collapsed, so reading the active page needs it open.
+export async function expectGalleryPage(page: Page, label: string) {
+  const tab = page.getByRole('tab', { name: label, exact: true })
+  if (await tab.count()) {
+    await expect(tab).toHaveAttribute('aria-selected', 'true')
+    return
+  }
+  await page.locator('.gallery-burger').click()
+  await expect(tab).toHaveAttribute('aria-selected', 'true')
+  // The open overlay drawer covers the burger, so dismiss it the way a user would.
+  await page.keyboard.press('Escape')
+  await expect(page.locator('.gallery-drawer')).toBeHidden()
 }

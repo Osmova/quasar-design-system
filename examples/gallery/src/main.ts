@@ -11,8 +11,6 @@ import './gallery.css'
 import '@osmova/quasar-design-system/fonts/inter.css'
 import '@osmova/quasar-design-system/fonts/open-sans.css'
 import '@osmova/quasar-design-system/fonts/selawik.css'
-// Gallery title only; self-hosted Latin 400, licensed OFL-1.1 by Fontsource.
-import '@fontsource/playwrite-fr-moderne/latin-400.css'
 
 import {
   configureDesignSystem,

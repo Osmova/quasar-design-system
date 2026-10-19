@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { readFile, readdir } from 'node:fs/promises'
-import { MATRIX_VARIANTS, customProperty, resolvedColor, resolvedShadow } from './helpers'
+import { MATRIX_VARIANTS, customProperty, expectGalleryPage, resolvedColor, resolvedShadow } from './helpers'
 
 type Mode = 'light' | 'dark'
 type Variant = 'fluent' | 'ink' | 'one' | 'term'
@@ -145,7 +145,7 @@ test.describe('QDS plugin/global UI surfaces', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#plugins')
     await applyTheme(page, 'light', 'fluent')
-    await expect(page.getByRole('tab', { name: 'Plugins' })).toHaveAttribute('aria-selected', 'true')
+    await expectGalleryPage(page, 'Plugins')
     await expectNoResidualGlobalSurfaces(page)
   })
 
