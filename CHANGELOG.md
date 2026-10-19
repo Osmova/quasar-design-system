@@ -8,6 +8,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **`atrium` variant** — a responsive iPad/macOS-inspired system and the sixth canonical variant.
+  Quiet floating translucent panels over a grouped background, capsule segments, grouped inset rows,
+  soft focus rings, 10px control and 18px block radii, and density that follows input capability
+  rather than viewport width alone. It uses the native system font stack and ships no Apple font or
+  symbol asset. Translucency is decoration only: `@supports not (backdrop-filter)`,
+  `prefers-reduced-transparency` and forced colours all resolve to opaque surfaces. Every role fill
+  clears WCAG AA against its own label in both modes.
+
+### Changed
+
+- **Fluent**: filled-role labels no longer dissolve into their own fill on hover and press.
+  `--qds-text-on-fill-pressed-mix` moves from `90%` to `100%`, matching Windows 11 / Fluent 2, where the
+  on-brand foreground is constant across rest, hover and pressed and only the fill moves along the
+  brand ramp. Worst measured label contrast rises from 3.766 to 4.298 in light and 3.844 to 4.233 in
+  dark. No other variant is affected: each already re-declared `100%`.
+- **Fluent**: the field clear/password action now has a visible focus ring. It carries Quasar's
+  `no-outline` utility (`outline: 0 !important`), which silently defeated the previous rule, so the ring
+  is routed through the same importance channel QBtn already uses.
+
+### Added
+
 - **Fields**: a Windows 11 (WinUI 3) finish, with a layer fill, an elevation border and a strong bottom stroke.
   On focus the field switches to the input-active fill and shows the accent bar. Fields have no halo by default.
   Quasar `color`, forced colours and reduced motion are respected.

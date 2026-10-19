@@ -196,6 +196,7 @@ The package is structured around `src/themes/`. For now there is one real theme,
 - `one`: Samsung One UI-inspired neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent, and touch-friendly rhythm.
 - `term`: opaque amber developer UI on warm cream or near-black panes, with crisp hairline rules, amber fills carrying dark ink, and a monospace-forward feel.
 - `shadcn`: opaque New York-inspired native Quasar controls with Neutral (default), Gray, Zinc, Stone, and Slate base palettes, compact 36px regular controls, 8px control radii, and 14px card radii. No Tailwind or Reka dependency is required by the package.
+- `atrium`: a responsive iPad/macOS-inspired system — quiet floating translucent panels over a grouped background, capsule segments, grouped inset rows, soft focus rings, 10px control and 18px block radii, and density that follows input capability rather than viewport width alone. It uses the native system font stack and ships no Apple font or symbol assets. Translucency is decoration only: `@supports not (backdrop-filter)`, `prefers-reduced-transparency` and forced colors all fall back to opaque surfaces.
 
 They are not separate brands — deliberate overlays over the same token system.
 
@@ -204,7 +205,7 @@ Choose the variant once at app startup and let the runtime keep the matching bod
 ```ts
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'ink', // fluent | ink | one | term | shadcn
+  variant: 'ink', // fluent | ink | one | term | shadcn | atrium
 })
 ```
 
