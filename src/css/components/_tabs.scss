@@ -1,12 +1,13 @@
 @use 'variants/mechanics';
 @use 'variants/folio';
+@use 'variants/atrium';
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 // Rails, segmented paint and density remain compatibility grammar, not mechanics.
 @mixin styles($grammar: compatibility) {
-  @if $grammar == compatibility { @include compatibility-styles; @include folio.tabs; @include folio.reading; }
+  @if $grammar == compatibility { @include compatibility-styles; @include folio.tabs; @include folio.reading; @include atrium.tabs; }
   @else if $grammar == independent { @include mechanics.tabs; @content; }
   @else { @error 'Unknown tabs grammar: #{$grammar}'; }
 }

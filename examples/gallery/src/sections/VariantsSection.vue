@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { useDesignSystem } from '@osmova/quasar-design-system'
 import ShadcnPalettePanels from '../components/ShadcnPalettePanels.vue'
 
-type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
+type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'atrium'
 const ds = useDesignSystem()
 
 type VariantSample = {
@@ -44,6 +44,12 @@ const variants: VariantSample[] = [
     intent: 'Opaque neutral New York surfaces, crisp outlines, and restrained role fills.',
     sample: 'Native surface 05',
   },
+  {
+    name: 'atrium',
+    label: 'Atrium',
+    intent: 'Floating translucent panels, capsule segments, grouped inset rows, and capability-aware density.',
+    sample: 'Library pane 02',
+  },
 ]
 
 const pages = reactive<Record<VariantName, number>>({
@@ -52,6 +58,7 @@ const pages = reactive<Record<VariantName, number>>({
   one: 3,
   term: 3,
   shadcn: 3,
+  atrium: 3,
 })
 </script>
 
@@ -63,7 +70,7 @@ const pages = reactive<Record<VariantName, number>>({
       <h1 id="qds-variants-title" class="qds-display">Same anatomy, different visual systems</h1>
       <p class="qds-text-muted">
         This view keeps component anatomy identical so variant-specific typography, density, borders,
-        material, and state rules are visible side by side. Five canonical variants share one token system.
+        material, and state rules are visible side by side. Six canonical variants share one token system.
       </p>
     </div>
 

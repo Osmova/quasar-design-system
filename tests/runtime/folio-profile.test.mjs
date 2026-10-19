@@ -31,7 +31,7 @@ test('every Folio rule is scoped to the Folio profile and borrows no other profi
     ${families.map((family) => `@include folio.${family};`).join('')} @include folio.reading;`)
   for (const [path] of flattenRules(css)) {
     assert.match(path, /\.qds-variant-folio/, `unscoped Folio rule: ${path}`)
-    assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn)/, `Folio borrowed another profile scope: ${path}`)
+    assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|atrium)/, `Folio borrowed another profile scope: ${path}`)
   }
 })
 
@@ -168,7 +168,7 @@ test('a deliberately cross-profile-corrupted control fails the Folio scope check
   assert.throws(() => {
     for (const path of paths) {
       assert.match(path, /\.qds-variant-folio/)
-      assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn)/)
+      assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|atrium)/)
     }
   }, 'the scope check must reject the corrupted control')
 })

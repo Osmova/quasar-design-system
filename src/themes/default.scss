@@ -239,6 +239,67 @@
   }
 }
 
+// Atrium is a quiet floating-panel system: translucent chrome over a grouped
+// background, soft rings instead of hard strokes, and capability-aware density.
+// Translucency is decoration only; every affordance must survive the opaque
+// fallback below.
+@mixin qds-atrium-material($scheme) {
+  --qds-stroke-strong: #{qds-variant-token(atrium, '#{$scheme}-stroke-strong')};
+  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
+    --qds-#{$token}: #{qds-variant-token(atrium, '#{$scheme}-border')};
+  }
+  --qds-control-stroke-strong: var(--qds-stroke-strong);
+  --qds-bg-overlay: #{qds-variant-token(atrium, '#{$scheme}-scrim')};
+  --qds-fg-disabled: #{qds-variant-token(atrium, '#{$scheme}-fg-disabled')};
+  --qds-fg-on-brand: var(--qds-text-on-primary);
+  --qds-text-on-solid: #{map.get(qds-variant-token(atrium, '#{$scheme}-on-fill'), primary)};
+  --qds-fg-brand: var(--qds-color-primary);
+  @each $role in secondary, accent, positive, negative, warning, info {
+    --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 86%, var(--qds-text-strong));
+  }
+  --qds-stroke-error: var(--qds-fg-negative);
+  --qds-stroke-focus: var(--qds-color-primary);
+  --qds-segmented-track-bg: var(--qds-surface-2);
+  --qds-segmented-thumb-bg: var(--qds-surface-0);
+  --qds-row-radius: var(--qds-radius-control);
+}
+
+@mixin qds-atrium-scopes {
+  @layer qds.tokens {
+  .qds-variant-atrium {
+    --qds-font-family: #{qds-variant-token(atrium, font-family)};
+    --qds-font-family-display: #{qds-variant-token(atrium, font-family-display)};
+    @include qds-variant-scheme(atrium);
+    @include fallbacks.qds-material-tokens(light);
+    @include qds-atrium-material(light);
+  }
+
+  @media not (pointer: coarse) {
+    .qds-variant-atrium {
+      --qds-list-item-min-height-value: #{qds-variant-token(atrium, list-item-min-height)};
+      --qds-menu-item-min-height-value: #{qds-variant-token(atrium, menu-item-min-height)};
+    }
+  }
+
+  .qds-theme-dark.qds-variant-atrium,
+  .qds-theme-dark .qds-variant-atrium,
+  body.qds-ui.body--dark.qds-variant-atrium,
+  body.qds-ui.body--dark .qds-variant-atrium {
+    @include qds-variant-scheme(atrium, true);
+    @include fallbacks.qds-material-tokens(dark);
+    @include qds-atrium-material(dark);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .qds-variant-atrium { @include fallbacks.qds-material-tokens(solid); }
+  }
+
+  @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+    .qds-variant-atrium { @include fallbacks.qds-material-tokens(solid); }
+  }
+  }
+}
+
 @mixin qds-term-crisp($scheme) {
   @each $step, $geometry in tokens.$shadow-steps {
     --qds-shadow-#{$step}: none;
@@ -427,4 +488,5 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
 }
 
 @include qds-folio-scopes;
+@include qds-atrium-scopes;
 @include shadcn.scopes;

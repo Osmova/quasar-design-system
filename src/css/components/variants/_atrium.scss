@@ -1,0 +1,123 @@
+// Atrium profile grammar: one responsive system for large pointer-driven and
+// touch surfaces. Quiet floating panels, grouped inset rows, capsule segments
+// and a soft focus ring. It owns its own enclosure and overlay language — no
+// Fluent bottom focus bar, rail or Mica, and no Folio paper depth. This partial
+// imports nothing from the compatibility grammar, so it compiles and paints
+// with that grammar removed.
+$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+
+@mixin button {
+  #{$atrium} .q-btn {
+    --_qds-atrium-face: var(--qds-surface-0);
+    min-height: clamp(var(--qds-button-size-sm), calc(var(--qds-button-min-height) + (1em - 0.875rem) * 2), var(--qds-button-size-lg));
+    padding-inline: clamp(var(--qds-button-dense-padding-inline), calc(var(--qds-button-padding-inline) + 1em - 0.875rem), calc(var(--qds-button-padding-inline) + 0.25rem));
+    border: 1px solid transparent;
+    background: var(--_qds-atrium-face);
+    box-shadow: var(--qds-shadow-sm);
+    color: var(--qds-fg-brand);
+    font-weight: var(--qds-font-weight-semibold);
+    letter-spacing: -0.01em;
+    text-transform: none;
+  }
+  #{$atrium} .q-btn:not(.q-btn--round, .q-btn--fab, .q-btn--fab-mini) { border-radius: var(--qds-radius-control); }
+  #{$atrium} .q-btn:is(.q-btn--round, .q-btn--fab, .q-btn--fab-mini) { padding-inline: 0; }
+  #{$atrium} .q-btn:not(.disabled):hover { --_qds-atrium-face: var(--qds-surface-1); }
+  #{$atrium} .q-btn:not(.disabled):active { --_qds-atrium-face: var(--qds-surface-2); box-shadow: none; }
+  #{$atrium} .q-btn:is(.q-btn--flat, .q-btn--unelevated) { background: transparent; box-shadow: none; }
+  #{$atrium} .q-btn--outline { border-color: var(--qds-control-stroke-default); background: transparent; box-shadow: none; }
+  #{$atrium} .q-btn:is([class*='bg-']):not(.q-btn--flat, .q-btn--outline) { border-color: transparent; }
+  #{$atrium} .q-btn.disabled { box-shadow: none; }
+  #{$atrium} .q-btn:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: 2px; }
+  #{$atrium} .q-btn__content { gap: 0.4rem; }
+  // Capsule segments: the selected thumb floats over a recessed track.
+  #{$atrium} .q-btn-toggle { padding: 2px; border-radius: var(--qds-radius-lg); background: var(--qds-segmented-track-bg); }
+  #{$atrium} .q-btn-toggle > .q-btn-item { box-shadow: none; background: transparent; }
+  #{$atrium} .q-btn-toggle > .q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) {
+    background: var(--qds-segmented-thumb-bg);
+    box-shadow: var(--qds-shadow-sm);
+  }
+}
+
+@mixin field {
+  // The field is a soft filled well with no baseline rule; focus is a ring,
+  // never an underline that grows.
+  #{$atrium} .q-field__control {
+    min-height: var(--qds-field-height);
+    border: 1px solid var(--qds-control-stroke-default);
+    border-radius: var(--qds-radius-control);
+    background: var(--qds-surface-1);
+    box-shadow: none;
+  }
+  #{$atrium} .q-field__control::before,
+  #{$atrium} .q-field__control::after { display: none; }
+  #{$atrium} .q-field--focused .q-field__control {
+    border-color: var(--qds-stroke-focus);
+    outline: var(--qds-focus-ring-width) solid color-mix(in srgb, var(--qds-stroke-focus) 34%, transparent);
+    outline-offset: 0;
+  }
+  #{$atrium} .q-field--error .q-field__control { border-color: var(--qds-stroke-error); }
+  #{$atrium} .q-field--error .q-field__bottom { color: var(--qds-fg-negative); }
+  #{$atrium} .q-field--readonly .q-field__control { background: var(--qds-surface-2); }
+  #{$atrium} .q-field--disabled .q-field__control { border-color: var(--qds-border-subtle); background: var(--qds-surface-1); }
+  #{$atrium} .q-field__label { color: var(--qds-text-muted); font-weight: var(--qds-font-weight-medium); }
+  #{$atrium} textarea.q-field__native { padding-block: 0.4rem; }
+}
+
+@mixin tabs {
+  // Navigation reads as a floating capsule group, not an underlined rail.
+  #{$atrium} .q-tabs { border-radius: var(--qds-radius-lg); }
+  #{$atrium} .q-tab {
+    min-height: var(--qds-tab-min-height, 2.125rem);
+    padding-inline: 0.875rem;
+    border-radius: var(--qds-radius-control);
+    color: var(--qds-text-muted);
+    font-weight: var(--qds-font-weight-medium);
+    letter-spacing: -0.01em;
+    text-transform: none;
+  }
+  #{$atrium} .q-tab--active { background: var(--qds-segmented-thumb-bg); box-shadow: var(--qds-shadow-sm); color: var(--qds-fg-brand); }
+  #{$atrium} .q-tab__indicator { display: none; }
+  #{$atrium} .q-tab:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: -2px; }
+  #{$atrium} .q-tab.disabled { color: var(--qds-fg-disabled); }
+}
+
+@mixin menu {
+  // Overlays are translucent floating panels with inset rounded rows; the
+  // opaque fallback in the theme keeps them readable without backdrop support.
+  #{$atrium} .q-menu {
+    padding: 0.25rem;
+    border: 1px solid var(--qds-menu-border);
+    border-radius: var(--qds-radius-lg);
+    background: var(--qds-material-regular-bg);
+    backdrop-filter: var(--qds-material-regular-filter);
+    -webkit-backdrop-filter: var(--qds-material-regular-filter);
+    box-shadow: var(--qds-shadow-lg);
+  }
+  #{$atrium} .q-menu .q-item {
+    min-height: var(--qds-menu-item-min-height, 2.25rem);
+    border-radius: calc(var(--qds-radius-control) - 2px);
+  }
+  #{$atrium} .q-menu .q-item--active,
+  #{$atrium} .q-menu .q-item.q-manual-focusable--focused {
+    background: color-mix(in srgb, var(--qds-color-primary) 14%, transparent);
+    color: var(--qds-fg-brand);
+  }
+  #{$atrium} .q-separator { background: var(--qds-border-subtle); }
+  // Grouped inset rows: a list is one rounded block, separators stop short of
+  // the edge rather than cutting the whole panel.
+  #{$atrium} .q-list--bordered {
+    border: 1px solid var(--qds-border-subtle);
+    border-radius: var(--qds-radius-lg);
+    overflow: hidden;
+  }
+}
+
+// Density follows input capability, not viewport width alone.
+@mixin capability {
+  @media (pointer: coarse) {
+    #{$atrium} .q-btn:not(.q-btn--dense),
+    #{$atrium} .q-tab,
+    #{$atrium} .q-field:not(.q-field--dense) .q-field__control { min-height: 2.75rem; }
+    #{$atrium} .q-menu .q-item { min-height: 2.75rem; }
+  }
+}

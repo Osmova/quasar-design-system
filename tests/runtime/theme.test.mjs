@@ -57,13 +57,15 @@ function browser(stored, prefersDark = false, legacyListener = false) {
   }
 }
 
-test('compiled package entrypoints expose the fifth variant and five exact base colors', () => {
+test('compiled package entrypoints expose every canonical variant and five exact base colors', () => {
   assert.equal(runtimeExport, createDesignSystemController)
   assert.equal(themesExport, SHADCN_BASE_COLORS)
   assert.deepEqual(SHADCN_BASE_COLORS.map(({ name }) => name), ['neutral', 'gray', 'zinc', 'stone', 'slate'])
-  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn'])
+  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn', 'atrium'])
   assert.equal(DESIGN_SYSTEM_VARIANTS.shadcn.cssClass, 'qds-variant-shadcn')
   assert.equal(isBuiltInDesignSystemVariantName('shadcn'), true)
+  assert.equal(DESIGN_SYSTEM_VARIANTS.atrium.cssClass, 'qds-variant-atrium')
+  assert.equal(isBuiltInDesignSystemVariantName('atrium'), true)
   assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.variant, 'fluent')
   assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.mode, 'system')
   for (const bad of [undefined, null, '', 'Gray', 'gray ', '__proto__', 'toString', {}, ['slate'], 1]) {

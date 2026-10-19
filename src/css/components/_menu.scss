@@ -1,6 +1,7 @@
 @use '../materials';
 @use 'variants/mechanics';
 @use 'variants/folio';
+@use 'variants/atrium';
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
@@ -8,7 +9,7 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 // Native Quasar owns portal positioning; compatibility still owns acrylic/rows.
 @mixin styles($grammar: compatibility) {
-  @if $grammar == compatibility { @include compatibility-styles; @include folio.menu; }
+  @if $grammar == compatibility { @include compatibility-styles; @include folio.menu; @include atrium.menu; }
   @else if $grammar == independent { @include mechanics.menu; @content; }
   @else { @error 'Unknown menu grammar: #{$grammar}'; }
 }
