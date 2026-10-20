@@ -51,7 +51,7 @@ const tableColumns = [
 const tableRows = [
   { token: '--qds-radius-control', scope: 'Fluent', value: '4px' },
   { token: '--qds-radius-control', scope: 'One', value: '14px' },
-  { token: '--qds-radius-control', scope: 'Atrium', value: '10px' },
+  { token: '--qds-radius-control', scope: 'Term', value: '6px' },
 ]
 
 const virtualRows = Array.from({ length: 400 }, (_, index) => ({ id: index, label: `Row ${index + 1}` }))
@@ -95,7 +95,7 @@ function loadMore(index: number, done: (stop?: boolean) => void) {
               <tbody>
                 <tr><td>--qds-radius-control</td><td>Fluent</td><td class="text-right">4px</td></tr>
                 <tr><td>--qds-radius-control</td><td>One</td><td class="text-right">14px</td></tr>
-                <tr><td>--qds-radius-control</td><td>Atrium</td><td class="text-right">10px</td></tr>
+                <tr><td>--qds-radius-control</td><td>Term</td><td class="text-right">6px</td></tr>
               </tbody>
             </QMarkupTable>
           </section>

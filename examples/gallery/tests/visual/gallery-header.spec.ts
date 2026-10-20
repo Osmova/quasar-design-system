@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { applyTheme, CANONICAL_VARIANTS, waitForThemePaint } from './helpers'
 
-const labels = ['Fluent', 'Ink', 'One', 'Term', 'Shadcn', 'Atrium']
+const labels = ['Fluent', 'Ink', 'One', 'Term', 'Shadcn']
 
 async function expectThemeMenuClosed(page: Page) {
   // Count the DOM node, including hidden leave-transition content, before reopening.

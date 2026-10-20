@@ -1,11 +1,11 @@
 import { expect, type Page } from '@playwright/test'
 
 export type Mode = 'light' | 'dark'
-export type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'atrium'
+export type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
 export type LegacyVariant = Exclude<Variant, 'shadcn'>
 export type BaseColor = 'neutral' | 'gray' | 'zinc' | 'stone' | 'slate'
 
-export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term', 'shadcn', 'atrium']
+export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term', 'shadcn']
 // Existing grammar tests deliberately keep their four-variant expectations.
 export const LEGACY_VARIANTS: LegacyVariant[] = ['fluent', 'ink', 'one', 'term']
 export const MATRIX_VARIANTS: Exclude<LegacyVariant, 'term'>[] = ['fluent', 'ink', 'one']

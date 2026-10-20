@@ -1,4 +1,4 @@
-export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'atrium'
+export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
 export type LegacyDesignSystemVariantName = 'studio' | 'air' | 'glass' | 'feather' | 'mobile' | 'terminal'
 export type BuiltInDesignSystemVariantName = CanonicalDesignSystemVariantName | LegacyDesignSystemVariantName
 
@@ -68,12 +68,6 @@ export const DESIGN_SYSTEM_VARIANTS = {
     description: 'Opaque New York-inspired surfaces with five neutral base palettes.',
     cssClass: 'qds-variant-shadcn',
   },
-  atrium: {
-    name: 'atrium',
-    label: 'Atrium',
-    description: 'Responsive iPad/macOS-inspired system: floating translucent panels, capsule segments, grouped inset rows, and capability-aware density.',
-    cssClass: 'qds-variant-atrium',
-  },
 } as Record<CanonicalDesignSystemVariantName, DesignSystemVariant> & {
   studio: DesignSystemVariant
   air: DesignSystemVariant
@@ -133,7 +127,7 @@ for (const [name, variant] of Object.entries(LEGACY_VARIANT_ALIASES)) {
 export const DEFAULT_THEME: QuasarDesignTheme = {
   name: DEFAULT_THEME_NAME,
   label: 'Default',
-  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, and Term variants.',
+  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, Term, and Shadcn variants.',
   variants: DESIGN_SYSTEM_VARIANTS,
 }
 
@@ -143,7 +137,6 @@ export const DESIGN_SYSTEM_THEMES = {
 
 export function isBuiltInDesignSystemVariantName(value: unknown): value is BuiltInDesignSystemVariantName {
   return value === 'fluent' || value === 'ink' || value === 'one' || value === 'term' || value === 'shadcn'
-    || value === 'atrium'
     || value === 'studio' || value === 'air' || value === 'glass' || value === 'feather'
     || value === 'mobile' || value === 'terminal'
 }
