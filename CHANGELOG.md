@@ -4,28 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [0.8.0] — 2026-10-20
 
-### Added
+Stable release of the 0.8.0 line: everything from `0.8.0-rc.1` (the reference-driven Fluent 2
+rebuild), `0.8.0-rc.2` (materials) and `0.8.0-rc.3` (the shadcn variant), plus the Windows 11
+control layer, the form and app compositions and the Ink / Term / One variant reworks below.
 
-- **`atrium` variant** — a responsive iPad/macOS-inspired system and the sixth canonical variant.
-  Quiet floating translucent panels over a grouped background, capsule segments, grouped inset rows,
-  soft focus rings, 10px control and 18px block radii, and density that follows input capability
-  rather than viewport width alone. It uses the native system font stack and ships no Apple font or
-  symbol asset. Translucency is decoration only: `@supports not (backdrop-filter)`,
-  `prefers-reduced-transparency` and forced colours all resolve to opaque surfaces. Every role fill
-  clears WCAG AA against its own label in both modes.
+### Breaking changes
 
-### Changed
-
-- **Fluent**: filled-role labels no longer dissolve into their own fill on hover and press.
-  `--qds-text-on-fill-pressed-mix` moves from `90%` to `100%`, matching Windows 11 / Fluent 2, where the
-  on-brand foreground is constant across rest, hover and pressed and only the fill moves along the
-  brand ramp. Worst measured label contrast rises from 3.766 to 4.298 in light and 3.844 to 4.233 in
-  dark. No other variant is affected: each already re-declared `100%`.
-- **Fluent**: the field clear/password action now has a visible focus ring. It carries Quasar's
-  `no-outline` utility (`outline: 0 !important`), which silently defeated the previous rule, so the ring
-  is routed through the same importance channel QBtn already uses.
+- **Variant IDs**: `mobile` is now `one` and `terminal` is now `term` (labels **One** and **Term**).
+  The runtime writes `qds-variant-one` / `qds-variant-term` and `data-qds-variant="one|term"`. `mobile` and
+  `terminal` are still accepted as legacy aliases (options, `setVariant`, persisted state), but the
+  `.qds-variant-mobile` / `.qds-variant-terminal` classes are no longer emitted or styled; update any consumer
+  selectors that target them. The `$variants` map in `./tokens/default` is keyed `one` / `term` as well.
+- **Pressed primary**: `--qds-color-primary-pressed` is now derived from the fill-state tokens (a lighter
+  Fluent press) instead of the fixed dark `#0c3b5e`, and the `primary-pressed` key is removed from the `$palette` /
+  `$dark-palette` maps in `./tokens/default`. Consumers that read either should use `--qds-color-primary-dark` for
+  a darker primary.
+- **One (One UI 8 neutral)**: One palette, surface, text, border, role-wash, focus-block and shadow token
+  values changed. Light page `#f2f2f2` with white blocks, dark true-black page with `#1a1a1a` blocks; the lavender
+  focus-block cast, Mica tint and card tints are gone. Calm blue accent (`#1b5fcf`, dark fill `#2f6fdc` with
+  light-blue `--qds-fg-brand`) and desaturated role fills with white text, ≥ 4.5:1 at rest and hover in both modes
+  (hover and press darken). Muted text, placeholders (including hovered fields), brand text and the focus ring meet
+  contrast on every One surface (fixes the 4.05 dark placeholder and 4.18 muted-on-focus-block gaps).
 
 ### Added
 
@@ -71,6 +72,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **Fluent**: filled-role labels no longer dissolve into their own fill on hover and press.
+  `--qds-text-on-fill-pressed-mix` moves from `90%` to `100%`, matching Windows 11 / Fluent 2, where the
+  on-brand foreground is constant across rest, hover and pressed and only the fill moves along the
+  brand ramp. Worst measured label contrast rises from 3.766 to 4.298 in light and 3.844 to 4.233 in
+  dark. No other variant is affected: each already re-declared `100%`.
+- **Fluent**: the field clear/password action now has a visible focus ring. It carries Quasar's
+  `no-outline` utility (`outline: 0 !important`), which silently defeated the previous rule, so the ring
+  is routed through the same importance channel QBtn already uses.
+
+
 - **Windows 11 control layer**: new tokens `--qds-control-fill-input-active`,
   `--qds-control-stroke-default|secondary|strong|top|bottom|on-accent-top|on-accent-bottom`, `--qds-card-fill`,
   `--qds-card-stroke` and `--qds-control-halo`. `--qds-control-fill-*` are now translucent layer values instead of
@@ -84,11 +95,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Nested cards stay strokeless; maximized dialog cards stay opaque.
 - **Lists**: the active item is a subtle pill with an accent indicator bar.
 - `.qds-field--required` is visual only; pair it with `required` or `aria-required` for assistive technology.
-- **Breaking — variant IDs**: `mobile` is now `one` and `terminal` is now `term` (labels **One** and **Term**).
-  The runtime writes `qds-variant-one` / `qds-variant-term` and `data-qds-variant="one|term"`. `mobile` and
-  `terminal` are still accepted as legacy aliases (options, `setVariant`, persisted state), but the
-  `.qds-variant-mobile` / `.qds-variant-terminal` classes are no longer emitted or styled; update any consumer
-  selectors that target them. The `$variants` map in `./tokens/default` is keyed `one` / `term` as well.
 - **Fluent geometry (Windows 11)**: `--qds-radius-control` is 4px and `--qds-radius-lg` (cards, dialogs, tables,
   bordered lists) is 8px; list and navigation rows (`--qds-row-radius`) use the 4px control radius at 36px. Ink,
   One and Term keep their own radii. Quasar's compile-time Sass radii (`$generic-border-radius` and friends) come
@@ -101,10 +107,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   light and dark. New tokens `--qds-color-primary-hover`, `--qds-fill-hover-mix`, `--qds-fill-pressed-mix`,
   `--qds-fill-state-base` and `--qds-text-on-fill-pressed-mix`. Checked checkbox, radio and toggle hovers use
   `--qds-color-primary-hover` too. Ink, One and Term keep their darker states.
-- **Breaking — pressed primary**: `--qds-color-primary-pressed` is now derived from the fill-state tokens (a lighter
-  Fluent press) instead of the fixed dark `#0c3b5e`, and the `primary-pressed` key is removed from the `$palette` /
-  `$dark-palette` maps in `./tokens/default`. Consumers that read either should use `--qds-color-primary-dark` for
-  a darker primary.
 - **Touch**: coarse pointers use a 32 / 40 / 48px control ramp (`--qds-control-size-lg` is now 48px) so dense,
   default and large controls stay distinct; toggles, which size from it, grow to 48 × 24px. Dense toolbars read
   the new `--qds-toolbar-dense-min-height` (40px; One 48px).
@@ -148,12 +150,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   ≥ 3:1. Neutral buttons drop the amber tint; the active `QBtnToggle` segment takes the control hairline.
 - **Term rows**: the 38 / 32px list and menu rows and 38px expansion headers apply to fine pointers only, so coarse
   pointers get the 44px touch rows.
-- **Breaking — One (One UI 8 neutral)**: One palette, surface, text, border, role-wash, focus-block and shadow token
-  values changed. Light page `#f2f2f2` with white blocks, dark true-black page with `#1a1a1a` blocks; the lavender
-  focus-block cast, Mica tint and card tints are gone. Calm blue accent (`#1b5fcf`, dark fill `#2f6fdc` with
-  light-blue `--qds-fg-brand`) and desaturated role fills with white text, ≥ 4.5:1 at rest and hover in both modes
-  (hover and press darken). Muted text, placeholders (including hovered fields), brand text and the focus ring meet
-  contrast on every One surface (fixes the 4.05 dark placeholder and 4.18 muted-on-focus-block gaps).
 - **One surfaces**: cards and blocks separate by tone and roundness (24px radius, no stroke); nested cards, tiles,
   carousels and settings cards take the grey `--qds-surface-focus-block`; dialogs (28px), floating bottom sheets
   (all corners rounded, inset from the edges) and windows sit on `--qds-surface-transient`, and controls, cards and
@@ -190,6 +186,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   palette grey.
 - Joined QBtnGroup / split-button segments draw their focus ring inside their own edge (in the on-fill ink on role
   fills), so it no longer squares off against the next segment or overlaps nearby rows.
+
+### Migration notes
+
+- Replace `mobile` with `one` and `terminal` with `term` in `configureDesignSystem` options,
+  `setVariant` calls and any CSS that targets `.qds-variant-mobile` / `.qds-variant-terminal`.
+  The old IDs still resolve, but those two classes are no longer emitted or styled.
+- Stop reading `--qds-color-primary-pressed` as a fixed dark value, and stop reading the
+  `primary-pressed` key from the `$palette` / `$dark-palette` maps in `./tokens/default`; use
+  `--qds-color-primary-dark` where you need a darker primary.
+- Re-check any layout tuned against the previous One palette and surfaces: blocks, focus blocks
+  and role fills all moved, and the lavender cast and card tints are gone.
+
+### Verification
+
+- `pnpm verify:publish` (`css:budget`, `build`, `typecheck`, `test:runtime`, `pack:dry`) green;
+  `test:runtime` 40/40; `typecheck` 0 errors.
+- CSS budgets under their reviewed caps on both the default and layered entries.
+- Playwright gallery gate 804/804, and the pinned screenshot job 84/84 on two consecutive
+  non-update runs; shared catalog contracts and the Storybook proof green.
+- The packed tarball was installed into a scratch consumer: all four Sass entries compile and the
+  runtime loads under SSR with no DOM.
 
 ## [@osmova/quasar-design-system 0.8.0-rc.3] — 2026-10-14
 
