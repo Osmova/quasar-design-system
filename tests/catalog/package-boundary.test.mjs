@@ -41,9 +41,16 @@ test('storybook dependency decision: exact 10.6.1 trio, no addon-essentials', ()
   const allDeps = { ...storybookPkg.dependencies, ...storybookPkg.devDependencies }
   assert.ok(!('@storybook/addon-essentials' in allDeps), 'addon-essentials is explicitly not used')
 
-  // No version bump on the public package root.
+  // The catalog proof must not mutate the version on the public package root. A
+  // literal pin would fail every release, so this ties the version to the newest
+  // versioned CHANGELOG heading instead: a bump passes only when it was deliberate
+  // enough to be written down.
   const rootPkg = JSON.parse(readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'))
-  assert.match(rootPkg.version, /^0\.8\.0-rc\.3$/, 'root package version must stay untouched by the proof')
+  assert.match(rootPkg.version, /^\d+\.\d+\.\d+(-rc\.\d+)?$/, 'root package version must be a plain release or rc version')
+  const changelog = readFileSync(path.join(REPO_ROOT, 'CHANGELOG.md'), 'utf8')
+  const newest = changelog.match(/^## \[(\d+\.\d+\.\d+(?:-rc\.\d+)?)\]/m)
+  assert.ok(newest, 'CHANGELOG must carry at least one versioned heading')
+  assert.equal(rootPkg.version, newest[1], 'package version must match the newest versioned CHANGELOG heading')
 })
 
 test('root tsconfig covers the shared catalog/adapters (typecheck surface)', () => {
