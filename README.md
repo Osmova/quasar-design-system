@@ -182,7 +182,8 @@ regular material; dialogs and the bottom sheet the thick one; tooltips the thin 
 
 Materials fall back to solid surfaces without `backdrop-filter` support, under `prefers-reduced-transparency: reduce`,
 and in forced-colors mode. The `ink` variant is always solid; `term` keeps acrylic only on menus and opt-in materials;
-`one` keeps acrylic menus, tooltips and popups on a flat page (no Mica tint), with solid dialogs and bottom sheets.
+`one` keeps acrylic menus, tooltips and popups on a flat page (no Mica tint), with solid dialogs and bottom sheets;
+`atrium` uses the thin material on header, footer and drawer chrome as translucent sheets over a grouped page, with solid panels.
 
 Tokens: `--qds-material-{thin,regular,thick}-{bg,blur,filter}`, `--qds-material-saturate`, `--qds-material-stroke`,
 `--qds-material-edge`, `--qds-mica-alt`, `--qds-backdrop` (a full `background` value, not a colour).
