@@ -41,4 +41,18 @@ test.describe('QDS variant distinctiveness lab', () => {
     expect.soft(await computed(page, '[data-test="qds-variant-card-term"] .q-btn', 'text-transform'), 'Term button renders uppercase').toBe('uppercase')
     expect.soft(await resolvedColor(page, '--qds-color-primary'), 'Fluent primary remains calibrated from source tokens').toBe('rgb(15, 108, 189)')
   })
+
+  // The dark scope selector list reaches (0,3,1) while a bare-class fallback is
+  // (0,1,0), so a fallback that is not nested in the dark block never applies.
+  for (const mode of ['light', 'dark'] as const) {
+    test(`atrium drops translucency under forced colors in ${mode}`, async ({ page }) => {
+      await page.goto('/#components?variant=atrium')
+      await applyTheme(page, mode, 'atrium')
+      await page.emulateMedia({ forcedColors: 'active' })
+
+      expect.soft(await customProperty(page, '--qds-material-thin-filter'), 'the acrylic filter is dropped').toBe('none')
+      expect.soft(await customProperty(page, '--qds-control-fill-default'), 'control fills become opaque').not.toContain('rgba')
+      expect.soft(await customProperty(page, '--qds-card-stroke'), 'the card stroke becomes opaque').not.toContain('rgba')
+    })
+  }
 })

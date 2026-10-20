@@ -288,6 +288,17 @@
     @include qds-variant-scheme(atrium, true);
     @include fallbacks.qds-material-tokens(dark);
     @include qds-atrium-material(dark);
+
+    // The opaque payload is nested here, not left to the bare-class blocks
+    // below: those are (0,1,0) and this selector list reaches (0,3,1), so a
+    // shared-specificity fallback is the only one dark mode ever applies.
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      @include fallbacks.qds-material-tokens(solid);
+    }
+
+    @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+      @include fallbacks.qds-material-tokens(solid);
+    }
   }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
