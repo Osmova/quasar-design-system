@@ -15,8 +15,10 @@ remains for existing variants. No mandatory Tailwind/Reka dependency is introduc
 
 An `atrium` profile (responsive iPad/macOS-inspired) and a `zen` profile (soft pastel reading) have
 tokens and component grammar in the bundle but are **deliberately unregistered**: neither appears in
-`DESIGN_SYSTEM_VARIANTS`, so the runtime never applies their classes and neither is a public
-contract. Do not document, export or select them until their variant tasks close.
+`DESIGN_SYSTEM_VARIANTS`, so neither is a public contract. Selecting one is accepted — any non-empty
+string is a valid variant name, so apps can register their own — but with no registry entry no
+variant class is applied and the grammar stays dead, while `data-qds-variant` still echoes the name
+asked for. Do not document, export or select them until their variant tasks close.
 
 It is a pure visual product: **no business logic, no entity/model layer, no API/transport code, no
 permissions, no app routes, no private endpoints.** Prefer semantic token names over app-specific
