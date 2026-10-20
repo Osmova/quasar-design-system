@@ -331,8 +331,7 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
   .qds-ui.qds-variant-term .q-slider:not(.disabled) .q-slider__selection,
   .qds-ui .qds-variant-term .q-slider:not(.disabled) .q-slider__selection { outline: var(--qds-border-width-control) solid var(--qds-selection-on, var(--qds-text-on-primary)); }
 
-  // The switch is a filled capsule whose track carries the state colour; its
-  // knob stays light in both schemes rather than taking an on-fill foreground.
+  // A filled capsule; the knob stays light in both schemes.
   #{$atrium} .q-toggle--dense { --qds-toggle-track-width: 2.5rem; --qds-toggle-track-height: 1.5rem; }
   #{$atrium} .q-toggle .q-toggle__track { background: var(--qds-surface-3); border-color: transparent; }
   #{$atrium} .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__track { background: currentColor; border-color: transparent; }

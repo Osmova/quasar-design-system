@@ -96,8 +96,7 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$shadcn} .q-table__container.q-table--square { border-radius: 0; }
   #{$shadcn} .q-card > .q-table__container { background: transparent; box-shadow: none; }
 
-  // A table is a grouped block too: hairline rules, a quiet header and no
-  // ruled line under the last row.
+  // A grouped block: hairline rules and no rule under the last row.
   #{$atrium} .q-table__container { --qds-table-divider: var(--qds-border-subtle); overflow: hidden; }
   #{$atrium} .q-table__card { box-shadow: var(--qds-shadow-md); }
   #{$atrium} .q-table__container:is(.q-table--flat, .q-table--grid) { box-shadow: none; }

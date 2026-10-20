@@ -262,8 +262,7 @@
   --qds-segmented-track-bg: var(--qds-surface-2);
   --qds-segmented-thumb-bg: var(--qds-surface-0);
   --qds-row-radius: var(--qds-radius-control);
-  // Capsule switch geometry. It belongs here, after qds-variant-scheme, because
-  // the generic ramp re-emits these three in the same block.
+  // Capsule geometry, after qds-variant-scheme, which re-emits these three.
   --qds-toggle-track-width: 3.1875rem;
   --qds-toggle-track-height: 1.9375rem;
   --qds-toggle-thumb-inset: 0.125rem;
@@ -302,9 +301,7 @@
     @include fallbacks.qds-material-tokens(dark);
     @include qds-atrium-material(dark);
 
-    // The opaque payload is nested here, not left to the bare-class blocks
-    // below: those are (0,1,0) and this selector list reaches (0,3,1), so a
-    // shared-specificity fallback is the only one dark mode ever applies.
+    // Nested so the fallback shares this scope's specificity; (0,1,0) loses.
     @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
       @include fallbacks.qds-material-tokens(solid);
     }

@@ -101,8 +101,7 @@ export async function gotoGalleryPage(page: Page, label: string) {
     await expect(tab).toHaveAttribute('aria-selected', 'true')
     return
   }
-  // Picking a page closes the overlay drawer, which unmounts the tab that was
-  // clicked, so the settled drawer is the only state worth waiting on here.
+  // Picking a page unmounts the clicked tab, so wait on the settled drawer.
   await page.locator('.gallery-burger').click()
   await expect(tab).toBeVisible()
   await tab.click()

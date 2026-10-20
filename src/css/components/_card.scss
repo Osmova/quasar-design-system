@@ -112,8 +112,7 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$term} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(.qds-material, .qds-card--transient)) { background: var(--qds-bg-surface-1); }
   #{$term} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(#{$framed})) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
 
-  // Panels float on the grouped background: one hairline, a soft drop, and a
-  // header that separates by spacing rather than a ruled line.
+  // Panels float: one hairline, a soft drop, no ruled header.
   #{$atrium} :is(.q-card, .qds-card, .qds-tile) { border-color: var(--qds-border-subtle); box-shadow: var(--qds-shadow-md); }
   #{$atrium} .q-card > .q-card__section--vert { padding: var(--qds-space-md) var(--qds-space-lg); }
   #{$atrium} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { padding: var(--qds-space-md) var(--qds-space-lg); border-block-end-color: transparent; }

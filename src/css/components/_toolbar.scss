@@ -46,8 +46,7 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$ink} .q-header { border-bottom-color: var(--qds-separator-color); }
   #{$term} .q-bar:not(.q-bar--dark) { border: var(--qds-border-width-control) solid var(--qds-border-subtle); }
 
-  // Chrome is a thin translucent sheet the content scrolls under; the theme's
-  // opaque fallback covers browsers and preferences without backdrop support.
+  // A thin translucent sheet; the theme owns the opaque fallback.
   #{$atrium} :is(.q-header, .q-footer) {
     background: var(--qds-material-thin-bg);
     backdrop-filter: var(--qds-material-thin-filter);

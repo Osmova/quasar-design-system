@@ -110,8 +110,7 @@ $rail: ".qds-ui .q-item:is(.q-item--active, [aria-selected='true'])::before, .qd
     #{$shadcn} .q-item:focus-visible::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; outline: var(--qds-focus-ring-width) solid Highlight; outline-offset: calc(-1 * var(--qds-focus-ring-width)); }
   }
 
-  // A grouped list is one inset block, so the rounded edge belongs to the group
-  // and separators start at the row text instead of cutting the whole block.
+  // A grouped list is one inset block, separators starting at the row text.
   #{$atrium} .q-list--bordered { padding: 0; overflow: hidden; background: var(--qds-surface-0); border-color: var(--qds-border-subtle); }
   #{$atrium} .q-list--separator > .q-item-type + .q-item-type { margin-inline-start: var(--qds-space-md); padding-inline-start: 0; }
   #{$atrium} .q-item { padding-inline: var(--qds-space-md); border-radius: var(--qds-radius-control); }

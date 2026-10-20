@@ -51,8 +51,7 @@ test.describe('QDS variant distinctiveness lab', () => {
     expect.soft(await resolvedColor(page, '--qds-color-primary'), 'Fluent primary remains calibrated from source tokens').toBe('rgb(15, 108, 189)')
   })
 
-  // The variant cards carry the variant class themselves, so the body-level
-  // grammar a real app gets is only observable once the whole page is atrium.
+  // Body-level grammar only shows once the whole page is atrium.
   test('atrium nests panels and keeps a light knob when the page itself is atrium', async ({ page }) => {
     await page.goto('/#variants')
     await applyTheme(page, 'dark', 'atrium')
@@ -62,8 +61,7 @@ test.describe('QDS variant distinctiveness lab', () => {
     expect.soft(await computed(page, '.q-header', 'backdrop-filter'), 'chrome is a translucent sheet').not.toBe('none')
   })
 
-  // The dark scope selector list reaches (0,3,1) while a bare-class fallback is
-  // (0,1,0), so a fallback that is not nested in the dark block never applies.
+  // A bare-class fallback (0,1,0) never beats the dark scope (0,3,1).
   for (const mode of ['light', 'dark'] as const) {
     test(`atrium drops translucency under forced colors in ${mode}`, async ({ page }) => {
       await page.goto('/#components?variant=atrium')
@@ -76,9 +74,7 @@ test.describe('QDS variant distinctiveness lab', () => {
     })
   }
 
-  // The capsule geometry and the switch "on" fill were both silently lost once:
-  // the generic size ramp re-emits the toggle tokens, and the base truthy track
-  // rule ties with the atrium off-state rule on specificity.
+  // Both of these were silently dead once; this is their regression gate.
   test('atrium switch keeps its capsule geometry and an on-state fill', async ({ page }) => {
     await page.goto('/#catalog?variant=atrium')
     await applyTheme(page, 'light', 'atrium')
