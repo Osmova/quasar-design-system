@@ -11,10 +11,12 @@ surface with charcoal type and pastel role washes, and the `one` variant referen
 Quasar component overrides, and a runtime light/dark/system + variant controller.
 The fifth variant, `shadcn`, provides opaque New York-inspired native Quasar styling with
 Neutral/Gray/Zinc/Stone/Slate palettes. It requires Quasar >=2.35; the existing ^2.0.0 peer range
-remains for existing variants. No mandatory Tailwind/Reka dependency is introduced. The sixth,
-`atrium`, is the responsive iPad/macOS-inspired system: floating translucent panels, capsule
-segments, grouped inset rows and capability-aware density, on the native system font stack with no
-Apple font or symbol assets and an opaque fallback wherever translucency is unavailable or refused.
+remains for existing variants. No mandatory Tailwind/Reka dependency is introduced.
+
+An `atrium` profile (responsive iPad/macOS-inspired) and a `zen` profile (soft pastel reading) have
+tokens and component grammar in the bundle but are **deliberately unregistered**: neither appears in
+`DESIGN_SYSTEM_VARIANTS`, so the runtime never applies their classes and neither is a public
+contract. Do not document, export or select them until their variant tasks close.
 
 It is a pure visual product: **no business logic, no entity/model layer, no API/transport code, no
 permissions, no app routes, no private endpoints.** Prefer semantic token names over app-specific
@@ -89,7 +91,7 @@ and `@include` it in `index.scss` (and the layered entry).
   `$q.dark`, and writes `data-qds-mode` / `data-qds-resolved` / `data-qds-variant` plus the
   `qds-theme-light|dark` and `.qds-ui` classes onto the target (default `document.body`).
 - `.qds-ui` is the scoping class the stronger overrides depend on — it is added here, not by hand.
-- Applies the `variant` as a body class (`qds-variant-fluent|ink|one|term|shadcn|atrium`; legacy `air`/`glass`/`studio` normalize to `fluent`; legacy `feather` normalizes to `ink`; legacy `mobile`/`terminal` normalize to `one`/`term`).
+- Applies the `variant` as a body class (`qds-variant-fluent|ink|one|term|shadcn`; legacy `air`/`glass`/`studio` normalize to `fluent`; legacy `feather` normalizes to `ink`; legacy `mobile`/`terminal` normalize to `one`/`term`).
 - Exposes `shadcnBaseColor` in options/state/computed refs and `setShadcnBaseColor()`; exports
   `SHADCN_BASE_COLORS` and `ShadcnBaseColor`. Invalid palettes normalize to Neutral. Selection survives
   other variants, while the active palette attribute exists only on shadcn.
@@ -108,7 +110,7 @@ and `@include` it in `index.scss` (and the layered entry).
 
 ### Themes vs variants — `src/themes/index.ts`
 
-There is **one theme** (`default`). "Variants" (`fluent`, `ink`, `one`, `term`, `shadcn`, `atrium`) are mood shifts
+There is **one theme** (`default`). "Variants" (`fluent`, `ink`, `one`, `term`, `shadcn`) are mood shifts
 expressed purely as CSS classes (`DESIGN_SYSTEM_VARIANTS[*].cssClass`) over the same token system —
 not separate brands. Legacy inputs `air`/`glass`/`studio` normalize to `fluent`; `feather` normalizes
 to `ink`. New themes start as variables-only files: `src/themes/{name}.scss` for CSS

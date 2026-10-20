@@ -30,7 +30,7 @@ The default language is Microsoft Fluent 2-inspired and neutral-first: colour ma
 ## Install
 
 ```bash
-pnpm add @osmova/quasar-design-system@next
+pnpm add @osmova/quasar-design-system
 ```
 
 > **Built TS + source SCSS.** TypeScript runtime entrypoints ship pre-compiled as ESM
@@ -96,7 +96,7 @@ Optional modules stay out of the default runtime and CSS bundle. Install their n
 `QdsWindow` wraps `@quasar/quasar-ui-qwindow` with QDS BEM chrome (`.qds-window`, `.qds-window__*`, `.qds-window--*`) while passing QWindow props, slots, methods, and events through to the native component.
 
 ```bash
-pnpm add @quasar/quasar-ui-qwindow @osmova/quasar-design-system@next
+pnpm add @quasar/quasar-ui-qwindow @osmova/quasar-design-system
 ```
 
 ```ts
@@ -182,8 +182,7 @@ regular material; dialogs and the bottom sheet the thick one; tooltips the thin 
 
 Materials fall back to solid surfaces without `backdrop-filter` support, under `prefers-reduced-transparency: reduce`,
 and in forced-colors mode. The `ink` variant is always solid; `term` keeps acrylic only on menus and opt-in materials;
-`one` keeps acrylic menus, tooltips and popups on a flat page (no Mica tint), with solid dialogs and bottom sheets;
-`atrium` uses the thin material on header, footer and drawer chrome as translucent sheets over a grouped page, with solid panels.
+`one` keeps acrylic menus, tooltips and popups on a flat page (no Mica tint), with solid dialogs and bottom sheets.
 
 Tokens: `--qds-material-{thin,regular,thick}-{bg,blur,filter}`, `--qds-material-saturate`, `--qds-material-stroke`,
 `--qds-material-edge`, `--qds-mica-alt`, `--qds-backdrop` (a full `background` value, not a colour).
@@ -197,7 +196,6 @@ The package is structured around `src/themes/`. For now there is one real theme,
 - `one`: Samsung One UI-inspired neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent, and touch-friendly rhythm.
 - `term`: opaque amber developer UI on warm cream or near-black panes, with crisp hairline rules, amber fills carrying dark ink, and a monospace-forward feel.
 - `shadcn`: opaque New York-inspired native Quasar controls with Neutral (default), Gray, Zinc, Stone, and Slate base palettes, compact 36px regular controls, 8px control radii, and 14px card radii. No Tailwind or Reka dependency is required by the package.
-- `atrium`: a responsive iPad/macOS-inspired system — quiet floating translucent panels over a grouped background, capsule segments, grouped inset rows, soft focus rings, 10px control and 18px block radii, and density that follows input capability rather than viewport width alone. It uses the native system font stack and ships no Apple font or symbol assets. Translucency is decoration only: `@supports not (backdrop-filter)`, `prefers-reduced-transparency` and forced colors all fall back to opaque surfaces.
 
 They are not separate brands — deliberate overlays over the same token system.
 
@@ -206,7 +204,7 @@ Choose the variant once at app startup and let the runtime keep the matching bod
 ```ts
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'ink', // fluent | ink | one | term | shadcn | atrium
+  variant: 'ink', // fluent | ink | one | term | shadcn
 })
 ```
 
@@ -214,7 +212,7 @@ Legacy inputs `air`, `glass`, and `studio` resolve to `fluent`; `feather` resolv
 
 ### Shadcn adoption and compatibility
 
-The new `shadcn` styling requires **Quasar 2.35 or newer**. The package's existing `quasar: ^2.0.0` peer range is unchanged for existing variants; this is not a claim that shadcn is tested on every Quasar 2 release. These changes are available as `@osmova/quasar-design-system@0.8.0-rc.3` on `next`; the legacy `@bastvi/quasar-design-system` stable `latest` channel remains on `0.7.0`.
+The new `shadcn` styling requires **Quasar 2.35 or newer**. The package's existing `quasar: ^2.0.0` peer range is unchanged for existing variants; this is not a claim that shadcn is tested on every Quasar 2 release. These changes ship in `@osmova/quasar-design-system` `0.8.0` on the stable `latest` channel; the legacy `@bastvi/quasar-design-system` package remains on `0.7.0` and receives no further releases.
 
 ```ts
 import {
