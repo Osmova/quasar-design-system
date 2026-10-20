@@ -96,12 +96,17 @@ export async function coarsePointer(page: Page): Promise<boolean> {
 // Page navigation lives in a drawer that is collapsed on the touch project.
 export async function gotoGalleryPage(page: Page, label: string) {
   const tab = page.getByRole('tab', { name: label, exact: true })
-  const collapsed = !(await tab.isVisible())
-  if (collapsed) await page.locator('.gallery-burger').click()
+  if (await tab.isVisible()) {
+    await tab.click()
+    await expect(tab).toHaveAttribute('aria-selected', 'true')
+    return
+  }
+  // Picking a page closes the overlay drawer, which unmounts the tab that was
+  // clicked, so the settled drawer is the only state worth waiting on here.
+  await page.locator('.gallery-burger').click()
+  await expect(tab).toBeVisible()
   await tab.click()
-  await expect(tab).toHaveAttribute('aria-selected', 'true')
-  // The overlay drawer would otherwise intercept pointer events on the page it opened.
-  if (collapsed) await expect(page.locator('.gallery-drawer')).toBeHidden()
+  await expect(page.locator('.gallery-drawer')).toBeHidden()
 }
 
 // The drawer is unmounted while collapsed, so reading the active page needs it open.

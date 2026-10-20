@@ -39,7 +39,27 @@ test.describe('QDS variant distinctiveness lab', () => {
     expect.soft(await term.evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-font-family').trim()), 'Term body font token is monospace').toContain('ui-monospace')
     expect.soft(await term.evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-control-text-transform').trim()), 'Term controls request uppercase').toBe('uppercase')
     expect.soft(await computed(page, '[data-test="qds-variant-card-term"] .q-btn', 'text-transform'), 'Term button renders uppercase').toBe('uppercase')
+    const atrium = page.locator('[data-test="qds-variant-card-atrium"]')
+    expect.soft(await atrium.evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-font-family').trim()), 'Atrium uses the native system stack').toContain('-apple-system')
+    const atriumRow = await atrium.locator('.q-list .q-item').first().evaluate((el) => getComputedStyle(el).minHeight)
+    expect.soft(parseFloat(atriumRow), 'Atrium grouped rows stay roomy').toBeGreaterThanOrEqual(44)
+    expect.soft(await computed(page, '[data-test="qds-variant-card-atrium"] .q-item.q-item--active', 'background-color'), 'Atrium active row takes the brand wash').toBe('rgb(228, 238, 252)')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-atrium"] .variant-card__nested', 'box-shadow'), 'Atrium nests without a second drop').toBe('none')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-atrium"] .variant-card__nested', 'border-top-color'), 'Atrium nested panels keep the hairline edge').toBe('rgb(229, 229, 234)')
+    expect.soft(await atrium.evaluate((el) => getComputedStyle(el).getPropertyValue('--_qds-atrium-knob').trim()), 'Atrium keeps a light switch knob in both schemes').toBe('#ffffff')
+
     expect.soft(await resolvedColor(page, '--qds-color-primary'), 'Fluent primary remains calibrated from source tokens').toBe('rgb(15, 108, 189)')
+  })
+
+  // The variant cards carry the variant class themselves, so the body-level
+  // grammar a real app gets is only observable once the whole page is atrium.
+  test('atrium nests panels and keeps a light knob when the page itself is atrium', async ({ page }) => {
+    await page.goto('/#variants')
+    await applyTheme(page, 'dark', 'atrium')
+
+    expect.soft(await customProperty(page, '--_qds-atrium-knob'), 'the knob stays light against a dark track').toBe('#ffffff')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-atrium"] .variant-card__nested', 'border-radius'), 'nested panels step down to the control radius').toBe('10px')
+    expect.soft(await computed(page, '.q-header', 'backdrop-filter'), 'chrome is a translucent sheet').not.toBe('none')
   })
 
   // The dark scope selector list reaches (0,3,1) while a bare-class fallback is
@@ -55,4 +75,26 @@ test.describe('QDS variant distinctiveness lab', () => {
       expect.soft(await customProperty(page, '--qds-card-stroke'), 'the card stroke becomes opaque').not.toContain('rgba')
     })
   }
+
+  // The capsule geometry and the switch "on" fill were both silently lost once:
+  // the generic size ramp re-emits the toggle tokens, and the base truthy track
+  // rule ties with the atrium off-state rule on specificity.
+  test('atrium switch keeps its capsule geometry and an on-state fill', async ({ page }) => {
+    await page.goto('/#catalog?variant=atrium')
+    await applyTheme(page, 'light', 'atrium')
+
+    expect.soft(await customProperty(page, '--qds-toggle-track-width'), 'the capsule survives the generic size ramp').toBe('3.1875rem')
+    const toggle = page.locator('[data-test="qds-catalog-toggle"]')
+    await expect(toggle).toBeVisible()
+    const track = toggle.locator('.q-toggle__track')
+    const inner = toggle.locator('.q-toggle__inner')
+    const startedOn = await inner.evaluate((el) => el.classList.contains('q-toggle__inner--truthy'))
+    const before = await track.evaluate((el) => getComputedStyle(el).backgroundColor)
+    await inner.click()
+    await expect(inner).toHaveClass(startedOn ? /q-toggle__inner--falsy/ : /q-toggle__inner--truthy/)
+    const after = await track.evaluate((el) => getComputedStyle(el).backgroundColor)
+    const [on, off] = startedOn ? [before, after] : [after, before]
+    expect.soft(on, 'the on track carries the role colour, not the off fill').not.toBe(off)
+    expect.soft(on, 'the on track resolves to atrium primary').toBe('rgb(11, 97, 214)')
+  })
 })

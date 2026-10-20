@@ -1,4 +1,5 @@
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $nav-parent: ':is(.q-drawer, nav) .q-expansion-item:is(.q-expansion-item--collapsed, .q-drawer--mini *):has(.q-item--active) > .q-expansion-item__container > .q-item';
 $rail: ".qds-ui .q-item:is(.q-item--active, [aria-selected='true'])::before, .qds-ui #{$nav-parent}::before";
@@ -108,4 +109,17 @@ $rail: ".qds-ui .q-item:is(.q-item--active, [aria-selected='true'])::before, .qd
   @media (forced-colors: active) {
     #{$shadcn} .q-item:focus-visible::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; outline: var(--qds-focus-ring-width) solid Highlight; outline-offset: calc(-1 * var(--qds-focus-ring-width)); }
   }
+
+  // A grouped list is one inset block, so the rounded edge belongs to the group
+  // and separators start at the row text instead of cutting the whole block.
+  #{$atrium} .q-list--bordered { padding: 0; overflow: hidden; background: var(--qds-surface-0); border-color: var(--qds-border-subtle); }
+  #{$atrium} .q-list--separator > .q-item-type + .q-item-type { margin-inline-start: var(--qds-space-md); padding-inline-start: 0; }
+  #{$atrium} .q-item { padding-inline: var(--qds-space-md); border-radius: var(--qds-radius-control); }
+  #{$atrium} .q-list--bordered > .q-item { border-radius: 0; }
+  #{$atrium} .q-item:is(.q-item--active, [aria-selected='true']) { color: var(--qds-fg-brand); background-color: var(--qds-surface-brand-soft); }
+  #{$atrium} .q-item:is(.q-item--active, [aria-selected='true'])::before,
+  #{$atrium} #{$nav-parent}::before { display: none; }
+  #{$atrium} .q-list .q-item__label--header { padding: var(--qds-space-md) var(--qds-space-md) var(--qds-space-xs); color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
+  #{$atrium} .q-item .q-item__section--side > .q-icon { color: var(--qds-fg-muted); font-size: var(--qds-control-icon-size-md); }
+  #{$atrium} .q-expansion-item { border-radius: var(--qds-radius-lg); }
 }

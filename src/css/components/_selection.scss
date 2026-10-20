@@ -1,4 +1,5 @@
 @use '../importance';
+$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive, .text-negative, .text-warning, .text-info)';
 
@@ -329,6 +330,22 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
   .qds-ui .qds-variant-term .q-slider:not(.disabled) .q-slider__thumb { border-color: var(--qds-selection-on, var(--qds-text-on-primary)); }
   .qds-ui.qds-variant-term .q-slider:not(.disabled) .q-slider__selection,
   .qds-ui .qds-variant-term .q-slider:not(.disabled) .q-slider__selection { outline: var(--qds-border-width-control) solid var(--qds-selection-on, var(--qds-text-on-primary)); }
+
+  // The switch is a filled capsule whose track carries the state colour; its
+  // knob stays light in both schemes rather than taking an on-fill foreground.
+  #{$atrium} .q-toggle--dense { --qds-toggle-track-width: 2.5rem; --qds-toggle-track-height: 1.5rem; }
+  #{$atrium} .q-toggle .q-toggle__track { background: var(--qds-surface-3); border-color: transparent; }
+  #{$atrium} .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__track { background: currentColor; border-color: transparent; }
+  #{$atrium} .q-toggle.disabled .q-toggle__inner--falsy .q-toggle__track { background: var(--qds-surface-2); }
+  #{$atrium} .q-toggle .q-toggle__thumb::after,
+  #{$atrium} .q-toggle .q-toggle__inner--truthy .q-toggle__thumb::after,
+  #{$atrium} .q-toggle.disabled .q-toggle__thumb::after { background: var(--_qds-atrium-knob); box-shadow: var(--qds-shadow-sm); }
+  #{$atrium} .q-toggle:not(.disabled):hover .q-toggle__inner--falsy .q-toggle__track { background: var(--qds-stroke-strong); border-color: transparent; }
+  #{$atrium} :is(.q-checkbox, .q-radio) :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet, .q-radio__inner--truthy) :is(.q-checkbox__bg, .q-radio__bg) { border-color: transparent; }
+  #{$atrium} .q-radio .q-radio__inner--truthy .q-radio__bg { background: currentColor; }
+  #{$atrium} .q-radio .q-radio__inner--truthy .q-radio__check { fill: var(--qds-selection-on, var(--qds-text-on-primary)); }
+  #{$atrium} .q-slider .q-slider__thumb { background: var(--_qds-atrium-knob); border-color: transparent; box-shadow: var(--qds-shadow-sm); }
+  #{$atrium} .q-slider .q-slider__inner { background: var(--qds-surface-2); }
 
   #{$shadcn} {
     :is(.q-checkbox, .q-radio) :is(.q-checkbox__inner--falsy, .q-radio__inner--falsy) { color: var(--qds-control-stroke-strong); }

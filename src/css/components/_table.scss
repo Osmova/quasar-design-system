@@ -1,6 +1,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
@@ -94,4 +95,15 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$shadcn} .q-table__container.q-table--flat { box-shadow: none; }
   #{$shadcn} .q-table__container.q-table--square { border-radius: 0; }
   #{$shadcn} .q-card > .q-table__container { background: transparent; box-shadow: none; }
+
+  // A table is a grouped block too: hairline rules, a quiet header and no
+  // ruled line under the last row.
+  #{$atrium} .q-table__container { --qds-table-divider: var(--qds-border-subtle); overflow: hidden; }
+  #{$atrium} .q-table__card { box-shadow: var(--qds-shadow-md); }
+  #{$atrium} .q-table__container:is(.q-table--flat, .q-table--grid) { box-shadow: none; }
+  #{$atrium} .q-table th { color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
+  #{$atrium} .q-table tbody tr:last-child td { border-bottom-color: transparent; }
+  #{$atrium} .q-table__grid-item-card { border-radius: var(--qds-radius-control); border-color: var(--qds-border-subtle); }
+  #{$atrium} .q-table__container.q-table--square { border-radius: 0; }
+  #{$atrium} .q-card > .q-table__container { background: transparent; box-shadow: none; }
 }

@@ -1,5 +1,6 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
@@ -23,6 +24,19 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
   #{$one} .q-drawer--mini { background: var(--qds-card-fill); }
   #{$one} .q-drawer--mini .q-list { margin: 0; background: transparent; }
+
+  // The sidebar is the same translucent sheet as the header, with capsule rows.
+  #{$atrium} .q-drawer {
+    background: var(--qds-material-thin-bg);
+    backdrop-filter: var(--qds-material-thin-filter);
+    -webkit-backdrop-filter: var(--qds-material-thin-filter);
+  }
+  #{$atrium} .q-drawer.q-drawer--bordered { border-color: var(--qds-border-subtle); }
+  #{$atrium} .q-drawer .q-list { padding: var(--qds-space-sm); }
+  #{$atrium} .q-drawer .q-item { padding-inline: var(--qds-space-sm); border-radius: var(--qds-radius-control); }
+  #{$atrium} .q-drawer .q-layout__shadow::after { box-shadow: none; }
+  #{$atrium} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
+  #{$atrium} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
 
   #{$shadcn} .q-drawer { color: var(--qds-shadcn-sidebar-foreground); background: var(--qds-shadcn-sidebar); }
   #{$shadcn} .q-drawer.q-drawer--bordered { border-color: var(--qds-shadcn-sidebar-border); }

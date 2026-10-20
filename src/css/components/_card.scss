@@ -4,6 +4,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
+$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $framed: '.q-card--bordered, .qds-card--readable, .qds-card--contrast, .qds-card--opaque, .qds-card--solid';
 $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark)';
@@ -110,6 +111,17 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$term} :is(.q-card, .qds-card, .qds-tile):where(:not(.qds-material, .qds-card--transient)) { background: var(--qds-card-fill); }
   #{$term} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(.qds-material, .qds-card--transient)) { background: var(--qds-bg-surface-1); }
   #{$term} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(#{$framed})) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
+
+  // Panels float on the grouped background: one hairline, a soft drop, and a
+  // header that separates by spacing rather than a ruled line.
+  #{$atrium} :is(.q-card, .qds-card, .qds-tile) { border-color: var(--qds-border-subtle); box-shadow: var(--qds-shadow-md); }
+  #{$atrium} .q-card > .q-card__section--vert { padding: var(--qds-space-md) var(--qds-space-lg); }
+  #{$atrium} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { padding: var(--qds-space-md) var(--qds-space-lg); border-block-end-color: transparent; }
+  #{$atrium} .q-card > .q-card__actions { justify-content: flex-end; gap: var(--qds-space-sm); padding: 0 var(--qds-space-lg) var(--qds-space-md); }
+  #{$atrium} .q-card > .q-card__actions .q-btn + .q-btn { margin-inline-start: 0; }
+  #{$atrium} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { background: var(--qds-bg-surface-1); border-radius: var(--qds-radius-control); box-shadow: none; }
+  #{$atrium} .q-card.q-card--flat { box-shadow: none; }
+  #{$atrium} .q-card.q-card--square { border-radius: 0; }
 
   #{$shadcn} :is(.q-card, .qds-card, .qds-tile) { color: var(--qds-shadcn-card-foreground); }
   #{$shadcn} .q-card > .q-card__section--vert { padding: var(--qds-space-lg); }

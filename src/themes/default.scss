@@ -262,6 +262,17 @@
   --qds-segmented-track-bg: var(--qds-surface-2);
   --qds-segmented-thumb-bg: var(--qds-surface-0);
   --qds-row-radius: var(--qds-radius-control);
+  // Capsule switch geometry. It belongs here, after qds-variant-scheme, because
+  // the generic ramp re-emits these three in the same block.
+  --qds-toggle-track-width: 3.1875rem;
+  --qds-toggle-track-height: 1.9375rem;
+  --qds-toggle-thumb-inset: 0.125rem;
+  // The switch and slider knob stays light in both schemes, unlike an on-fill foreground.
+  @if $scheme == light {
+    --_qds-atrium-knob: #{qds-variant-token(atrium, light-surface-0)};
+  } @else {
+    --_qds-atrium-knob: #{qds-variant-token(atrium, dark-text-strong)};
+  }
 }
 
 @mixin qds-atrium-scopes {
@@ -269,6 +280,8 @@
   .qds-variant-atrium {
     --qds-font-family: #{qds-variant-token(atrium, font-family)};
     --qds-font-family-display: #{qds-variant-token(atrium, font-family-display)};
+    --qds-motion-fast: #{qds-variant-token(atrium, motion-fast)};
+    --qds-motion-ease-out: #{qds-variant-token(atrium, motion-ease-out)};
     @include qds-variant-scheme(atrium);
     @include fallbacks.qds-material-tokens(light);
     @include qds-atrium-material(light);
