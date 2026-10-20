@@ -5,7 +5,7 @@ export const root = new URL('../../', import.meta.url)
 export const families = ['button', 'field', 'tabs', 'menu']
 const imports = families.map((name) => `@use 'src/css/components/${name}';`).join('\n')
 
-// A deliberately utilitarian test specimen, NOT a proposed Ink/Folio/Apple design.
+// A deliberately utilitarian test specimen, NOT a proposed Ink/Zen/Apple design.
 // These values and every visual recipe are test-owned, with no production tokens.
 const grammar = `
 @mixin pilot-button {

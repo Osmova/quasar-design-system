@@ -1,4 +1,4 @@
-// Computed-paint proof for the Folio pilot: real Quasar controls, the real
+// Computed-paint proof for the Zen pilot: real Quasar controls, the real
 // compiled QDS bundle, and measured contrast. Nothing here is judged by eye and
 // nothing here claims anything about physical e-paper hardware.
 import assert from 'node:assert/strict'
@@ -13,7 +13,7 @@ const galleryRequire = createRequire(new URL('examples/gallery/package.json', ro
 let chromium
 try { ({ chromium } = galleryRequire('@playwright/test')) }
 catch (cause) {
-  throw new Error('The Folio browser proof requires the full pnpm workspace install (including examples/gallery). Run pnpm install --frozen-lockfile, then pnpm -C examples/gallery exec playwright install chromium.', { cause })
+  throw new Error('The Zen browser proof requires the full pnpm workspace install (including examples/gallery). Run pnpm install --frozen-lockfile, then pnpm -C examples/gallery exec playwright install chromium.', { cause })
 }
 
 const assets = {
@@ -55,7 +55,7 @@ async function mount(browser, bodyClass) {
   await page.evaluate(() => {
     const { createApp, h, reactive, nextTick } = Vue
     const { QBtn, QInput, QTabs, QTab, QMenu, QList, QItem, QItemSection, QSeparator } = Quasar
-    const state = reactive({ value: 'Folio', tab: 'a', menu: false, error: false })
+    const state = reactive({ value: 'Zen', tab: 'a', menu: false, error: false })
     const app = createApp({ setup: () => () => [
       h('div', { style: 'display:flex;gap:16px;flex-wrap:wrap' }, [
         h(QBtn, { id: 'button', label: 'Action' }),
@@ -64,19 +64,19 @@ async function mount(browser, bodyClass) {
           .map((role) => h(QBtn, { id: `fill-${role}`, class: 'role-fill', label: role, color: role })),
       ]),
       h(QInput, { id: 'field', modelValue: state.value, 'onUpdate:modelValue': (v) => { state.value = v },
-        label: 'Reading label', outlined: true, hint: 'Folio help', error: state.error, errorMessage: 'Folio error' }),
+        label: 'Reading label', outlined: true, hint: 'Zen help', error: state.error, errorMessage: 'Zen error' }),
       h(QTabs, { id: 'tabs', modelValue: state.tab, 'onUpdate:modelValue': (v) => { state.tab = v } },
         () => ['a', 'b', 'c'].map((name) => h(QTab, { name, label: `Tab ${name}` }))),
       h(QBtn, { id: 'anchor', label: 'Menu', onClick: () => { state.menu = true } }, () => h(QMenu, {
         id: 'menu', noParentEvent: true, modelValue: state.menu, 'onUpdate:modelValue': (v) => { state.menu = v }, transitionDuration: 0,
       }, () => h(QList, {}, () => [
-        h(QItem, { id: 'item', clickable: true, active: true }, () => h(QItemSection, {}, () => 'Folio item')),
+        h(QItem, { id: 'item', clickable: true, active: true }, () => h(QItemSection, {}, () => 'Zen item')),
         h(QSeparator, { id: 'separator' }),
       ]))),
     ] })
     app.use(Quasar)
     app.mount('#app')
-    window.folio = { state, async set(values) { Object.assign(state, values); await nextTick() }, dispose() { app.unmount() } }
+    window.zen = { state, async set(values) { Object.assign(state, values); await nextTick() }, dispose() { app.unmount() } }
   })
   return page
 }
@@ -91,7 +91,7 @@ const read = (page, selector, properties) => page.evaluate(([target, names]) => 
 const PAINT = ['color', 'background-color', 'border-top-width', 'border-top-color', 'border-top-style', 'box-shadow', 'outline-width', 'outline-color', 'font-weight']
 
 async function observe(page) {
-  await page.evaluate(() => window.folio.set({ menu: true }))
+  await page.evaluate(() => window.zen.set({ menu: true }))
   await page.waitForSelector('.q-menu', { state: 'visible' })
   const samples = {}
   for (const [name, selector] of [
@@ -105,7 +105,7 @@ async function observe(page) {
   samples.indicator = await read(page, '.q-tab--active .q-tab__indicator', ['display'])
   samples.fieldAfter = await page.evaluate(() => getComputedStyle(document.querySelector('.q-field__control'), '::after').content)
   samples.page = await read(page, 'body', ['background-color', 'color'])
-  await page.evaluate(() => window.folio.set({ menu: false }))
+  await page.evaluate(() => window.zen.set({ menu: false }))
   return samples
 }
 
@@ -117,7 +117,7 @@ const record = (scheme, label, ratio, minimum) => {
 
 const browser = await chromium.launch()
 try {
-  for (const [scheme, bodyClass] of [['light', 'qds-ui qds-variant-folio'], ['dark', 'qds-ui qds-variant-folio qds-theme-dark']]) {
+  for (const [scheme, bodyClass] of [['light', 'qds-ui qds-variant-zen'], ['dark', 'qds-ui qds-variant-zen qds-theme-dark']]) {
     const page = await mount(browser, bodyClass)
     try {
       const paint = await observe(page)
@@ -185,8 +185,8 @@ try {
       assert.notEqual(paint.button['box-shadow'], 'none', `${scheme} button keeps gentle raised depth`)
       assert.match(paint.field['box-shadow'], /inset/, `${scheme} field keeps a recessed well`)
       assert.match(paint.tabsTrack['box-shadow'], /inset/, `${scheme} tabs track keeps a recessed well`)
-      assert.equal(paint.indicator.display, 'none', `${scheme} Folio uses no tab rail`)
-      assert.equal(paint.fieldAfter, 'none', `${scheme} Folio paints no field focus bar`)
+      assert.equal(paint.indicator.display, 'none', `${scheme} Zen uses no tab rail`)
+      assert.equal(paint.fieldAfter, 'none', `${scheme} Zen paints no field focus bar`)
       assert.ok(Number(paint.activeLabel['font-weight']) > Number(paint.idleLabel['font-weight']), `${scheme} active tab carries a non-colour weight cue (${paint.activeLabel['font-weight']} vs ${paint.idleLabel['font-weight']})`)
 
       // Focus rings the whole control instead of underlining it.
@@ -196,7 +196,7 @@ try {
       record(scheme, 'field focus ring', contrast(rgb(focused['outline-color']), opaque(paint.field['background-color'], `${scheme} focus`)), 3)
 
       // Error state never falls back to Quasar's native #c10015.
-      await page.evaluate(() => window.folio.set({ error: true }))
+      await page.evaluate(() => window.zen.set({ error: true }))
       const error = await read(page, '.q-field--error .q-field__control', ['border-top-color'])
       assert.notDeepEqual(rgb(error['border-top-color']).slice(0, 3), [193, 0, 21], `${scheme} field error must not use the native #c10015`)
       record(scheme, 'field error boundary', contrast(rgb(error['border-top-color']), opaque(paint.field['background-color'], `${scheme} error`)), 3)
@@ -204,7 +204,7 @@ try {
   }
 
   // Reading presentation: decorative depth and motion gone, boundaries intact.
-  for (const [scheme, bodyClass] of [['light', 'qds-ui qds-variant-folio qds-reading'], ['dark', 'qds-ui qds-variant-folio qds-theme-dark qds-reading']]) {
+  for (const [scheme, bodyClass] of [['light', 'qds-ui qds-variant-zen qds-reading'], ['dark', 'qds-ui qds-variant-zen qds-theme-dark qds-reading']]) {
     const page = await mount(browser, bodyClass)
     try {
       const paint = await observe(page)
@@ -215,7 +215,7 @@ try {
       }
       assert.ok(Number(paint.activeLabel['font-weight']) > Number(paint.idleLabel['font-weight']), `reading ${scheme} active tab keeps its weight cue`)
       // observe() closes the menu again, so reopen it before probing the portal.
-      await page.evaluate(() => window.folio.set({ menu: true }))
+      await page.evaluate(() => window.zen.set({ menu: true }))
       await page.waitForSelector('.q-menu', { state: 'visible' })
       const motion = await page.evaluate(() => ['#button', '.q-field__control', '.q-tab', '.q-menu'].map((selector) => {
         const computed = getComputedStyle(document.querySelector(selector))
@@ -227,4 +227,4 @@ try {
 } finally { await browser.close() }
 
 console.log(JSON.stringify({ observations: results.length, minimum: Math.min(...results.map((r) => r.contrast)), results }, null, 2))
-console.log(`Folio browser proof PASS: ${results.length} computed contrast observations across light/dark, plus reading-mode depth, motion, boundary and opacity checks.`)
+console.log(`Zen browser proof PASS: ${results.length} computed contrast observations across light/dark, plus reading-mode depth, motion, boundary and opacity checks.`)

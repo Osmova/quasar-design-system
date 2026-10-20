@@ -8,17 +8,17 @@ import { compileString } from 'sass'
 const ROOT = new URL('../', import.meta.url)
 const BASELINE = '71bb9d52bf483a93de0b50202df122b73f70ed9e'
 /**
- * Full-catalog allocation, reviewed 2026-10-16 (T193 Folio pilot). NOT an auto-ratchet:
+ * Full-catalog allocation, reviewed 2026-10-16 (T193 Zen pilot). NOT an auto-ratchet:
  * sized once for the whole planned variant catalog so each new variant does not trigger its
  * own raise. Exceeding these requires a fresh owner review, not a bump.
  *
- * Measured: the Folio pilot moved index.layered from 467546/47877 to 505908/50259 — +38362 min
- * for one variant, of which only 6360 is Folio's own component grammar. The remaining ~32000 is
+ * Measured: the Zen pilot moved index.layered from 467546/47877 to 505908/50259 — +38362 min
+ * for one variant, of which only 6360 is Zen's own component grammar. The remaining ~32000 is
  * the three-scheme token emission every variant pays under one-bundle delivery. Component source
  * lines moved 3633 -> 3777 for four pilot families.
  *
  * Allocated from that measurement — these parts are estimates, explicitly not measurements:
- * Folio completion beyond the four pilot families, Ink (T192) independent grammar over tokens
+ * Zen completion beyond the four pilot families, Ink (T192) independent grammar over tokens
  * already emitted, and Atrium (T194) as a new variant paying both tokens and grammar. Projected
  * full catalog ~570000 min / ~56800 gzip / ~4450 component lines; caps set just above that.
  */

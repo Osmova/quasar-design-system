@@ -1,13 +1,13 @@
 @use '../importance';
 @use 'variants/mechanics';
-@use 'variants/folio';
+@use 'variants/zen';
 @use 'variants/atrium';
 
 $one-field: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one) :is(.q-field--outlined, .q-field--filled)';
 
 // Compatibility owns label bands, focus bars and every old-profile override.
 @mixin styles($grammar: compatibility) {
-  @if $grammar == compatibility { @include compatibility-styles; @include folio.field; @include atrium.field; }
+  @if $grammar == compatibility { @include compatibility-styles; @include zen.field; @include atrium.field; }
   @else if $grammar == independent { @include mechanics.field; @content; }
   @else { @error 'Unknown field grammar: #{$grammar}'; }
 }

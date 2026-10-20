@@ -182,25 +182,25 @@
   }
 }
 
-// Folio keeps gentle raised/recessed depth, so shadows stay. Every affordance
+// Zen keeps gentle raised/recessed depth, so shadows stay. Every affordance
 // must still read with shadows off, which is why control strokes resolve to the
 // 3:1 stroke-strong value rather than the quiet divider border.
-@mixin qds-folio-paper($scheme) {
-  --qds-stroke-strong: #{qds-variant-token(folio, '#{$scheme}-stroke-strong')};
+@mixin qds-zen-paper($scheme) {
+  --qds-stroke-strong: #{qds-variant-token(zen, '#{$scheme}-stroke-strong')};
   @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
     --qds-#{$token}: var(--qds-stroke-strong);
   }
-  --qds-bg-overlay: #{qds-variant-token(folio, '#{$scheme}-scrim')};
-  // Folio owns its disabled value instead of inheriting the Fluent grey, and
+  --qds-bg-overlay: #{qds-variant-token(zen, '#{$scheme}-scrim')};
+  // Zen owns its disabled value instead of inheriting the Fluent grey, and
   // holds it at the 3:1 non-text floor even though WCAG 1.4.3 exempts it.
-  --qds-fg-disabled: #{qds-variant-token(folio, '#{$scheme}-fg-disabled')};
+  --qds-fg-disabled: #{qds-variant-token(zen, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
-  --qds-text-on-solid: #{map.get(qds-variant-token(folio, '#{$scheme}-on-fill'), primary)};
+  --qds-text-on-solid: #{map.get(qds-variant-token(zen, '#{$scheme}-on-fill'), primary)};
   --qds-fg-brand: color-mix(in srgb, var(--qds-color-primary) 80%, var(--qds-text-strong));
   @each $role in secondary, accent, positive, negative, warning, info {
     --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 80%, var(--qds-text-strong));
   }
-  // Quasar's native #c10015 validation paint must never reach a Folio field.
+  // Quasar's native #c10015 validation paint must never reach a Zen field.
   --qds-stroke-error: var(--qds-fg-negative);
   --qds-stroke-focus: var(--qds-fg-brand);
   --qds-segmented-track-bg: var(--qds-surface-2);
@@ -208,33 +208,33 @@
   --qds-row-radius: var(--qds-radius-control);
 }
 
-// Folio's emission is isolated in one mixin so the frozen pre-Folio default
+// Zen's emission is isolated in one mixin so the frozen pre-Zen default
 // theme hash stays verifiable by removing a single include, the same way
 // shadcn.scopes is removed. The hash is never regenerated.
-@mixin qds-folio-scopes {
+@mixin qds-zen-scopes {
   @layer qds.tokens {
-  .qds-variant-folio {
-    --qds-font-family: #{qds-variant-token(folio, font-family)};
-    --qds-font-family-display: #{qds-variant-token(folio, font-family-display)};
-    @include qds-variant-scheme(folio);
+  .qds-variant-zen {
+    --qds-font-family: #{qds-variant-token(zen, font-family)};
+    --qds-font-family-display: #{qds-variant-token(zen, font-family-display)};
+    @include qds-variant-scheme(zen);
     @include fallbacks.qds-material-tokens(solid);
-    @include qds-folio-paper(light);
+    @include qds-zen-paper(light);
   }
 
   @media not (pointer: coarse) {
-    .qds-variant-folio {
-      --qds-list-item-min-height-value: #{qds-variant-token(folio, list-item-min-height)};
-      --qds-menu-item-min-height-value: #{qds-variant-token(folio, menu-item-min-height)};
+    .qds-variant-zen {
+      --qds-list-item-min-height-value: #{qds-variant-token(zen, list-item-min-height)};
+      --qds-menu-item-min-height-value: #{qds-variant-token(zen, menu-item-min-height)};
     }
   }
 
-  .qds-theme-dark.qds-variant-folio,
-  .qds-theme-dark .qds-variant-folio,
-  body.qds-ui.body--dark.qds-variant-folio,
-  body.qds-ui.body--dark .qds-variant-folio {
-    @include qds-variant-scheme(folio, true);
+  .qds-theme-dark.qds-variant-zen,
+  .qds-theme-dark .qds-variant-zen,
+  body.qds-ui.body--dark.qds-variant-zen,
+  body.qds-ui.body--dark .qds-variant-zen {
+    @include qds-variant-scheme(zen, true);
     @include fallbacks.qds-material-tokens(solid);
-    @include qds-folio-paper(dark);
+    @include qds-zen-paper(dark);
   }
   }
 }
@@ -508,6 +508,6 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
   }
 }
 
-@include qds-folio-scopes;
+@include qds-zen-scopes;
 @include qds-atrium-scopes;
 @include shadcn.scopes;
