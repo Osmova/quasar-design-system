@@ -195,6 +195,7 @@ The package is structured around `src/themes/`. For now there is one real theme,
 - `ink`: paper-neutral editorial surfaces with charcoal type and coordinated pastel role washes.
 - `one`: Samsung One UI-inspired neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent, and touch-friendly rhythm.
 - `term`: opaque amber developer UI on warm cream or near-black panes, with crisp hairline rules, amber fills carrying dark ink, and a monospace-forward feel.
+- `zen`: soft tinted paper blocks with a quiet reading rhythm — warm greige surfaces, 12px control and 20px block radii, gentle diffuse depth, and an essential 1px edge on every control so nothing depends on a shadow alone. The opt-in `.qds-reading` class strips decorative depth and motion while every boundary survives.
 - `shadcn`: opaque New York-inspired native Quasar controls with Neutral (default), Gray, Zinc, Stone, and Slate base palettes, compact 36px regular controls, 8px control radii, and 14px card radii. No Tailwind or Reka dependency is required by the package.
 
 They are not separate brands — deliberate overlays over the same token system.
@@ -204,7 +205,7 @@ Choose the variant once at app startup and let the runtime keep the matching bod
 ```ts
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'ink', // fluent | ink | one | term | shadcn
+  variant: 'ink', // fluent | ink | one | term | shadcn | zen
 })
 ```
 

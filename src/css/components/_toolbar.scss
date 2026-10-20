@@ -1,6 +1,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
@@ -59,6 +60,13 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$atrium} .q-toolbar__title { padding-inline: 0; font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
   #{$atrium} .q-bar:not(.q-bar--dark) { background: var(--qds-surface-1); border-radius: var(--qds-radius-control); }
   #{$atrium} .q-separator { background: var(--qds-border-subtle); }
+
+  // Header and footer are calm sheets with an essential edge, no elevation.
+  #{$zen} :is(.q-header, .q-footer) { background: var(--qds-surface-0); color: var(--qds-fg-default); box-shadow: none; }
+  #{$zen} .q-header { border-bottom: 1px solid var(--qds-stroke-strong); }
+  #{$zen} .q-footer { border-top: 1px solid var(--qds-stroke-strong); }
+  #{$zen} .q-toolbar__title { font-weight: var(--qds-font-weight-semibold); letter-spacing: 0; }
+
 
   #{$shadcn} :is(.q-header, .q-footer) { border-color: var(--qds-stroke-divider); box-shadow: none; }
   #{$shadcn} .q-toolbar { gap: var(--qds-space-sm); padding-inline: var(--qds-space-md); }

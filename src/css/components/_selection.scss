@@ -1,5 +1,6 @@
 @use '../importance';
 $atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive, .text-negative, .text-warning, .text-info)';
 
@@ -345,6 +346,18 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
   #{$atrium} .q-radio .q-radio__inner--truthy .q-radio__check { fill: var(--qds-selection-on, var(--qds-text-on-primary)); }
   #{$atrium} .q-slider .q-slider__thumb { background: var(--_qds-atrium-knob); border-color: transparent; box-shadow: var(--qds-shadow-sm); }
   #{$atrium} .q-slider .q-slider__inner { background: var(--qds-surface-2); }
+
+  // Every selection control keeps a real boundary in every state.
+  #{$zen} :is(.q-checkbox, .q-radio, .q-toggle) .q-icon { color: var(--qds-text-on-solid); }
+  #{$zen} .q-checkbox__bg { border-color: var(--qds-stroke-strong); border-radius: var(--qds-radius-sm); background: var(--qds-surface-0); }
+  #{$zen} .q-radio__bg { color: var(--qds-stroke-strong); }
+  #{$zen} .q-toggle__track { border: 1px solid var(--qds-stroke-strong); background: var(--qds-surface-1); opacity: 1; }
+  #{$zen} .q-toggle__inner--truthy .q-toggle__track { border-color: transparent; background: var(--qds-color-primary); }
+  #{$zen} .q-toggle__thumb { background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .q-slider__track-container { border-radius: var(--qds-radius-full); }
+  #{$zen} .q-slider .q-slider__inner { background: var(--qds-surface-2); }
+  #{$zen} .q-slider__thumb { color: var(--qds-color-primary); }
+
 
   #{$shadcn} {
     :is(.q-checkbox, .q-radio) :is(.q-checkbox__inner--falsy, .q-radio__inner--falsy) { color: var(--qds-control-stroke-strong); }

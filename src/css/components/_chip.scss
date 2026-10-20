@@ -11,6 +11,7 @@ $tonal-fills: ();
 }
 
 $tonal-fills: map.set($tonal-fills, 'grey', (fg: var(--qds-fg-default), bg: var(--qds-bg-layer)));
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui .q-chip {
@@ -154,4 +155,8 @@ $tonal-fills: map.set($tonal-fills, 'grey', (fg: var(--qds-fg-default), bg: var(
   #{button.$shadcn} .q-chip:is(#{button.$accent-fills}).qds-solid.q-chip--clickable:not(.disabled):hover { --qds-chip-fill: var(--_qds-hover); }
   #{button.$shadcn} .q-chip:is(#{button.$accent-fills}).qds-solid.q-chip--clickable:not(.disabled):active { --qds-chip-fill: var(--_qds-pressed); }
   @media (forced-colors: active) { #{button.$shadcn} .q-chip { border-color: ButtonText; } }
+
+  #{$zen} .q-chip { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-surface-1); }
+  #{$zen} .q-chip:is([class*='bg-']) { border-color: transparent; }
+  #{$zen} .q-chip.q-chip--clickable:not(.disabled):hover { background: var(--qds-surface-2); }
 }

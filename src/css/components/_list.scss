@@ -1,5 +1,6 @@
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $nav-parent: ':is(.q-drawer, nav) .q-expansion-item:is(.q-expansion-item--collapsed, .q-drawer--mini *):has(.q-item--active) > .q-expansion-item__container > .q-item';
 $rail: ".qds-ui .q-item:is(.q-item--active, [aria-selected='true'])::before, .qds-ui #{$nav-parent}::before";
@@ -121,4 +122,16 @@ $rail: ".qds-ui .q-item:is(.q-item--active, [aria-selected='true'])::before, .qd
   #{$atrium} .q-list .q-item__label--header { padding: var(--qds-space-md) var(--qds-space-md) var(--qds-space-xs); color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
   #{$atrium} .q-item .q-item__section--side > .q-icon { color: var(--qds-fg-muted); font-size: var(--qds-control-icon-size-md); }
   #{$atrium} .q-expansion-item { border-radius: var(--qds-radius-lg); }
+  // A reading list is one bounded block; the active row is a tinted band, not a rail.
+  #{$zen} .q-list--bordered { padding: 0; overflow: hidden; border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); }
+  #{$zen} .q-item { min-height: var(--qds-list-item-min-height); padding-inline: var(--qds-space-md); border-radius: var(--qds-radius-control); }
+  #{$zen} .q-list--bordered > .q-item { border-radius: 0; }
+  #{$zen} .q-list--separator > .q-item-type + .q-item-type { border-block-start: 1px solid var(--qds-stroke-strong); }
+  #{$zen} .q-item:not(.disabled):hover { background-color: var(--qds-surface-1); }
+  #{$zen} .q-item:is(.q-item--active, [aria-selected='true']) { color: var(--qds-fg-brand); background-color: var(--qds-surface-brand-soft); }
+  #{$zen} .q-item:is(.q-item--active, [aria-selected='true'])::before,
+  #{$zen} #{$nav-parent}::before { display: none; }
+  #{$zen} .q-list .q-item__label--header { padding: var(--qds-space-md) var(--qds-space-md) var(--qds-space-xs); color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} .q-item .q-item__section--side > .q-icon { color: var(--qds-fg-muted); }
+  #{$zen} .q-expansion-item { border-radius: var(--qds-radius-lg); }
 }

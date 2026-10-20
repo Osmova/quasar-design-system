@@ -3,6 +3,7 @@
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
@@ -75,4 +76,10 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
   #{$atrium} .q-dialog__message { color: var(--qds-fg-muted); }
   #{$atrium} .q-dialog__inner > .q-card > .q-card__actions { justify-content: flex-end; gap: var(--qds-space-sm); }
   #{$atrium} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); }
+
+  // The block language lifted off the page; zen overlays stay opaque.
+  #{$zen} .q-dialog__inner > .q-card { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-lg); }
+  #{$zen} .q-dialog__inner--maximized > .q-card { border: 0; border-radius: 0; box-shadow: none; }
+  #{$zen} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); background: var(--qds-surface-0); }
+
 }

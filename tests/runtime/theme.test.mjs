@@ -61,9 +61,11 @@ test('compiled package entrypoints expose every canonical variant and five exact
   assert.equal(runtimeExport, createDesignSystemController)
   assert.equal(themesExport, SHADCN_BASE_COLORS)
   assert.deepEqual(SHADCN_BASE_COLORS.map(({ name }) => name), ['neutral', 'gray', 'zinc', 'stone', 'slate'])
-  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn'])
+  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn', 'zen'])
   assert.equal(DESIGN_SYSTEM_VARIANTS.shadcn.cssClass, 'qds-variant-shadcn')
   assert.equal(isBuiltInDesignSystemVariantName('shadcn'), true)
+  assert.equal(DESIGN_SYSTEM_VARIANTS.zen.cssClass, 'qds-variant-zen')
+  assert.equal(isBuiltInDesignSystemVariantName('zen'), true)
   // atrium grammar ships but is deliberately unregistered until T194 closes.
   assert.equal(DESIGN_SYSTEM_VARIANTS.atrium, undefined)
   assert.equal(isBuiltInDesignSystemVariantName('atrium'), false)

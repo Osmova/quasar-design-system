@@ -3,6 +3,7 @@ $banner-roles: (positive: positive, negative: negative, warning: warning, info: 
 $ink-term: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink, .qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui .q-breadcrumbs { color: var(--qds-fg-muted); font-size: var(--qds-font-size-body1); }
@@ -171,4 +172,10 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
       .q-banner:is(.bg-#{$role}, .text-#{$role}) .q-banner__avatar { color: var(--qds-fg-#{$role}); }
     }
   }
+
+  #{$zen} .q-btn-group { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-control); overflow: hidden; box-shadow: none; }
+  #{$zen} .q-btn-group > .q-btn { border-radius: 0; box-shadow: none; }
+  #{$zen} .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-surface-1); padding: 0.125rem; }
+  #{$zen} .q-btn-toggle > .q-btn { border: 0; border-radius: var(--qds-radius-full); background: transparent; box-shadow: none; }
+  #{$zen} .q-btn-toggle > .q-btn.q-btn--active { background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
 }

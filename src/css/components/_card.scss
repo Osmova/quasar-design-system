@@ -5,6 +5,7 @@ $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $framed: '.q-card--bordered, .qds-card--readable, .qds-card--contrast, .qds-card--opaque, .qds-card--solid';
 $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark)';
@@ -121,6 +122,17 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$atrium} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { background: var(--qds-bg-surface-1); border-radius: var(--qds-radius-control); box-shadow: none; }
   #{$atrium} .q-card.q-card--flat { box-shadow: none; }
   #{$atrium} .q-card.q-card--square { border-radius: 0; }
+
+  // Blocks nest by tone, never by a second drop.
+  #{$zen} :is(.q-card, .qds-card, .qds-tile) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .q-card > .q-card__section--vert { padding: var(--qds-space-md) var(--qds-space-lg); }
+  #{$zen} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { padding: var(--qds-space-md) var(--qds-space-lg); border-block-end: 1px solid var(--qds-stroke-strong); background: none; }
+  #{$zen} .q-card > .q-card__actions { gap: var(--qds-space-sm); padding: var(--qds-space-sm) var(--qds-space-lg) var(--qds-space-md); }
+  #{$zen} .q-card > .q-card__actions .q-btn + .q-btn { margin-inline-start: 0; }
+  #{$zen} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { border-radius: var(--qds-radius-control); background: var(--qds-surface-1); box-shadow: none; }
+  #{$zen} .q-card.q-card--flat { box-shadow: none; }
+  #{$zen} .q-card.q-card--square { border-radius: 0; }
+  #{$zen} .q-card:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); }
 
   #{$shadcn} :is(.q-card, .qds-card, .qds-tile) { color: var(--qds-shadcn-card-foreground); }
   #{$shadcn} .q-card > .q-card__section--vert { padding: var(--qds-space-lg); }

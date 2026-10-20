@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { useDesignSystem } from '@osmova/quasar-design-system'
 import ShadcnPalettePanels from '../components/ShadcnPalettePanels.vue'
 
-type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
+type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen'
 const ds = useDesignSystem()
 
 type VariantSample = {
@@ -39,6 +39,12 @@ const variants: VariantSample[] = [
     sample: 'qdsctl --inspect',
   },
   {
+    name: 'zen',
+    label: 'Zen',
+    intent: 'Soft tinted paper blocks, a quiet reading rhythm and an essential edge on every control.',
+    sample: 'Reading pane 01',
+  },
+  {
     name: 'shadcn',
     label: 'Shadcn',
     intent: 'Opaque neutral New York surfaces, crisp outlines, and restrained role fills.',
@@ -52,6 +58,7 @@ const pages = reactive<Record<VariantName, number>>({
   one: 3,
   term: 3,
   shadcn: 3,
+  zen: 3,
 })
 </script>
 

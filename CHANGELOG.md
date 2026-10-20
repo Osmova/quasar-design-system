@@ -30,6 +30,15 @@ control layer, the form and app compositions and the Ink / Term / One variant re
 
 ### Added
 
+- **`zen` variant** — a soft reading surface and the sixth canonical variant. Warm greige paper
+  blocks (`#faf7f4` through `#dbd2d8`) with Figtree for UI and Literata for reading, 12px control
+  and 20px block radii, and gentle diffuse depth. Its governing rule is that **boundary is essential
+  and depth is decorative**: every control and block carries a real 1px edge, so nothing is legible
+  by shadow alone. Hover steps the face up a surface and pressed steps it down into an inset, so
+  depth never grows on press; nested blocks step by tone rather than stacking a second drop. Role
+  fills drop the stroke and carry their own on-fill foreground. The opt-in `.qds-reading` class
+  removes decorative depth and motion while every boundary survives.
+
 - **Fields**: a Windows 11 (WinUI 3) finish, with a layer fill, an elevation border and a strong bottom stroke.
   On focus the field switches to the input-active fill and shows the accent bar. Fields have no halo by default.
   Quasar `color`, forced colours and reduced motion are respected.

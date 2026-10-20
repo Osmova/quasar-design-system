@@ -1,4 +1,4 @@
-export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn'
+export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen'
 export type LegacyDesignSystemVariantName = 'studio' | 'air' | 'glass' | 'feather' | 'mobile' | 'terminal'
 export type BuiltInDesignSystemVariantName = CanonicalDesignSystemVariantName | LegacyDesignSystemVariantName
 
@@ -68,6 +68,12 @@ export const DESIGN_SYSTEM_VARIANTS = {
     description: 'Opaque New York-inspired surfaces with five neutral base palettes.',
     cssClass: 'qds-variant-shadcn',
   },
+  zen: {
+    name: 'zen',
+    label: 'Zen',
+    description: 'Soft tinted paper blocks with a quiet reading rhythm, gentle depth and an essential boundary on every control.',
+    cssClass: 'qds-variant-zen',
+  },
 } as Record<CanonicalDesignSystemVariantName, DesignSystemVariant> & {
   studio: DesignSystemVariant
   air: DesignSystemVariant
@@ -127,7 +133,7 @@ for (const [name, variant] of Object.entries(LEGACY_VARIANT_ALIASES)) {
 export const DEFAULT_THEME: QuasarDesignTheme = {
   name: DEFAULT_THEME_NAME,
   label: 'Default',
-  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, Term, and Shadcn variants.',
+  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, Term, Shadcn, and Zen variants.',
   variants: DESIGN_SYSTEM_VARIANTS,
 }
 
@@ -137,6 +143,7 @@ export const DESIGN_SYSTEM_THEMES = {
 
 export function isBuiltInDesignSystemVariantName(value: unknown): value is BuiltInDesignSystemVariantName {
   return value === 'fluent' || value === 'ink' || value === 'one' || value === 'term' || value === 'shadcn'
+    || value === 'zen'
     || value === 'studio' || value === 'air' || value === 'glass' || value === 'feather'
     || value === 'mobile' || value === 'terminal'
 }

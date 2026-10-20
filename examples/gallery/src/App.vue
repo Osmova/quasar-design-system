@@ -13,6 +13,7 @@ import {
   PhSun,
   PhTerminal,
   PhSquaresFour,
+  PhLeaf,
 } from '@phosphor-icons/vue'
 import {
   useDesignSystem,
@@ -58,6 +59,7 @@ const variantIcons: Record<string, Component> = {
   one: PhDeviceMobile,
   term: PhTerminal,
   shadcn: PhSquaresFour,
+  zen: PhLeaf,
 }
 const linkIcons: Record<string, Component> = {
   histoire: PhBooks,
