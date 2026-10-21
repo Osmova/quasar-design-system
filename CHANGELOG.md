@@ -30,8 +30,9 @@ control layer, the form and app compositions and the Ink / Term / One variant re
 
 ### Added
 
-- **`zen` variant** — a soft reading surface and the sixth canonical variant. Warm greige paper
-  blocks (`#faf7f4` through `#dbd2d8`) with Figtree for UI and Literata for reading, 12px control
+- **`zen` variant** — a soft reading surface and the sixth canonical variant. Warm linen paper
+  (`#faf8f3` through `#ddd4c4`) with a muted sage primary (`#4f6245`), Figtree for UI and Literata
+  for reading, 12px control
   and 20px block radii, and gentle diffuse depth. Its governing rule is that **boundary is essential
   and depth is decorative**: every control and block carries a real 1px edge, so nothing is legible
   by shadow alone. Hover steps the face up a surface and pressed steps it down into an inset, so
