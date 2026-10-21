@@ -557,7 +557,8 @@ watch(tab, revealActiveGalleryTab)
 
 .gallery-nav.gallery-nav.gallery-nav :deep(.q-tab--active) {
   background: color-mix(in srgb, var(--qds-color-primary) 12%, transparent);
-  color: var(--qds-color-primary);
+  /* A light-on-light primary (term amber) is unreadable as a label; the tint carries the accent. */
+  color: var(--qds-fg-strong);
   font-weight: 560;
 }
 
