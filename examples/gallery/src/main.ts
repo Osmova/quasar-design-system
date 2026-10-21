@@ -5,6 +5,7 @@ import { BottomSheet, Dialog, Loading, LoadingBar, Notify, Quasar } from 'quasar
 import './adoption-default.scss'
 
 // 3. Gallery-only demo helpers (NOT part of the published design-system package).
+import './fonts/plus-jakarta-sans.css'
 import './gallery.css'
 
 // 4. Optional design-system fonts (drive --qds-font-family* faces).

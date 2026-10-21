@@ -361,6 +361,7 @@ watch(tab, revealActiveGalleryTab)
 .gallery-header,
 .gallery-nav {
   --gallery-chrome-font: 'Inter Variable', Inter, system-ui, sans-serif;
+  --gallery-title-font: 'Plus Jakarta Sans', 'Inter Variable', Inter, system-ui, sans-serif;
   --qds-button-min-height: 32px;
   --qds-button-size-sm: 32px;
   --qds-button-size-md: 32px;
@@ -410,10 +411,10 @@ watch(tab, revealActiveGalleryTab)
   min-width: 0;
   padding: 0;
   overflow: hidden;
-  font-family: var(--gallery-chrome-font);
+  font-family: var(--gallery-title-font);
   font-size: 18px;
   line-height: 1.4;
-  letter-spacing: -0.021em;
+  letter-spacing: -0.012em;
   white-space: nowrap;
 }
 
@@ -441,6 +442,8 @@ watch(tab, revealActiveGalleryTab)
 .gallery-switcher.gallery-switcher.gallery-switcher {
   flex: 0 1 auto;
   padding: 0;
+  border: 0;
+  box-shadow: none;
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
@@ -460,6 +463,7 @@ watch(tab, revealActiveGalleryTab)
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
+  border: 0;
   border-radius: 6px;
 }
 
@@ -472,6 +476,7 @@ watch(tab, revealActiveGalleryTab)
   height: 32px;
   min-height: 32px;
   padding-inline: 0.5rem;
+  border: 0;
   font-family: var(--gallery-chrome-font);
   font-size: 12px;
   font-weight: 500;
@@ -489,6 +494,7 @@ watch(tab, revealActiveGalleryTab)
   min-width: 36px;
   height: 36px;
   min-height: 36px;
+  border: 0;
 }
 
 .gallery-palette-slot {
@@ -503,6 +509,14 @@ watch(tab, revealActiveGalleryTab)
   padding-block: 0.25rem 0.75rem;
   font-family: var(--gallery-chrome-font);
   color: var(--qds-text);
+}
+
+.gallery-nav.gallery-nav.gallery-nav {
+  padding: 0.25rem 0 0.75rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .gallery-nav.gallery-nav.gallery-nav :deep(.q-tabs__content) {

@@ -69,7 +69,7 @@ test('native Theme menu supports keyboard selection, dismissal and isolated stat
   expect(page.url()).toBe(url)
 })
 
-test('wordmark renders in the loaded Inter face with weight contrast, not a separate display font', async ({ page }) => {
+test('wordmark renders in the loaded Plus Jakarta Sans face with weight contrast while the chrome stays Inter', async ({ page }) => {
   const fontRequests: string[] = []
   page.on('request', request => { if (request.resourceType() === 'font') fontRequests.push(request.url()) })
   await page.goto('/')
@@ -85,17 +85,21 @@ test('wordmark renders in the loaded Inter face with weight contrast, not a sepa
       size: parseFloat(style.fontSize),
       markWeight: parseInt(getComputedStyle(mark).fontWeight, 10),
       subWeight: parseInt(getComputedStyle(sub).fontWeight, 10),
-      loaded: document.fonts.check('600 18px "Inter Variable"', 'Quasar Design System'),
+      loaded: document.fonts.check('640 18px "Plus Jakarta Sans"', 'Quasar Design System'),
+      interLoaded: document.fonts.check('600 18px "Inter Variable"', 'Quasar Design System'),
       body: getComputedStyle(document.body).fontFamily,
       button: getComputedStyle(button).fontFamily,
     }
   })
-  expect(evidence.family).toContain('Inter')
+  expect(evidence.family).toContain('Plus Jakarta Sans')
   expect(evidence.size).toBeGreaterThanOrEqual(16)
   expect(evidence.size).toBeLessThanOrEqual(20)
   expect(evidence.markWeight).toBeGreaterThan(evidence.subWeight)
   expect(evidence.loaded).toBe(true)
+  expect(evidence.interLoaded).toBe(true)
+  expect(evidence.body).not.toContain('Plus Jakarta Sans')
   expect(evidence.body).toContain('Inter')
+  expect(evidence.button).not.toContain('Plus Jakarta Sans')
   expect(evidence.button).toContain('Inter')
   expect(evidence.family + evidence.body + evidence.button).not.toContain('Playwrite')
   for (const url of fontRequests) expect(new URL(url).origin).toBe(new URL(page.url()).origin)
