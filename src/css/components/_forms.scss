@@ -282,4 +282,7 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$zen} .qds-option-group--card :is(.q-radio, .q-checkbox).qds-active { border-color: var(--qds-color-primary); background: var(--qds-surface-brand-soft); box-shadow: none; }
   #{$zen} .qds-pin .q-field__control { justify-content: center; }
   #{$zen} :is(.q-date, .q-color-picker) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); box-shadow: var(--qds-shadow-sm); }
+  // Zen's generous control sizing overruns the picker's fixed shell at narrow widths.
+  #{$zen} .q-date__content { width: 100%; min-width: 0; }
+  #{$zen} .q-date__arrow { width: auto; --qds-button-dense-min-height: 1.75rem; }
 }

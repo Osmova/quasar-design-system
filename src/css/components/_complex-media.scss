@@ -284,7 +284,8 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$zen} :is(.q-stepper, .q-uploader, .q-editor, .q-splitter) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
   #{$zen} .q-stepper__tab--active .q-stepper__dot { background: var(--qds-color-primary); color: var(--qds-text-on-solid); }
   #{$zen} .q-carousel { border-radius: var(--qds-radius-lg); background: var(--qds-surface-1); }
-  #{$zen} .q-message-text--sent { background: var(--qds-surface-brand-soft); color: var(--qds-fg-default); }
+  // A tonal bubble must also rebind the on-fill foreground, or the content utility keeps the on-solid ink.
+  #{$zen} .q-message-sent .q-message-text { --qds-chat-bubble-bg: var(--qds-surface-brand-soft); --qds-chat-bubble-fg: var(--qds-fg-default); border-color: var(--qds-stroke-strong); }
   #{$zen} .q-message-text--received { border: 1px solid var(--qds-stroke-strong); background: var(--qds-surface-0); }
   #{$zen} .q-timeline__subtitle { color: var(--qds-fg-muted); }
   #{$zen} .q-img { border-radius: var(--qds-radius-control); }

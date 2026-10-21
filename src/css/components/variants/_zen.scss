@@ -11,7 +11,7 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
 @mixin button {
   #{$zen} .q-btn {
     --_qds-zen-face: var(--qds-surface-0);
-    min-height: 2.375rem;
+    min-height: var(--qds-button-min-height);
     padding-inline: 1rem;
     border: 1px solid var(--qds-stroke-strong);
     border-radius: var(--qds-radius-control);
@@ -31,6 +31,7 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
   // their own boundary and drop the stroke rather than ringing it twice.
   #{$zen} .q-btn:is([class*='bg-']):not(.q-btn--flat, .q-btn--outline) { border-color: transparent; }
   #{$zen} .q-btn.disabled { box-shadow: none; }
+  #{$zen} .q-btn--dense { min-height: var(--qds-button-dense-min-height); }
   #{$zen} .q-btn__content { gap: 0.5rem; }
 }
 
@@ -38,7 +39,8 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
   // The field is a recessed well: an inset edge plus a real boundary, never a
   // bottom focus bar and never depth alone.
   #{$zen} .q-field__control {
-    min-height: 3.25rem;
+    height: var(--qds-field-height);
+    min-height: var(--qds-field-height);
     padding-inline: 0.875rem;
     border: 1px solid var(--qds-stroke-strong);
     border-radius: var(--qds-radius-control);
@@ -73,6 +75,9 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
   // Enclosed segments, not a rail: the track recedes and the active segment is
   // raised, bounded and heavier, so it reads without shadow or colour alone.
   #{$zen} .q-tabs {
+    // The enclosure adds padding and a border, so it must shrink inside a narrow cell.
+    max-width: 100%;
+    min-width: 0;
     padding: 0.25rem;
     border: 1px solid var(--qds-stroke-strong);
     border-radius: var(--qds-radius-control);
@@ -81,8 +86,8 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
     color: var(--qds-fg-default);
   }
   #{$zen} .q-tab {
-    min-height: 2.125rem;
-    padding: 0 0.875rem;
+    min-height: var(--qds-tab-min-height);
+    padding: 0 var(--qds-space-sm);
     border: 1px solid transparent;
     border-radius: calc(var(--qds-radius-control) - 0.25rem);
     opacity: 1;
