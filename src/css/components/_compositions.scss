@@ -2,6 +2,7 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $subpage-tabs: ':is(.qds-subpage-tabs.q-tabs, .qds-subpage-tabs .q-tabs)';
 $tile-roles: (alert: negative, warning: warning, positive: positive);
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   // Multi-line rows align to the title line; single-line rows stay centred.
@@ -158,4 +159,11 @@ $tile-roles: (alert: negative, warning: warning, positive: positive);
     #{$shadcn} .qds-tile--#{$modifier} > :is(.qds-tile__meta, .qds-tile__spark) { color: var(--qds-fg-#{$role}); }
     #{$shadcn} .qds-tile--#{$modifier} > .qds-tile__icon { color: var(--qds-fg-#{$role}); background: transparent; }
   }
+
+  #{$zen} .qds-menu-row__title { font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} .qds-menu-row__caption, #{$zen} .qds-menu-row__description { color: var(--qds-fg-muted); }
+  #{$zen} .qds-subpage-tabs .q-tab--active { color: var(--qds-fg-brand); }
+  #{$zen} .qds-table-segmented .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-surface-1); }
+  #{$zen} .qds-tile { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .qds-tile__label { color: var(--qds-fg-muted); }
 }

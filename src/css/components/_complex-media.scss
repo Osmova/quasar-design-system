@@ -4,6 +4,7 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 $role-fills: '.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui :is(.q-stepper, .q-uploader) {
@@ -279,4 +280,12 @@ $role-fills: '.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative
     .q-uploader__header:is(#{$role-fills}) .q-btn:hover { background: var(--_qds-uploader-hover); }
     .q-uploader__header:is(#{$role-fills}) .q-btn:active { background: var(--_qds-uploader-pressed); }
   }
+
+  #{$zen} :is(.q-stepper, .q-uploader, .q-editor, .q-splitter) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .q-stepper__tab--active .q-stepper__dot { background: var(--qds-color-primary); color: var(--qds-text-on-solid); }
+  #{$zen} .q-carousel { border-radius: var(--qds-radius-lg); background: var(--qds-surface-1); }
+  #{$zen} .q-message-text--sent { background: var(--qds-surface-brand-soft); color: var(--qds-fg-default); }
+  #{$zen} .q-message-text--received { border: 1px solid var(--qds-stroke-strong); background: var(--qds-surface-0); }
+  #{$zen} .q-timeline__subtitle { color: var(--qds-fg-muted); }
+  #{$zen} .q-img { border-radius: var(--qds-radius-control); }
 }

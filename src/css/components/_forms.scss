@@ -2,6 +2,7 @@
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 $shadcn-roles: ':is(.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info)';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui .q-option-group {
@@ -275,4 +276,10 @@ $shadcn-roles: ':is(.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-ne
     :is(.q-date__header, .q-time__header)#{$shadcn-roles} :is(.q-date__header-link, .q-time__link):hover { background: var(--_qds-hover); }
     :is(.q-date__header, .q-time__header)#{$shadcn-roles} :is(.q-date__header-link, .q-time__link):active { background: var(--_qds-pressed); }
   }
+
+  #{$zen} .q-option-group--inline { gap: var(--qds-space-md); }
+  #{$zen} .qds-option-group--card .q-radio, #{$zen} .qds-option-group--card .q-checkbox { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .qds-option-group--card :is(.q-radio, .q-checkbox).qds-active { border-color: var(--qds-color-primary); background: var(--qds-surface-brand-soft); box-shadow: none; }
+  #{$zen} .qds-pin .q-field__control { justify-content: center; }
+  #{$zen} :is(.q-date, .q-color-picker) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); box-shadow: var(--qds-shadow-sm); }
 }

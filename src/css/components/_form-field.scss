@@ -2,6 +2,7 @@
 
 // Groups of three or more unlabelled children wrap on narrow screens; pairs and labelled groups stay on one row.
 $wrap: '.qds-ui .qds-field-group:where(:has(> :nth-child(3)):not(:has(> .q-field--labeled)))';
+$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui .qds-form-field {
@@ -267,4 +268,11 @@ $wrap: '.qds-ui .qds-field-group:where(:has(> :nth-child(3)):not(:has(> .q-field
     .qds-settings-card:is(a, button, [role='button']):focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); }
     .qds-field--dropzone.q-field--disabled .q-field__control:has(.q-file__dnd) { background: var(--qds-control-fill-disabled); }
   }
+
+  #{$zen} .qds-form-field__label { color: var(--qds-fg-default); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} :is(.qds-form-field__hint, .qds-form-field__description) { color: var(--qds-fg-muted); }
+  #{$zen} .qds-field-group > :is(.q-field, .q-btn) { border-radius: 0; }
+  #{$zen} .qds-field--dropzone .q-field__control { border-style: dashed; background: var(--qds-surface-1); box-shadow: none; }
+  #{$zen} .qds-settings-card { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .qds-settings-group > .qds-settings-card + .qds-settings-card { margin-block-start: var(--qds-space-sm); }
 }
