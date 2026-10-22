@@ -338,6 +338,20 @@ test.describe('forms', () => {
       const group = page.locator(byHook(hook))
       for (const width of [page.viewportSize()!.width, 393]) {
         await page.setViewportSize({ width, height: page.viewportSize()!.height })
+        // QLayout swaps the persistent drawer for an overlay on a debounced resize, so the row
+        // keeps the previous content width until that lands. Wait for the measured group itself
+        // to hold the same geometry across consecutive frames before reading the seam.
+        await page.evaluate(() => { delete (window as unknown as Record<string, unknown>).__qdsSeamPrev })
+        await page.waitForFunction((selector) => {
+          const element = document.querySelector(selector)
+          if (!element) return false
+          const box = element.getBoundingClientRect()
+          const current = `${Math.round(box.left)}:${Math.round(box.width)}`
+          const store = window as unknown as Record<string, unknown>
+          const previous = store.__qdsSeamPrev
+          store.__qdsSeamPrev = current
+          return previous === current
+        }, byHook(hook))
         const [first, last] = await group.evaluate((element) =>
           [...element.children].map((child) => {
             const box = (child.classList.contains('q-btn') ? child : child.querySelector('.q-field__control')) as HTMLElement
