@@ -124,12 +124,12 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$atrium} .q-card.q-card--square { border-radius: 0; }
 
   // Blocks nest by tone, never by a second drop.
-  #{$zen} :is(.q-card, .qds-card, .qds-tile) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} :is(.q-card, .qds-card, .qds-tile) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }
   #{$zen} .q-card > .q-card__section--vert { padding: var(--qds-space-md) var(--qds-space-lg); }
   #{$zen} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { padding: var(--qds-space-md) var(--qds-space-lg); border-block-end: 1px solid var(--qds-stroke-strong); background: none; }
   #{$zen} .q-card > .q-card__actions { gap: var(--qds-space-sm); padding: var(--qds-space-sm) var(--qds-space-lg) var(--qds-space-md); }
   #{$zen} .q-card > .q-card__actions .q-btn + .q-btn { margin-inline-start: 0; }
-  #{$zen} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { border-radius: var(--qds-radius-control); background: var(--qds-surface-1); box-shadow: none; }
+  #{$zen} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { border-radius: var(--qds-radius-control); background: var(--qds-bg-surface-1); box-shadow: none; }
   #{$zen} .q-card.q-card--flat { box-shadow: none; }
   #{$zen} .q-card.q-card--square { border-radius: 0; }
   #{$zen} .q-card:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); }

@@ -163,7 +163,7 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$zen} .qds-menu-row__title { font-weight: var(--qds-font-weight-semibold); }
   #{$zen} .qds-menu-row__caption, #{$zen} .qds-menu-row__description { color: var(--qds-fg-muted); }
   #{$zen} .qds-subpage-tabs .q-tab--active { color: var(--qds-fg-brand); }
-  #{$zen} .qds-table-segmented .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-surface-1); }
-  #{$zen} .qds-tile { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .qds-table-segmented .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-bg-surface-1); }
+  #{$zen} .qds-tile { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }
   #{$zen} .qds-tile__label { color: var(--qds-fg-muted); }
 }

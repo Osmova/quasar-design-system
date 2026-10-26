@@ -181,11 +181,29 @@ test('a Zen partial that depended on the compatibility grammar would fail the re
     @include zen.button; @include button.compatibility-styles;`), /button/)
 })
 
+// A `dark` prop on a light page inverts by rebinding the alias tokens and
+// treats --qds-surface-N as the value it inverts from. A profile that paints
+// straight from --qds-surface-N therefore keeps its light face under a
+// local-dark surface while the text flips, which measured 1.00:1 before this
+// gate existed.
+test('Zen paints every surface through a rebindable alias, never a raw --qds-surface-N', () => {
+  const bundle = compile("@use 'src/css/index.scss';")
+  const offenders = []
+  for (const [path, declarations] of flattenRules(bundle)) {
+    if (!/\.qds-variant-zen/.test(path)) continue
+    for (const declaration of declarations.split(';')) {
+      if (!/^(background|background-color|--_qds-zen-face)\s*:/.test(declaration.trim())) continue
+      if (/var\(--qds-surface-[0-9]/.test(declaration)) offenders.push(`${path}{${declaration.trim()}}`)
+    }
+  }
+  assert.deepEqual(offenders, [])
+})
+
 test('with the compatibility grammar removed the Zen field still paints its own well in every state', () => {
   const css = compile(zenProgram())
   for (const expected of [
-    /\.q-field__control\{[^}]*background:var\(--qds-surface-1\)/,
-    /\.q-field__control:hover\{background:var\(--qds-surface-1\)\}/,
-    /\.q-field--focused \.q-field__control\{[^}]*background:var\(--qds-surface-1\)/,
+    /\.q-field__control\{[^}]*background:var\(--qds-bg-surface-1\)/,
+    /\.q-field__control:hover\{background:var\(--qds-bg-surface-1\)\}/,
+    /\.q-field--focused \.q-field__control\{[^}]*background:var\(--qds-bg-surface-1\)/,
   ]) assert.match(css, expected)
 })

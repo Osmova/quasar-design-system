@@ -175,7 +175,7 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
   #{$zen} .q-btn-group { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-control); overflow: hidden; box-shadow: none; }
   #{$zen} .q-btn-group > .q-btn { border-radius: 0; box-shadow: none; }
-  #{$zen} .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-surface-1); padding: 0.125rem; }
+  #{$zen} .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-bg-surface-1); padding: 0.125rem; }
   #{$zen} .q-btn-toggle > .q-btn { border: 0; border-radius: var(--qds-radius-full); background: transparent; box-shadow: none; }
-  #{$zen} .q-btn-toggle > .q-btn.q-btn--active { background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .q-btn-toggle > .q-btn.q-btn--active { background: var(--qds-control-fill-default); box-shadow: var(--qds-shadow-sm); }
 }

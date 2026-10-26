@@ -349,13 +349,13 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
 
   // Every selection control keeps a real boundary in every state.
   #{$zen} :is(.q-checkbox, .q-radio, .q-toggle) .q-icon { color: var(--qds-text-on-solid); }
-  #{$zen} .q-checkbox__bg { border-color: var(--qds-stroke-strong); border-radius: var(--qds-radius-sm); background: var(--qds-surface-0); }
+  #{$zen} .q-checkbox__bg { border-color: var(--qds-stroke-strong); border-radius: var(--qds-radius-sm); background: var(--qds-control-fill-default); }
   #{$zen} .q-radio__bg { color: var(--qds-stroke-strong); }
-  #{$zen} .q-toggle__track { border: 1px solid var(--qds-stroke-strong); background: var(--qds-surface-1); opacity: 1; }
+  #{$zen} .q-toggle__track { border: 1px solid var(--qds-stroke-strong); background: var(--qds-bg-surface-1); opacity: 1; }
   #{$zen} .q-toggle__inner--truthy .q-toggle__track { border-color: transparent; background: var(--qds-color-primary); }
-  #{$zen} .q-toggle__thumb { background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .q-toggle__thumb { background: var(--qds-control-fill-default); box-shadow: var(--qds-shadow-sm); }
   #{$zen} .q-slider__track-container { border-radius: var(--qds-radius-full); }
-  #{$zen} .q-slider .q-slider__inner { background: var(--qds-surface-2); }
+  #{$zen} .q-slider .q-slider__inner { background: var(--qds-bg-surface-2); }
   #{$zen} .q-slider__thumb { color: var(--qds-color-primary); }
 
 

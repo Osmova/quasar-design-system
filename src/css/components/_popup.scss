@@ -29,5 +29,5 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$shadcn} .q-popup-edit__buttons .q-btn + .q-btn { margin-inline-start: 0; }
   @media (forced-colors: active) { #{$shadcn} .q-tooltip { background: CanvasText; color: Canvas; border-color: CanvasText; box-shadow: none; } }
 
-  #{$zen} :is(.q-tooltip, .q-popup-edit) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-control); background: var(--qds-surface-0); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-md); backdrop-filter: none; }
+  #{$zen} :is(.q-tooltip, .q-popup-edit) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-control); background: var(--qds-bg-flyout); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-md); backdrop-filter: none; }
 }

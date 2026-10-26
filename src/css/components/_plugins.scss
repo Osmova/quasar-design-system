@@ -72,11 +72,11 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   @media (forced-colors: active) { #{$shadcn} .q-dialog__inner > .q-bottom-sheet, #{$shadcn} .q-loading .q-loading__box { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; } #{$shadcn} .q-bottom-sheet__item:focus-visible { outline-color: Highlight; } }
 
   // Zen sheets and the loading box are opaque blocks with a real edge, never acrylic.
-  #{$zen} .q-dialog__inner > .q-bottom-sheet { border: 1px solid var(--qds-stroke-strong); border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); box-shadow: var(--qds-shadow-lg); @include materials.solid(var(--qds-surface-0)); }
+  #{$zen} .q-dialog__inner > .q-bottom-sheet { border: 1px solid var(--qds-stroke-strong); border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); box-shadow: var(--qds-shadow-lg); @include materials.solid(var(--qds-bg-flyout)); }
   #{$zen} .q-bottom-sheet .q-separator { background: var(--qds-stroke-strong); }
   #{$zen} .q-bottom-sheet__item { border: 1px solid transparent; border-radius: var(--qds-radius-control); color: var(--qds-fg-default); }
-  #{$zen} .q-bottom-sheet__item:not(.disabled):is(:hover, :focus-visible) { background: var(--qds-surface-1); }
-  #{$zen} .q-bottom-sheet__item:not(.disabled):active { background: var(--qds-surface-2); box-shadow: inset 0 1px 2px var(--qds-bg-overlay); }
+  #{$zen} .q-bottom-sheet__item:not(.disabled):is(:hover, :focus-visible) { background: var(--qds-bg-surface-1); }
+  #{$zen} .q-bottom-sheet__item:not(.disabled):active { background: var(--qds-bg-surface-2); box-shadow: inset 0 1px 2px var(--qds-bg-overlay); }
   #{$zen} .q-bottom-sheet__item > .q-focus-helper { opacity: 0; }
-  #{$zen} .q-loading .q-loading__box { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-lg); @include materials.solid(var(--qds-surface-0)); }
+  #{$zen} .q-loading .q-loading__box { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-lg); @include materials.solid(var(--qds-bg-flyout)); }
 }

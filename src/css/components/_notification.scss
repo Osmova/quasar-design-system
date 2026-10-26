@@ -73,6 +73,6 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-notification { transition: none; } #{$shadcn} .q-notification__badge { animation: none; } #{$shadcn} .q-notification__progress { display: none; } }
   @media (forced-colors: active) { #{$shadcn} .q-notification { --qds-notify-bg: Canvas; --qds-fg-default: CanvasText; border-color: CanvasText; box-shadow: none; } #{$shadcn} :is(.q-notification__icon, .q-notification__spinner) { color: CanvasText; } #{$shadcn} .q-notification__badge { background: Highlight; color: HighlightText; } #{$shadcn} .q-notification__progress { background: Highlight; } }
 
-  #{$zen} .q-notification { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-md); backdrop-filter: none; }
+  #{$zen} .q-notification { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-flyout); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-md); backdrop-filter: none; }
   #{$zen} .q-notification__message { color: var(--qds-fg-default); }
 }

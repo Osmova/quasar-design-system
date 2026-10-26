@@ -272,7 +272,7 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$zen} .qds-form-field__label { color: var(--qds-fg-default); font-weight: var(--qds-font-weight-semibold); }
   #{$zen} :is(.qds-form-field__hint, .qds-form-field__description) { color: var(--qds-fg-muted); }
   #{$zen} .qds-field-group > :is(.q-field, .q-btn) { border-radius: 0; }
-  #{$zen} .qds-field--dropzone .q-field__control { border-style: dashed; background: var(--qds-surface-1); box-shadow: none; }
-  #{$zen} .qds-settings-card { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .qds-field--dropzone .q-field__control { border-style: dashed; background: var(--qds-bg-surface-1); box-shadow: none; }
+  #{$zen} .qds-settings-card { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }
   #{$zen} .qds-settings-group > .qds-settings-card + .qds-settings-card { margin-block-start: var(--qds-space-sm); }
 }

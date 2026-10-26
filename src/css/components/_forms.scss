@@ -278,7 +278,7 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   }
 
   #{$zen} .q-option-group--inline { gap: var(--qds-space-md); }
-  #{$zen} .qds-option-group--card .q-radio, #{$zen} .qds-option-group--card .q-checkbox { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: var(--qds-shadow-sm); }
+  #{$zen} .qds-option-group--card .q-radio, #{$zen} .qds-option-group--card .q-checkbox { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }
   #{$zen} .qds-option-group--card :is(.q-radio, .q-checkbox).qds-active { border-color: var(--qds-color-primary); background: var(--qds-surface-brand-soft); box-shadow: none; }
   #{$zen} .qds-pin .q-field__control { justify-content: center; }
   #{$zen} :is(.q-date, .q-color-picker) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); box-shadow: var(--qds-shadow-sm); }

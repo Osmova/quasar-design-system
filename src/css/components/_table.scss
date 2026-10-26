@@ -108,11 +108,11 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$atrium} .q-card > .q-table__container { background: transparent; box-shadow: none; }
 
   // Data reads as a quiet grouped block: caption-weight header, no rule under the last row.
-  #{$zen} .q-table__container { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-surface-0); box-shadow: none; overflow: hidden; }
-  #{$zen} .q-table thead th { color: var(--qds-fg-muted); font-weight: var(--qds-font-weight-semibold); background: var(--qds-surface-1); }
+  #{$zen} .q-table__container { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: none; overflow: hidden; }
+  #{$zen} .q-table thead th { color: var(--qds-fg-muted); font-weight: var(--qds-font-weight-semibold); background: var(--qds-bg-surface-1); }
   #{$zen} .q-table :is(th, td) { border-color: var(--qds-stroke-strong); }
   #{$zen} .q-table tbody tr:last-child > td { border-bottom: 0; }
-  #{$zen} .q-table tbody tr:not(.disabled):hover > td { background: var(--qds-surface-1); }
+  #{$zen} .q-table tbody tr:not(.disabled):hover > td { background: var(--qds-bg-surface-1); }
   #{$zen} .q-table tbody tr.selected > td { background: var(--qds-surface-brand-soft); }
   #{$zen} .q-card > .q-table__container { border: 0; border-radius: 0; background: transparent; }
 

@@ -90,7 +90,7 @@ test.describe('QDS official stable data and layout modes', () => {
     expect(await computed(page, '[data-test="qds-tree-dark-no-connectors"] .q-tree__node-header', 'display', '::before')).toBe('none')
   })
 
-  for (const variant of ['ink', 'one', 'term'] as const) {
+  for (const variant of ['ink', 'one', 'term', 'zen'] as const) {
     test(`keeps explicit QTable and QTree dark in light/${variant}`, async ({ page }) => {
       await openComponents(page)
       await applyTheme(page, 'light', variant)

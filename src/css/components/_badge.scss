@@ -96,5 +96,5 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{button.$shadcn} .q-badge:is(#{button.$accent-fills}):not(.qds-tonal):is(a, [tabindex]):active { --qds-badge-fill: var(--_qds-pressed); }
 
   #{$zen} .q-badge { border-radius: var(--qds-radius-full); font-weight: var(--qds-font-weight-semibold); }
-  #{$zen} .q-badge:not([class*='bg-']) { border: 1px solid var(--qds-stroke-strong); background: var(--qds-surface-1); color: var(--qds-fg-default); }
+  #{$zen} .q-badge:not([class*='bg-']) { border: 1px solid var(--qds-stroke-strong); background: var(--qds-bg-surface-1); color: var(--qds-fg-default); }
 }
