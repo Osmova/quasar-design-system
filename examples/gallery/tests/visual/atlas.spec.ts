@@ -220,7 +220,7 @@ test.describe('@screens atlas', () => {
     })
   }
 
-  for (const variant of ['ink', 'one', 'term'] as const) {
+  for (const variant of ['ink', 'one', 'term', 'zen'] as const) {
     for (const mode of MODES) {
       test(`${variant} ${mode}`, async ({ page }) => {
         for (const [section, hooks] of Object.entries(VARIANT_HOOKS)) {

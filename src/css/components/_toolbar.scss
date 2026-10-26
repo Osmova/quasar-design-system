@@ -63,8 +63,8 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
   // Header and footer are calm sheets with an essential edge, no elevation.
   #{$zen} :is(.q-header, .q-footer) { background: var(--qds-bg-card); color: var(--qds-fg-default); box-shadow: none; }
-  #{$zen} .q-header { border-bottom: 1px solid var(--qds-stroke-strong); }
-  #{$zen} .q-footer { border-top: 1px solid var(--qds-stroke-strong); }
+  #{$zen} .q-header { border-bottom: 1px solid var(--qds-stroke-default); }
+  #{$zen} .q-footer { border-top: 1px solid var(--qds-stroke-default); }
   #{$zen} .q-toolbar__title { font-weight: var(--qds-font-weight-semibold); letter-spacing: 0; }
 
 
