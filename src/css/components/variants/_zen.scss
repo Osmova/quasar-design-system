@@ -133,7 +133,7 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
 @mixin reading {
   #{$reading} :is(.q-btn, .q-field__control, .q-tabs, .q-tab, .q-menu, .q-item) { box-shadow: none; }
   // Decorative depth goes; the boundary each family carries is what survives.
-  #{$reading} :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-table__container, .q-stepper, .q-uploader, .q-editor, .q-splitter, .q-notification, .q-tooltip, .q-dialog__inner > .q-card, .q-drawer, .q-header, .q-footer) { box-shadow: none; }
+  #{$reading} :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-table__container, .q-stepper, .q-uploader, .q-editor, .q-splitter, .q-notification, .q-tooltip, .q-dialog__inner > .q-card, .q-dialog__inner > .q-bottom-sheet, .q-loading .q-loading__box, .q-drawer, .q-header, .q-footer) { box-shadow: none; }
   #{$reading} .q-field__control { background: var(--qds-surface-0); }
   #{$reading} .q-tab--active { background: var(--qds-surface-0); }
   #{$reading} :is(.q-btn, .q-field, .q-field__control, .q-tab, .q-menu, .q-item),
