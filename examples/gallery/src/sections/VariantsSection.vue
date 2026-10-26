@@ -180,7 +180,7 @@ const pages = reactive<Record<VariantName, number>>({
 
 .variants-kicker {
   margin: 0 0 var(--qds-space-xs);
-  color: var(--qds-color-primary);
+  color: var(--qds-fg-brand);
   font-size: 0.78rem;
   font-weight: var(--qds-font-weight-semibold);
   letter-spacing: 0.08em;
@@ -216,9 +216,7 @@ const pages = reactive<Record<VariantName, number>>({
 }
 
 .variant-card.qds-variant-term .variant-card__eyebrow,
-.variant-card.qds-variant-one .variant-card__eyebrow,
-.qds-variant-term .variants-kicker,
-.qds-variant-one .variants-kicker {
+.variant-card.qds-variant-one .variant-card__eyebrow {
   color: var(--qds-fg-brand);
 }
 

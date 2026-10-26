@@ -120,7 +120,7 @@ const materials = [
 
 .scenes-kicker {
   margin: 0 0 var(--qds-space-xs);
-  color: var(--qds-color-primary);
+  color: var(--qds-fg-brand);
   font-size: 0.78rem;
   font-weight: var(--qds-font-weight-semibold);
   letter-spacing: 0.08em;
@@ -197,9 +197,7 @@ const materials = [
 }
 
 .scene-frame--term .scene-panel__eyebrow,
-.scene-frame--one .scene-panel__eyebrow,
-.qds-variant-term .scenes-kicker,
-.qds-variant-one .scenes-kicker {
+.scene-frame--one .scene-panel__eyebrow {
   color: var(--qds-fg-brand);
 }
 
