@@ -159,6 +159,26 @@ test.describe('QDS optional QWindow extension', () => {
 
   })
 
+  test('long body content scrolls inside the window instead of growing past it', async ({ page }) => {
+    await page.goto('/#window')
+    await forceTheme(page)
+    const windowShell = page.locator('.qds-window').filter({ hasText: 'QDS window shell' })
+    await expect(windowShell).toBeVisible()
+
+    const metrics = await windowShell.evaluate((el) => {
+      const native = el.querySelector('.q-window__body') as HTMLElement
+      const body = el.querySelector('.qds-window__body') as HTMLElement
+      const filler = document.createElement('div')
+      filler.style.height = `${native.clientHeight * 3}px`
+      body.append(filler)
+      const result = { native: native.getBoundingClientRect().height, body: body.getBoundingClientRect().height, scroll: body.scrollHeight, client: body.clientHeight }
+      filler.remove()
+      return result
+    })
+    expect(metrics.body).toBeLessThanOrEqual(metrics.native + 0.5)
+    expect(metrics.scroll).toBeGreaterThan(metrics.client)
+  })
+
   test('Ink windows keep the focus-block surface and One windows sit on the transient surface', async ({ page }) => {
     await page.goto('/#window')
     const windowShell = page.locator('.qds-window').filter({ hasText: 'QDS window shell' })

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+
+- **QWindow body scrolling**: `.qds-window__body` used `min-height: 100%` inside QWindow's wrapping
+  `.row` body, so content taller than the window grew its flex line past it and was clipped with no
+  scroll. It now takes `height: 100%` of the definite-height native body, so it scrolls. Found in
+  Osmolab V2's quote window.
+
 ## [0.8.0] — 2026-10-20
 
 Stable release of the 0.8.0 line: everything from `0.8.0-rc.1` (the reference-driven Fluent 2
