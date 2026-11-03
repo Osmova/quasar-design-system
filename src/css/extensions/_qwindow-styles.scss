@@ -35,10 +35,9 @@ $shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
   .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:hover,
   .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:focus-visible { @include importance.declarations { color: var(--qds-window-close-fg, var(--qds-color-negative)) !important; } background: var(--qds-window-close-bg, var(--qds-surface-negative-soft)); }
   .qds-ui .qds-window__action--close.q-btn.q-btn.q-btn--flat:focus-visible { @include importance.declarations { outline: var(--qds-focus-ring-width) solid var(--_qds-window-close-ring, var(--qds-window-close-ring, var(--qds-color-negative))) !important; } outline-offset: -2px; }
-  // QWindow's native body is a wrapping Quasar `.row`: without nowrap and a bounded body, long
-  // content grows past the window and is clipped with no scroll (min-height is only a floor).
-  .qds-ui .qds-window .q-window__body { flex-wrap: nowrap; }
-  .qds-ui .qds-window__body { flex: 1 1 auto; width: 100%; height: 100%; max-height: 100%; min-height: 0; overflow: auto; padding: var(--qds-space-md); color: var(--qds-text); background: var(--qds-surface-0); }
+  // QWindow's native body is a wrapping `.row` with a definite height: a `min-height` floor let long
+  // content grow its flex line past the window, clipped with no scroll. `height` bounds it.
+  .qds-ui .qds-window__body { width: 100%; height: 100%; overflow: auto; padding: var(--qds-space-md); color: var(--qds-text); background: var(--qds-surface-0); }
   .qds-ui .qds-window--minimized .qds-window__body,
   .qds-ui .qds-window--headless .qds-window__titlebar { display: none; }
 
