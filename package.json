@@ -1,6 +1,6 @@
 {
   "name": "@osmova/quasar-design-system",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Opinionated Quasar 2 design system inspired by Fluent 2, Apple, and One UI.",
   "type": "module",
   "main": "dist/index.js",
