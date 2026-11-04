@@ -59,6 +59,12 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
     --qds-state-pressed: color-mix(in srgb, var(--qds-surface-0) 12%, transparent);
     --qds-state-selected: color-mix(in srgb, var(--qds-fg-primary) 24%, transparent);
     --qds-surface-brand-soft: color-mix(in srgb, var(--qds-color-primary) 36%, var(--qds-text-strong));
+    // Surfaces outside the alias set, so nested chrome flips with the card.
+    --qds-toolbar-bg: var(--qds-bg-card);
+    --qds-mica-alt: var(--qds-bg-card);
+    --qds-segmented-track-bg: var(--qds-bg-surface-2);
+    --qds-segmented-thumb-bg: var(--qds-control-fill-default);
+    --qds-surface-focus-block: var(--qds-bg-surface-2);
 
     @each $role in primary, secondary, accent, positive, negative, warning, info {
       --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 50%, var(--qds-surface-0));

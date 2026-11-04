@@ -43,7 +43,7 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   .qds-ui .q-separator { background: var(--qds-stroke-divider); }
 
   #{$ink} :is(.q-header, .q-footer, .q-toolbar),
-  :is(#{$ink}, #{$term}) .q-bar:not(.q-bar--dark) { background: var(--qds-surface-0); }
+  :is(#{$ink}, #{$term}) .q-bar:not(.q-bar--dark) { background: var(--qds-bg-card); }
   #{$ink} .q-header { border-bottom-color: var(--qds-separator-color); }
   #{$term} .q-bar:not(.q-bar--dark) { border: var(--qds-border-width-control) solid var(--qds-border-subtle); }
 

@@ -36,7 +36,7 @@
 .qds-ui.qds-variant-ink .catalog-expansion-list.catalog-expansion-list,
 .qds-ui .qds-variant-ink .catalog-expansion-list.catalog-expansion-list {
   gap: 0;
-  background: var(--qds-surface-0);
+  background: var(--qds-bg-card);
   border: var(--qds-border-width-control) solid var(--qds-separator-color);
   border-radius: var(--qds-card-radius);
 }
