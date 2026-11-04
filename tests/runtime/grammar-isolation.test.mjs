@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs'
 import { compileMechanics, compilePilot, families, root } from './grammar-fixture.mjs'
 import { compileSubstrateBaseline, substrateBaseline } from './grammar-fixture-baseline.mjs'
 import { ruleKeys } from './css-rules.mjs'
-import { ADDED_IMPORTANT_RULE, applyDeclaredFluentChanges } from './declared-fluent-changes.mjs'
+import { ADDED_IMPORTANT_RULE, applyDeclaredFluentChanges, applyDeclaredShadcnChanges } from './declared-fluent-changes.mjs'
 
 test('independent hooks compile identically after physically excluding all compatibility modules', () => {
   assert.equal(compilePilot(), compilePilot({ removed: true }))
@@ -47,8 +47,8 @@ test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only
 
     const current = ruleKeys(css)
     // The frozen hash above still covers the untouched baseline; only the
-    // enumerated Fluent changes are normalised before the rule-by-rule compare.
-    const expected = ruleKeys(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') }))
+    // enumerated declared changes are normalised before the rule-by-rule compare.
+    const expected = ruleKeys(applyDeclaredShadcnChanges(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') })))
     const added = []
     let cursor = 0
     for (const rule of expected) {

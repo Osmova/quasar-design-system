@@ -100,6 +100,15 @@ for (const mode of ['light', 'dark'] as const) {
         await target.scrollIntoViewIfNeeded()
         await settle(page)
         await expect(target).toHaveScreenshot(`shadcn-${hook}-${mode}.png`, { stylePath: hideHeader })
+        if (hook === 'qds-catalog-toggle') {
+          await target.locator('.q-toggle__inner').click()
+          await page.mouse.move(0, 0)
+          await expect(target.locator('.q-toggle__inner--falsy')).toHaveCount(1)
+          await settle(page)
+          await expect(target).toHaveScreenshot(`shadcn-${hook}-off-${mode}.png`, { stylePath: hideHeader })
+          await target.locator('.q-toggle__inner').click()
+          await expect(target.locator('.q-toggle__inner--truthy')).toHaveCount(1)
+        }
       }
     })
   }

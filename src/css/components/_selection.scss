@@ -364,15 +364,20 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
     .q-checkbox .q-checkbox__bg { border-radius: var(--qds-radius-xs); }
     :is(.q-checkbox__bg, .q-radio__bg) { border-color: var(--qds-control-stroke-strong); }
     .q-radio .q-radio__inner--truthy .q-radio__check { transform: none; }
-    .q-toggle .q-toggle__track { border-color: var(--qds-control-stroke-strong); background: var(--qds-control-fill-hover); }
-    .q-toggle .q-toggle__thumb::after { background: var(--qds-bg-canvas); box-shadow: var(--qds-shadow-sm); }
+    .q-toggle .q-toggle__track { border-color: transparent; background: var(--qds-shadcn-input); }
+    .q-toggle:not(.disabled):hover .q-toggle__inner--falsy .q-toggle__track { border-color: transparent; }
+    .q-toggle .q-toggle__thumb::after { background: var(--qds-bg-canvas); box-shadow: none; }
+    .q-toggle .q-toggle__inner--falsy .q-toggle__thumb::after { box-shadow: 0 0 0 1px var(--qds-text-muted); }
     .q-toggle .q-toggle__inner--indet { color: var(--qds-color-primary); }
-    .q-toggle .q-toggle__inner--indet .q-toggle__track { background: currentColor; border-color: currentColor; }
-    .q-toggle .q-toggle__inner--indet .q-toggle__thumb::after { background: var(--qds-selection-on, var(--qds-text-on-primary)); }
-    .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__track { border-color: var(--qds-control-stroke-strong); }
+    .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__track { background: currentColor; border-color: transparent; }
+    .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__thumb::after { background: var(--qds-selection-on, var(--qds-text-on-primary)); }
     :is(.q-checkbox, .q-radio, .q-toggle):not(.disabled):active :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet, .q-radio__inner--truthy, .q-toggle__inner--truthy, .q-toggle__inner--indet):where(:not([class*='text-'])) { color: var(--qds-color-primary-pressed); }
     .q-toggle:not(.disabled):hover .q-toggle__inner--indet:where(:not([class*='text-'])) { color: var(--qds-color-primary-hover); }
     :is(.q-checkbox, .q-radio, .q-toggle):focus-visible :is(.q-checkbox__inner, .q-radio__inner, .q-toggle__inner) { box-shadow: var(--qds-field-focus-halo); outline-width: var(--qds-border-width-control); }
+    @supports (color: light-dark(#000, #fff)) {
+      .q-toggle .q-toggle__track { background: light-dark(var(--qds-shadcn-input), color-mix(in srgb, var(--qds-shadcn-input) 80%, transparent)); }
+      .q-toggle .q-toggle__inner--falsy .q-toggle__thumb::after { background: light-dark(var(--qds-shadcn-background), var(--qds-shadcn-foreground)); box-shadow: 0 0 0 1px light-dark(var(--qds-text-muted), transparent); }
+    }
     .q-slider .q-slider__thumb { border-color: var(--qds-control-stroke-strong); background: var(--qds-bg-canvas); box-shadow: var(--qds-shadow-sm); }
     .q-slider .q-slider__thumb-shape path { fill: var(--qds-bg-canvas); stroke: currentColor; stroke-width: var(--qds-border-width-control); }
     .q-slider .q-slider__marker-labels { color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); }
