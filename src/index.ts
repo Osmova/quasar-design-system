@@ -17,7 +17,9 @@ export {
   DEFAULT_THEME_NAME,
   DESIGN_SYSTEM_THEMES,
   DESIGN_SYSTEM_VARIANTS,
+  SHADCN_ACCENT_COLORS,
   SHADCN_BASE_COLORS,
+  isShadcnAccentColor,
   isShadcnBaseColor,
   isBuiltInDesignSystemVariantName,
   isDesignSystemVariantName,
@@ -27,6 +29,7 @@ export {
   type DesignSystemVariantName,
   type LegacyDesignSystemVariantName,
   type QuasarDesignTheme,
+  type ShadcnAccentColor,
   type ShadcnBaseColor,
 } from './themes/index.js'
 

@@ -37,6 +37,18 @@ export function isShadcnBaseColor(value: unknown): value is ShadcnBaseColor {
   return SHADCN_BASE_COLORS.some((color) => color.name === value)
 }
 
+// Optional brand accent over the shadcn base palette ('none' keeps the palette's own primary).
+export const SHADCN_ACCENT_COLORS = [
+  { name: 'none', label: 'None' },
+  { name: 'blue', label: 'Blue' },
+] as const
+
+export type ShadcnAccentColor = (typeof SHADCN_ACCENT_COLORS)[number]['name']
+
+export function isShadcnAccentColor(value: unknown): value is ShadcnAccentColor {
+  return SHADCN_ACCENT_COLORS.some((color) => color.name === value)
+}
+
 export const DESIGN_SYSTEM_VARIANTS = {
   fluent: {
     name: 'fluent',

@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- **Shadcn brand accent** (`shadcnAccent`, default `'none'`): an optional accent layered over any of the
+  five shadcn base palettes. It repaints only primary, ring and sidebar-primary (fill, on-fill pair,
+  calibrated hover/pressed states, readable `--qds-fg-primary`), light and dark, including local-dark
+  boundaries. First accent: **blue** (`#2563eb` / on-fill white). CSS-only usage:
+  `data-qds-shadcn-accent="blue"` on the shadcn scope. Runtime: option, persisted state,
+  `shadcnAccent` computed and `setShadcnAccent()`; exports `SHADCN_ACCENT_COLORS`,
+  `ShadcnAccentColor`, `isShadcnAccentColor`. With `'none'` (default) the CSS output for existing
+  consumers is unchanged. T184 parity now admits `data-qds-shadcn-accent` rules as an added profile.
+
 ## [0.8.1] — 2026-11-03
 
 ### Fixed
