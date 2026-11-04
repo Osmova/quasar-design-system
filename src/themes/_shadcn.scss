@@ -18,9 +18,9 @@
 
 // Palette-dependent declarations only. Scopes use this after Neutral aliases
 // to avoid duplicating the identical native contract for every base color.
-@function palette-values($palette: neutral, $scheme: light, $state-container: null) {
-  $profile: tokens.profile($palette, $scheme);
-  $source: tokens.profile($palette, $scheme, false);
+@function palette-values($palette: neutral, $scheme: light, $state-container: null, $accent: null) {
+  $profile: tokens.profile($palette, $scheme, true, $accent);
+  $source: tokens.profile($palette, $scheme, false, $accent);
   $fills: tokens.role-fills($profile, $scheme);
   $pairs: tokens.role-pairs($profile, $scheme);
   $states: tokens.role-state-fills($profile, $scheme, $state-container);
@@ -68,6 +68,33 @@
   @each $name, $value in $values {
     @if not map.has-key($base, $name) or map.get($base, $name) != $value { #{$name}: #{$value}; }
   }
+}
+
+// Accent delta over the same palette/scheme already applied on this element.
+// It also re-emits every key the Neutral accent rule sets, so a Neutral accent
+// rule matching the same element can never leak Neutral values into another palette.
+@mixin accent($palette, $scheme, $accent, $state-container: null) {
+  $values: palette-values($palette, $scheme, $state-container, $accent);
+  $base: palette-values($palette, $scheme, $state-container);
+  $neutral-keys: ();
+  @if $palette != neutral {
+    $neutral-accent: palette-values(neutral, $scheme, $state-container, $accent);
+    $neutral-base: palette-values(neutral, $scheme, $state-container);
+    @each $name, $value in $neutral-accent {
+      @if map.get($neutral-base, $name) != $value { $neutral-keys: map.set($neutral-keys, $name, true); }
+    }
+  }
+  @each $name, $value in $values {
+    @if map.get($base, $name) != $value or map.has-key($neutral-keys, $name) { #{$name}: #{$value}; }
+  }
+}
+
+// Same-element accent selectors. Neutral matches on the accent alone (missing
+// or unknown palettes fall back to Neutral); other palettes add their attribute.
+@function accent-anchor($palette, $accent) {
+  $attr: '[data-qds-shadcn-accent="#{$accent}"]';
+  @if $palette != neutral { $attr: '[data-qds-shadcn-base-color="#{$palette}"]#{$attr}'; }
+  @return $attr;
 }
 
 // Final declarations only: no Fluent fallback assignments followed by overrides.
@@ -241,6 +268,12 @@
       #{selector.nest($anchor, $boundaries)} { @include palette($palette, $scheme, $state-container, true); }
     }
   }
+  @each $accent in tokens.$accent-names {
+    @each $palette in tokens.$base-colors {
+      $anchor: selector.append($scope, accent-anchor($palette, $accent));
+      #{selector.nest($anchor, $boundaries)} { @include accent($palette, $scheme, $accent, $state-container); }
+    }
+  }
 }
 
 @mixin bridge {
@@ -267,6 +300,18 @@
         // The common scope already rebinds every native alias on this same
         // element. Only palette-dependent values change at scheme boundaries.
         @include palette($palette, dark, null, $palette != neutral);
+      }
+    }
+    // Accents come last: same-element palette rules above already ran, and the
+    // extra attribute outranks them for the few primary/ring slots it repaints.
+    @each $accent in tokens.$accent-names {
+      @each $palette in tokens.$base-colors {
+        $attr: accent-anchor($palette, $accent);
+        #{$scope}#{$attr} { @include accent($palette, light, $accent); }
+        #{$scope}#{$attr}:where(.qds-theme-dark, [data-qds-resolved='dark'], body.qds-ui.body--dark):not([data-qds-resolved='light']):not(.qds-theme-light),
+        :where(.qds-theme-dark, body.qds-ui.body--dark) #{$scope}#{$attr}:not([data-qds-resolved='light']):not(.qds-theme-light):not(:where(.qds-theme-light *)) {
+          @include accent($palette, dark, $accent);
+        }
       }
     }
   }

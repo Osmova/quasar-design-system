@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { afterEach, test } from 'node:test'
 import {
   createDesignSystemController, configureDesignSystem, DEFAULT_DESIGN_SYSTEM_OPTIONS,
-  DESIGN_SYSTEM_VARIANTS, SHADCN_BASE_COLORS, isShadcnBaseColor, isBuiltInDesignSystemVariantName,
+  DESIGN_SYSTEM_VARIANTS, SHADCN_ACCENT_COLORS, SHADCN_BASE_COLORS, isShadcnBaseColor, isBuiltInDesignSystemVariantName,
 } from '@osmova/quasar-design-system'
 import { createDesignSystemController as runtimeExport } from '@osmova/quasar-design-system/runtime'
 import { SHADCN_BASE_COLORS as themesExport } from '@osmova/quasar-design-system/themes'
@@ -120,7 +120,7 @@ test('all palettes switch on the same custom target and persist with mode and va
     assert.equal(subtree.dataset.qdsShadcnBaseColor, name)
     assert.equal(subtree.dataset.qdsVariant, 'shadcn')
     assert.equal(subtree.dataset.qdsMode, 'light')
-    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'shadcn', shadcnBaseColor: name })
+    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'shadcn', shadcnBaseColor: name, shadcnAccent: 'none' })
   }
   controller.setDark()
   assert.equal(subtree.dataset.qdsResolved, 'dark')
@@ -137,6 +137,26 @@ test('all palettes switch on the same custom target and persist with mode and va
   assert.deepEqual(subtree.dataset, { author: 'retained' })
   assert.deepEqual([...subtree.classes], ['author-class'])
   assert.equal(env.listeners.size, 0)
+})
+
+test('shadcn accent applies only on shadcn, persists, and falls back to none', () => {
+  const env = browser()
+  const subtree = target()
+  const controller = createDesignSystemController({ target: subtree, variant: 'shadcn', mode: 'light', shadcnAccent: 'blue' })
+  controller.initialize()
+  assert.equal(subtree.dataset.qdsShadcnAccent, 'blue')
+  assert.equal(controller.setShadcnAccent('blue'), 'blue')
+  assert.equal(JSON.parse(env.storage.get(storageKey)).shadcnAccent, 'blue')
+  controller.setVariant('fluent')
+  assert.equal(subtree.dataset.qdsShadcnAccent, undefined)
+  assert.equal(controller.shadcnAccent.value, 'blue')
+  controller.setVariant('shadcn')
+  assert.equal(subtree.dataset.qdsShadcnAccent, 'blue')
+  assert.equal(controller.setShadcnAccent('purple'), 'none')
+  assert.equal(subtree.dataset.qdsShadcnAccent, undefined)
+  assert.ok(SHADCN_ACCENT_COLORS.some((accent) => accent.name === 'blue'))
+  controller.destroy()
+  assert.deepEqual(subtree.dataset, { author: 'retained' })
 })
 
 test('stored palette wins; absent old field preserves configured palette or defaults Neutral', () => {

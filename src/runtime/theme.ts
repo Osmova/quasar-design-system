@@ -11,10 +11,12 @@ import {
 import {
   DESIGN_SYSTEM_VARIANTS,
   isDesignSystemVariantName,
+  isShadcnAccentColor,
   isShadcnBaseColor,
   type DesignSystemVariant,
   type DesignSystemVariantName,
   type QuasarDesignTheme,
+  type ShadcnAccentColor,
   type ShadcnBaseColor,
 } from '../themes/index.js'
 
@@ -26,6 +28,7 @@ export interface DesignSystemOptions {
   mode?: DesignSystemMode
   variant?: DesignSystemVariantName
   shadcnBaseColor?: ShadcnBaseColor
+  shadcnAccent?: ShadcnAccentColor
   syncWithSystem?: boolean
   persist?: boolean
   storageKey?: string
@@ -64,6 +67,7 @@ export interface DesignSystemState {
   prefersDark: boolean
   variant: DesignSystemVariantName
   shadcnBaseColor: ShadcnBaseColor
+  shadcnAccent: ShadcnAccentColor
   syncWithSystem: boolean
   persist: boolean
   storageKey: string
@@ -77,6 +81,7 @@ export interface DesignSystemController {
   isDark: ComputedRef<boolean>
   variant: ComputedRef<DesignSystemVariantName>
   shadcnBaseColor: ComputedRef<ShadcnBaseColor>
+  shadcnAccent: ComputedRef<ShadcnAccentColor>
   initialize: () => void
   destroy: () => void
   setMode: (mode: DesignSystemMode) => DesignSystemMode
@@ -86,6 +91,7 @@ export interface DesignSystemController {
   toggleMode: () => DesignSystemMode
   setVariant: (variant: DesignSystemVariantName) => DesignSystemVariantName
   setShadcnBaseColor: (color: ShadcnBaseColor) => ShadcnBaseColor
+  setShadcnAccent: (accent: ShadcnAccentColor) => ShadcnAccentColor
 }
 
 interface QuasarDarkLike {
@@ -110,6 +116,7 @@ export const DEFAULT_DESIGN_SYSTEM_OPTIONS: Required<
   mode: 'system',
   variant: 'fluent',
   shadcnBaseColor: 'neutral',
+  shadcnAccent: 'none',
   syncWithSystem: true,
   persist: true,
   storageKey: 'bastvi.quasar-design-system.theme',
@@ -188,6 +195,7 @@ export function createDesignSystemController(
     prefersDark: false,
     variant: normalizeVariant(options.variant),
     shadcnBaseColor: normalizeShadcnBaseColor(options.shadcnBaseColor),
+    shadcnAccent: normalizeShadcnAccent(options.shadcnAccent),
     syncWithSystem: options.syncWithSystem ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.syncWithSystem,
     persist: options.persist ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.persist,
     storageKey: options.storageKey ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.storageKey,
@@ -218,6 +226,11 @@ export function createDesignSystemController(
     } else {
       delete target.dataset.qdsShadcnBaseColor
     }
+    if (state.variant === 'shadcn' && state.shadcnAccent !== 'none') {
+      target.dataset.qdsShadcnAccent = state.shadcnAccent
+    } else {
+      delete target.dataset.qdsShadcnAccent
+    }
     target.classList.toggle('qds-theme-light', !state.isDark)
     target.classList.toggle('qds-theme-dark', state.isDark)
     target.classList.toggle(DESIGN_SYSTEM_SCOPE_CLASS, state.enabled)
@@ -243,6 +256,9 @@ export function createDesignSystemController(
       if (Object.prototype.hasOwnProperty.call(stored, 'shadcnBaseColor')) {
         state.shadcnBaseColor = normalizeShadcnBaseColor(stored.shadcnBaseColor)
       }
+      if (Object.prototype.hasOwnProperty.call(stored, 'shadcnAccent')) {
+        state.shadcnAccent = normalizeShadcnAccent(stored.shadcnAccent)
+      }
     } catch {
       try {
         window.localStorage.removeItem(state.storageKey)
@@ -260,6 +276,7 @@ export function createDesignSystemController(
     try {
       window.localStorage.setItem(state.storageKey, JSON.stringify({
         mode: state.mode, variant: state.variant, shadcnBaseColor: state.shadcnBaseColor,
+        shadcnAccent: state.shadcnAccent,
       }))
     } catch {
       // Persistence is best effort; theme switching must still work.
@@ -336,6 +353,7 @@ export function createDesignSystemController(
       delete target.dataset.qdsResolved
       delete target.dataset.qdsVariant
       delete target.dataset.qdsShadcnBaseColor
+      delete target.dataset.qdsShadcnAccent
     }
     state.initialized = false
   }
@@ -347,6 +365,7 @@ export function createDesignSystemController(
     isDark: computed(() => state.isDark),
     variant: computed(() => state.variant),
     shadcnBaseColor: computed(() => state.shadcnBaseColor),
+    shadcnAccent: computed(() => state.shadcnAccent),
     initialize,
     destroy,
     setMode,
@@ -361,6 +380,12 @@ export function createDesignSystemController(
       applyState()
       return state.shadcnBaseColor
     },
+    setShadcnAccent: (accent) => {
+      state.shadcnAccent = normalizeShadcnAccent(accent)
+      saveState()
+      applyState()
+      return state.shadcnAccent
+    },
   }
 }
 
@@ -370,6 +395,10 @@ function normalizeMode(value: unknown): DesignSystemMode {
 
 function normalizeShadcnBaseColor(value: unknown): ShadcnBaseColor {
   return isShadcnBaseColor(value) ? value : 'neutral'
+}
+
+function normalizeShadcnAccent(value: unknown): ShadcnAccentColor {
+  return isShadcnAccentColor(value) ? value : 'none'
 }
 
 function normalizeVariant(value: unknown): DesignSystemVariantName {

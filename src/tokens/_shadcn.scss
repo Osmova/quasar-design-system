@@ -8,6 +8,17 @@
 // Modern: apps/v4/registry/themes.ts. Gray/Slate: apps/v4/public/r/themes/*.json.
 // Keep source colors here; every emitted sRGB channel is quantized exactly once.
 $base-colors: 'neutral', 'gray', 'zinc', 'stone', 'slate';
+
+// Optional brand accent layered over any base palette: repaints primary + ring
+// (and the sidebar primary) while every neutral surface stays the palette's.
+// Each entry: (fill, on-fill, ring) per scheme; the fill/on-fill pair must pass 4.5:1.
+$accents: (
+  blue: (
+    light: (#2563eb, #ffffff, #3b82f6),
+    dark: (#2563eb, #ffffff, #60a5fa),
+  ),
+);
+$accent-names: map.keys($accents);
 $roles: primary, secondary, accent, positive, negative, warning, info;
 
 @function srgb($value) {
@@ -101,7 +112,7 @@ $legacy: (
 
 // Returns all upstream slots, normalized to nearest 8-bit sRGB (alpha retained).
 // Legacy sidebar omissions alias popover/secondary/primary/border/ring exactly.
-@function profile($palette: neutral, $scheme: light, $quantize: true) {
+@function profile($palette: neutral, $scheme: light, $quantize: true, $accent: null) {
   @if not list.index($base-colors, $palette) or not list.index((light, dark), $scheme) {
     @error 'Unknown shadcn profile #{$palette}/#{$scheme}';
   }
@@ -141,6 +152,13 @@ $legacy: (
       (hsl(12 76% 61%), hsl(173 58% 39%), hsl(197 37% 24%), hsl(43 74% 66%), hsl(27 87% 67%)),
       (hsl(220 70% 50%), hsl(160 60% 45%), hsl(30 80% 55%), hsl(280 65% 60%), hsl(340 75% 55%))));
   @for $i from 1 through 5 { $result: map.set($result, 'chart-#{$i}', list.nth($charts, $i)); }
+  @if $accent != null {
+    @if not map.has-key($accents, $accent) { @error 'Unknown shadcn accent #{$accent}'; }
+    $tone: map.get($accents, $accent, $scheme);
+    @each $slot, $index in (primary: 1, primary-foreground: 2, ring: 3, sidebar-primary: 1, sidebar-primary-foreground: 2, sidebar-ring: 3) {
+      $result: map.set($result, $slot, list.nth($tone, $index));
+    }
+  }
   @if $quantize {
     @each $slot, $value in $result { $result: map.set($result, $slot, srgb($value)); }
   }
