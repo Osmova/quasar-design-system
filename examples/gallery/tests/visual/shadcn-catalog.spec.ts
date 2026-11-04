@@ -13,7 +13,10 @@ for (const variant of CANONICAL_VARIANTS) {
   test(`shared switcher/native DOM invariants ${variant}`, async ({ page }) => {
     await page.goto('/#components')
     await applyTheme(page, 'light', variant)
-    await expect(page.getByRole('group', { name: 'Variant', exact: true }).locator('.q-btn')).toHaveCount(CANONICAL_VARIANTS.length)
+    await page.locator('[data-test="qds-variant-switcher"]').click()
+    await expect(page.getByRole('menu', { name: 'Variant', exact: true }).getByRole('menuitemradio')).toHaveCount(CANONICAL_VARIANTS.length)
+    await page.keyboard.press('Escape')
+    await expect(page.locator('#gallery-variant-menu')).toHaveCount(0)
     await expect(page.locator('[data-test="qds-control-standard-button"] .q-btn__content')).toHaveText('Standard')
     await expect(page.locator('[data-test="qds-control-standard-button"]')).toHaveAttribute('type', 'button')
     // The palette picker lives in the theme menu so the header keeps one footprint.

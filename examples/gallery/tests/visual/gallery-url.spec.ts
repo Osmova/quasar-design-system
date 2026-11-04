@@ -62,7 +62,8 @@ test('UI, page and controller changes replace URL while preserving outer URL, st
     history.replaceState({ owner: 'gallery-host' }, '', location.href)
     return history.length
   })
-  await page.getByRole('group', { name: 'Variant', exact: true }).getByRole('button', { name: 'Ink', exact: true }).click()
+  await page.locator('[data-test="qds-variant-switcher"]').click()
+  await page.locator('[data-test="qds-variant-option-ink"]').click()
   await expectState(page, 'compare', 'ink')
   await expect(page).toHaveURL(/#compare\?keep=a%26b&keep=two&variant=ink$/)
   await gotoGalleryPage(page, 'Tokens')
