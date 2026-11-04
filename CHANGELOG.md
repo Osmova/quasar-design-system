@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   `#7b756b` light and `#8b8881` dark: the softest edge that still clears 3:1 against every surface
   step and role wash (worst pairing 3.11).
 
+### Fixed
+
+- **Shadcn switch** (shadcn only): `QToggle` follows the shadcn v4 Switch. The on track now fills with
+  the primary (it stayed grey), the off track is a borderless input fill (80% in dark), and the off thumb
+  is the foreground in dark and, in light, the background ringed in `--qds-text-muted` (at least 4.19:1 on
+  the track), so on and off read apart in both schemes. The on thumb uses the role's on-fill colour; the
+  focus halo still shows on `:focus-visible` only.
+
 ## [0.9.0] — 2026-11-04
 
 ### Added
