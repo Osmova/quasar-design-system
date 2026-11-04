@@ -111,7 +111,7 @@ for (const palette of SHADCN_PALETTES) for (const mode of ['light', 'dark'] as c
     await applyShadcn(page, mode, palette)
     const painted = await computed(page, native('default-button'), 'background-color')
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('qds.shadcn.conformance')!))
-    expect(stored).toEqual({ mode, variant: 'shadcn', shadcnBaseColor: palette })
+    expect(stored).toEqual({ mode, variant: 'shadcn', shadcnBaseColor: palette, shadcnAccent: 'none' })
     await page.reload()
     await expect(page.locator('body')).toHaveAttribute('data-qds-shadcn-base-color', palette)
     expect(await computed(page, native('default-button'), 'background-color')).toBe(painted)
@@ -139,7 +139,7 @@ for (const palette of SHADCN_PALETTES) for (const mode of ['light', 'dark'] as c
     await page.evaluate(() => (window as unknown as { __qdsGallery: { setShadcnBaseColor: (value: string) => void } }).__qdsGallery.setShadcnBaseColor('invalid'))
     await expect(body).toHaveAttribute('data-qds-shadcn-base-color', 'neutral')
     await expect.poll(physicalBackground, { message: 'invalid JS palette reaches frozen Neutral/light paint' }).toEqual(neutralLight)
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('qds.shadcn.conformance')!))).toEqual({ mode: 'system', variant: 'shadcn', shadcnBaseColor: 'neutral' })
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('qds.shadcn.conformance')!))).toEqual({ mode: 'system', variant: 'shadcn', shadcnBaseColor: 'neutral', shadcnAccent: 'none' })
   })
 }
 
