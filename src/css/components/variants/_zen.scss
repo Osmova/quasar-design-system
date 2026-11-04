@@ -125,7 +125,7 @@ $reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds
   }
   #{$zen} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible) { background: var(--qds-bg-surface-1); }
   #{$zen} .q-menu .q-item--active { border-color: var(--qds-stroke-strong); background: var(--qds-surface-brand-soft); }
-  #{$zen} .q-menu .q-separator { background: var(--qds-stroke-strong); }
+  #{$zen} .q-menu .q-separator { background: var(--qds-stroke-default); }
 }
 
 // Reading presentation keeps every boundary and removes decorative depth and

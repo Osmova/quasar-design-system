@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Changed
+
+- **Zen borders in two tiers** (zen only): blocks, dividers and separators (cards, tables, bordered
+  lists, drawer/header/footer, settings cards, steppers, uploaders, editors, badges, menu and sheet
+  separators) take the quiet `--qds-stroke-default` line (about 1.6:1) instead of `--qds-stroke-strong`
+  (5.5:1 light / 5.35:1 dark). Controls and floating overlays keep `--qds-stroke-strong`, retuned to
+  `#7b756b` light and `#8b8881` dark: the softest edge that still clears 3:1 against every surface
+  step and role wash (worst pairing 3.11).
+
 ## [0.9.0] — 2026-11-04
 
 ### Added
