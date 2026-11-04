@@ -118,13 +118,20 @@ async function settle(page, state, timeoutMs = 5000) {
         resolve(last)
       } else frame = requestAnimationFrame(poll)
     }
-    frame = requestAnimationFrame(poll)
+    document.fonts.ready.then(() => { frame = requestAnimationFrame(() => { frame = requestAnimationFrame(poll) }) })
   }), { state, timeoutMs })
 }
+
+// Positions may land one scroll/rounding pixel apart across builds; fixed sizes only absorb sub-pixel rounding.
+const positionTolerancePx = 1
+const sizeTolerancePx = 0.5
+const nearPx = (actual, expected, tolerance) => typeof actual === 'number' && typeof expected === 'number' && Math.abs(actual - expected) <= tolerance
+const assertNearPx = (actual, expected, message) => assert.ok(nearPx(actual, expected, sizeTolerancePx), `${message ?? 'geometry'}: expected ${expected}±${sizeTolerancePx}px, actual ${actual}`)
 
 function assertSnapshot(actual, expected, context) {
   const difference = (a, b, path = '') => {
     if (Object.is(a, b)) return null
+    if (/(^|\.)rect\.\d+$/.test(path) && nearPx(a, b, positionTolerancePx)) return null
     if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return { path, actual: a, expected: b }
     for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) {
       const found = difference(a[key], b[key], path ? `${path}.${key}` : key)
@@ -133,7 +140,7 @@ function assertSnapshot(actual, expected, context) {
     return null
   }
   const first = difference(actual, expected)
-  assert.deepEqual(actual, expected, `${context}: ${first ? `${first.path}: expected ${JSON.stringify(first.expected)}, actual ${JSON.stringify(first.actual)}` : 'all native paint/geometry/subelements unchanged'}`)
+  if (first) assert.fail(`${context}: ${first.path}: expected ${JSON.stringify(first.expected)}, actual ${JSON.stringify(first.actual)}`)
 }
 
 async function holdNativeIndicatorEndpoints(page) {
@@ -235,23 +242,23 @@ function assertOwned(actual, state) {
     assert.equal(actual.button.styles.backgroundColor, 'rgb(255, 248, 231)')
     for (const name of ['native', 'help', 'counter', 'clear', 'marginal']) assert.ok(actual[name], `native ${name} must be mounted`)
   }
-  assert.equal(actual.control.rect[3], 64, `${state}: field geometry`)
+  assertNearPx(actual.control.rect[3], 64, `${state}: field geometry`)
   assert.equal(actual.control.styles.backgroundColor, state === 'disabled' ? 'rgb(211, 238, 229)' : 'rgb(255, 248, 231)')
   assert.equal(actual.label.styles.fontSize, '12px')
-  assert.equal(actual.marginal.rect[3], 60)
+  assertNearPx(actual.marginal.rect[3], 60)
   assert.equal(actual.bottom.styles.fontSize, '12px')
   assert.equal(actual.focus.styles.clipPath, 'none', `${state}: no Fluent bottom focus clipping`)
   assert.equal(actual.focus.styles.borderTopWidth, '2px', `${state}: perimeter not focusbar`)
-  assert.equal(actual.indicator.rect[2], 6)
-  assert.equal(actual.indicator.rect[3], 6)
-  assert.equal(actual.verticalIndicator.rect[2], 6)
-  assert.equal(actual.verticalIndicator.rect[3], 6)
+  assertNearPx(actual.indicator.rect[2], 6)
+  assertNearPx(actual.indicator.rect[3], 6)
+  assertNearPx(actual.verticalIndicator.rect[2], 6)
+  assertNearPx(actual.verticalIndicator.rect[3], 6)
   assert.equal(actual.tabArrow.styles.color, 'rgb(0, 90, 88)')
   assert.ok(actual.disabledTab)
   if (state === 'focus') assert.equal(actual.button.styles.outlineStyle, 'dashed')
   if (state === 'hover') assert.equal(actual.button.styles.backgroundColor, 'rgb(211, 238, 229)')
   if (state === 'pressed') assert.equal(actual.button.styles.backgroundColor, 'rgb(0, 90, 88)')
-  if (state === 'loading') { assert.equal(actual.spinner.rect[2], 20); assert.equal(actual.spinner.styles.visibility, 'visible') }
+  if (state === 'loading') { assertNearPx(actual.spinner.rect[2], 20); assert.equal(actual.spinner.styles.visibility, 'visible') }
   if (state === 'disabled') assert.equal(actual.button.styles.opacity, '0.45')
   if (state === 'readonly') assert.equal(actual.control.styles.borderStyle, 'dotted')
   if (state === 'error') {
@@ -264,8 +271,8 @@ function assertOwned(actual, state) {
     assert.equal(actual.menu.styles.borderStyle, 'dashed')
     assert.equal(actual.menu.styles.backdropFilter, 'none')
     assert.equal(actual.menu.styles.boxShadow, 'none')
-    assert.equal(actual.item.rect[3], 38)
-    assert.equal(actual.separator.rect[3], 2)
+    assertNearPx(actual.item.rect[3], 38)
+    assertNearPx(actual.separator.rect[3], 2)
     assert.ok(actual.disabledItem)
   }
 }
@@ -311,7 +318,8 @@ const states = [
     const before = await p.locator('#tabs .q-tabs__content').evaluate((e) => e.scrollLeft)
     await p.locator('#tabs .q-tabs__arrow--right').hover()
     await p.mouse.down()
-    await p.waitForFunction(() => { const e = document.querySelector('#tabs .q-tabs__content'); return e.scrollLeft >= e.scrollWidth - e.clientWidth - 1 })
+    // Quasar scrolls in 5px steps: release at its own end state, never one step short.
+    await p.locator('#tabs .q-tabs__arrow--right.q-tabs__arrow--faded').waitFor()
     await p.mouse.up()
     assert.ok(await p.locator('#tabs .q-tabs__content').evaluate((e) => e.scrollLeft) > before)
   }],
