@@ -8,32 +8,37 @@ $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
   background-color: var(--qds-material-regular-bg);
   backdrop-filter: var(--qds-material-regular-filter);
   -webkit-backdrop-filter: var(--qds-material-regular-filter);
-  box-shadow: var(--_qds-glass-float);
+  box-shadow: var(--qds-material-edge), 0 0 0 1px var(--qds-material-stroke), var(--qds-shadow-sm);
 }
 
 @mixin button {
   #{$glass} .q-btn { min-height: clamp(var(--qds-button-size-sm), calc(var(--qds-button-min-height) + (1em - 0.875rem) * 2), var(--qds-button-size-lg)); border-radius: var(--qds-button-radius); letter-spacing: -0.01em; text-transform: none; }
   #{$glass} .q-btn:is(.q-btn--round, .q-btn--fab, .q-btn--fab-mini) { border-radius: 50%; }
   #{$glass} .q-btn--dense:not(.q-btn--round) { min-height: var(--qds-button-dense-min-height); border-radius: var(--qds-radius-control); }
-  #{$glass} .q-btn:is(.q-btn--standard, .q-btn--unelevated, .q-btn--push):not(.q-btn-toggle > *) { border-color: var(--qds-control-stroke-default); box-shadow: var(--qds-material-edge), var(--qds-shadow-sm); }
+  #{$glass} .q-btn:is(.q-btn--standard, .q-btn--unelevated, .q-btn--push):not(.q-btn-toggle > *) { border-color: var(--qds-material-stroke); box-shadow: var(--qds-material-edge), var(--qds-shadow-sm); }
   #{$glass} .q-btn[class*='bg-']:not(.q-btn--flat, .q-btn--outline) { border-color: transparent; }
   #{$glass} .q-btn--outline { border-color: var(--qds-stroke-strong); }
+  #{$glass} .q-btn.disabled:not(.q-btn--flat, [class*='bg-']) { border-color: var(--qds-border); box-shadow: none; }
   #{$glass} .q-btn:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: 2px; }
-  // Toolbar items float on glass: a group shares one capsule, a lone button gets its own.
-  #{$glass} .q-toolbar :is(.q-btn-group, .q-btn--flat:not(.q-btn-group > *)) { @include material; }
+  // Bar items float on glass, a group sharing one capsule; toolbars in content stay plain.
+  #{$glass} .q-toolbar :is(.q-btn-group, .q-btn--flat:not(.q-btn-group > *)) { background: var(--qds-control-fill-default); }
+  #{$glass} :is(.q-header .q-toolbar, .q-footer .q-toolbar, .q-toolbar.qds-glass-bar) :is(.q-btn-group, .q-btn--flat:not(.q-btn-group > *)) { @include material; }
   #{$glass} .q-toolbar .q-btn-group > .q-btn { background: transparent; border-color: transparent; box-shadow: none; }
   // Segmented capsule: the selected thumb floats over a recessed track, edged at 3:1.
-  #{$glass} .q-btn-toggle { padding: 0.1875rem; gap: 0.125rem; border-radius: var(--qds-radius-full); background: var(--qds-segmented-track-bg); box-shadow: inset 0 0 0 1px var(--qds-control-stroke-default); }
+  #{$glass} .q-btn-toggle { padding: 0.1875rem; gap: 0.125rem; border-radius: var(--qds-radius-full); background: var(--qds-segmented-track-bg); box-shadow: inset 0 0 0 1px var(--qds-material-stroke); }
   #{$glass} .q-btn-toggle > .q-btn-item { border-radius: var(--qds-radius-full); box-shadow: none; background: transparent; }
   #{$glass} .q-btn-toggle > .q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { background: var(--qds-segmented-thumb-bg); box-shadow: 0 0 0 1px var(--qds-control-stroke-default), var(--qds-shadow-sm); }
 }
 
+// Borderless and ghost fields keep their own quiet paint.
+$boxed: ':where(:not(.q-field--borderless, .qds-field--ghost))';
+
 @mixin field {
-  #{$glass} .q-field__control {
-    min-height: var(--qds-field-height);
+  #{$glass} .q-field__control { min-height: var(--qds-field-height); }
+  #{$glass} .q-field#{$boxed} .q-field__control {
     border: 1px solid var(--qds-control-stroke-default);
     border-radius: var(--qds-radius-control);
-    background: color-mix(in srgb, var(--qds-text-muted) 9%, var(--qds-surface-0));
+    background: color-mix(in srgb, var(--qds-text-muted) 9%, var(--qds-bg-card));
     box-shadow: none;
   }
   #{$glass} .q-field__control::before,
@@ -44,8 +49,8 @@ $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
   }
   #{$glass} .q-field--error .q-field__control { border-color: var(--qds-stroke-error); }
   #{$glass} .q-field--error .q-field__bottom { color: var(--qds-fg-negative); }
-  #{$glass} .q-field--readonly .q-field__control { background: var(--qds-surface-2); }
-  #{$glass} .q-field--disabled .q-field__control { border-color: var(--qds-border); background: var(--qds-surface-1); }
+  #{$glass} .q-field--readonly#{$boxed} .q-field__control { background: var(--qds-bg-surface-2); }
+  #{$glass} .q-field--disabled#{$boxed} .q-field__control { border-color: var(--qds-border); background: var(--qds-bg-surface-1); }
   #{$glass} .q-field__label { color: var(--qds-text-muted); font-weight: var(--qds-font-weight-medium); }
   #{$glass} textarea.q-field__native { padding-block: 0.4rem; }
 }
@@ -66,13 +71,18 @@ $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
   #{$glass} .q-tab__indicator { display: none; }
   #{$glass} .q-tab:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: -2px; }
   #{$glass} .q-tab.disabled { color: var(--qds-fg-disabled); }
+  // Forced colours drop fills and shadows, so selection needs a system outline; segments set no-outline.
+  @media (forced-colors: active) {
+    #{$glass} .q-tab--active { outline: 2px solid Highlight; outline-offset: -2px; }
+    #{$glass} .q-btn-toggle > .q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active)::after { content: ''; position: absolute; inset: 0; border: 2px solid Highlight; border-radius: inherit; pointer-events: none; }
+  }
 }
 
 @mixin menu {
-  // Menus emerge from their anchor with a short spring; reduced motion drops the scale.
-  #{$glass} .q-menu { transform-origin: top; }
+  // Menus spring from their centre, as either placement may flip; reduced motion drops the scale.
+  #{$glass} .q-menu { transform-origin: center; }
   #{$glass} .q-menu.q-transition--fade-enter-active { transition: opacity var(--qds-motion-duration-base) var(--qds-motion-ease-out), transform 0.32s var(--_qds-glass-spring); }
-  #{$glass} .q-menu.q-transition--fade-enter-from { transform: scale3d(0.9, 0.9, 1); }
+  #{$glass} .q-menu.q-transition--fade-enter-from { transform: scale3d(0.96, 0.96, 1); }
   #{$glass} .q-menu :is(.q-item--active, .q-item.q-manual-focusable--focused) { background: color-mix(in srgb, var(--qds-color-primary) 14%, transparent); color: var(--qds-fg-brand); }
   #{$glass} .q-separator { background: var(--qds-border-subtle); }
   #{$glass} .q-list--bordered { border: 1px solid var(--qds-border-subtle); border-radius: var(--qds-radius-lg); overflow: hidden; }

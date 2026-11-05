@@ -28,8 +28,8 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
   // The sidebar is an inset floating glass panel; its rows are concentric with it.
   #{$glass} .q-drawer { padding: calc(var(--_qds-glass-inset) + env(safe-area-inset-top)) var(--_qds-glass-inset) calc(var(--_qds-glass-inset) + env(safe-area-inset-bottom)); background: transparent; }
-  #{$glass} .q-drawer--left { padding-inline-start: calc(var(--_qds-glass-inset) + env(safe-area-inset-left)); }
-  #{$glass} .q-drawer--right { padding-inline-end: calc(var(--_qds-glass-inset) + env(safe-area-inset-right)); }
+  #{$glass} .q-drawer--left { padding-left: calc(var(--_qds-glass-inset) + env(safe-area-inset-left)); }
+  #{$glass} .q-drawer--right { padding-right: calc(var(--_qds-glass-inset) + env(safe-area-inset-right)); }
   #{$glass} .q-drawer.q-drawer--bordered { border-color: transparent; }
   #{$glass} .q-drawer__content {
     border: 1px solid var(--qds-material-stroke);
