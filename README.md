@@ -196,6 +196,7 @@ The package is structured around `src/themes/`. For now there is one real theme,
 - `one`: Samsung One UI-inspired neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent, and touch-friendly rhythm.
 - `term`: opaque amber developer UI on warm cream or near-black panes, with crisp hairline rules, amber fills carrying dark ink, and a monospace-forward feel.
 - `zen`: linen paper with sage controls and a quiet reading rhythm — warm linen surfaces, a muted sage primary, 12px control and 20px block radii, gentle diffuse depth, and an essential 1px edge on every control so nothing depends on a shadow alone. The opt-in `.qds-reading` class strips decorative depth and motion while every boundary survives.
+- `glass`: inspired by Apple's design language. Controls and bars float on a translucent functional layer above opaque content: bars carry no fill of their own and fade into a soft scroll edge, the sidebar and sheets float inset, and menus emerge from their anchor. Prominent controls are capsules, dense ones rounded rectangles, and nested shapes are concentric with their container. Tint is reserved for role fills and selection. It uses the native system font stack and ships no Apple font, symbol or artwork. Translucency is decoration only: without `backdrop-filter`, under reduced transparency, forced colours or increased contrast it resolves to opaque surfaces with 3:1 control edges.
 - `shadcn`: opaque New York-inspired native Quasar controls with Neutral (default), Gray, Zinc, Stone, and Slate base palettes, compact 36px regular controls, 8px control radii, and 14px card radii. No Tailwind or Reka dependency is required by the package.
 
 They are not separate brands — deliberate overlays over the same token system.
@@ -205,11 +206,11 @@ Choose the variant once at app startup and let the runtime keep the matching bod
 ```ts
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'ink', // fluent | ink | one | term | shadcn | zen
+  variant: 'ink', // fluent | ink | one | term | shadcn | zen | glass
 })
 ```
 
-Legacy inputs `air`, `glass`, and `studio` resolve to `fluent`; `feather` resolves to `ink`; `mobile` resolves to `one`; `terminal` resolves to `term`. The runtime accepts these legacy names for options, `setVariant` and persisted state, but writes only the canonical body classes; new apps should use the canonical names above.
+Legacy inputs `air` and `studio` resolve to `fluent` (`glass` did too before 0.9.2 and is now its own variant); `feather` resolves to `ink`; `mobile` resolves to `one`; `terminal` resolves to `term`. The runtime accepts these legacy names for options, `setVariant` and persisted state, but writes only the canonical body classes; new apps should use the canonical names above.
 
 ### Shadcn adoption and compatibility
 

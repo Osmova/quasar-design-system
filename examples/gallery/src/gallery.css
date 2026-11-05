@@ -81,3 +81,7 @@
   border-color: color-mix(in srgb, var(--qds-color-primary) 24%, var(--qds-border) 76%);
   box-shadow: none;
 }
+
+/* The shell drawer keeps one geometry in every variant; only content drawers float inset. */
+.q-drawer.q-drawer:has(> .gallery-drawer) { padding: 0; }
+.q-drawer__content.gallery-drawer.gallery-drawer { border: 0; border-radius: 0; }

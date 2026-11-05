@@ -23,6 +23,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the track), so on and off read apart in both schemes. The on thumb uses the role's on-fill colour; the
   focus halo still shows on `:focus-visible` only.
 
+### Added
+
+- **`glass` variant** — inspired by Apple's design language, and the seventh canonical variant.
+  Controls and navigation float on a translucent functional layer above opaque content: header,
+  footer and toolbars carry no fill or rule of their own and fade into a soft scroll-edge blur, related
+  toolbar buttons share one glass capsule, the sidebar is an inset floating panel, dialogs and bottom
+  sheets float inset with a large radius, and menus emerge from their anchor with a short spring.
+  Prominent controls (buttons, tab bars, segmented controls, switches) are capsules; dense controls and
+  fields are rounded rectangles; nested shapes are concentric — a nested block, menu row, sidebar row or
+  dialog field takes its container's radius minus the padding between them. Tint is reserved for role
+  fills and selection, titles are bolder, and safe-area insets reach the header, footer, sidebar and
+  bottom sheets. It uses the native system font stack and ships no Apple font, symbol or artwork.
+  Translucency is decoration only: `@supports not (backdrop-filter)`, `prefers-reduced-transparency`,
+  forced colours and `prefers-contrast: more` all resolve to opaque surfaces, and increased contrast
+  also deepens the accent and strengthens every edge. Every role fill clears WCAG AA against its label,
+  and every control edge and state indicator clears 3:1, in both modes.
+
+### Changed (breaking)
+
+- **`glass` no longer aliases `fluent`.** A configured or persisted `variant: 'glass'` now
+  selects the new glass variant instead of resolving to fluent. To keep the previous look, use
+  `variant: 'fluent'`; a stored `glass` record is not migrated. `air` and `studio` still resolve to
+  `fluent`.
+
 ## [0.9.0] — 2026-11-04
 
 ### Added

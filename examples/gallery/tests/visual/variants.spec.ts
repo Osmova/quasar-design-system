@@ -40,6 +40,71 @@ test.describe('QDS variant distinctiveness lab', () => {
     expect.soft(await term.evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-control-text-transform').trim()), 'Term controls request uppercase').toBe('uppercase')
     expect.soft(await computed(page, '[data-test="qds-variant-card-term"] .q-btn', 'text-transform'), 'Term button renders uppercase').toBe('uppercase')
 
+    const glass = page.locator('[data-test="qds-variant-card-glass"]')
+    expect.soft(await glass.evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-font-family').trim()), 'Glass uses the native system stack').toContain('-apple-system')
+    const glassRow = await glass.locator('.q-list .q-item').first().evaluate((el) => getComputedStyle(el).minHeight)
+    expect.soft(parseFloat(glassRow), 'Glass grouped rows stay roomy').toBeGreaterThanOrEqual(44)
+    expect.soft(await computed(page, '[data-test="qds-variant-card-glass"] .q-item.q-item--active', 'background-color'), 'Glass active row takes the brand wash').toBe('rgb(228, 238, 252)')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-glass"] .variant-card__nested', 'box-shadow'), 'Glass content nests without a second drop').toBe('none')
+    expect.soft(await glass.evaluate((el) => getComputedStyle(el).getPropertyValue('--_qds-glass-knob').trim()), 'Glass keeps a light switch knob').toBe('#ffffff')
+
     expect.soft(await resolvedColor(page, '--qds-color-primary'), 'Fluent primary remains calibrated from source tokens').toBe('rgb(15, 108, 189)')
+  })
+
+  // Body-level grammar only shows once the whole page is glass.
+  test('glass nests concentric shapes, keeps capsules and floats bars on glass', async ({ page }) => {
+    await page.goto('/#variants')
+    await applyTheme(page, 'dark', 'glass')
+
+    expect.soft(await customProperty(page, '--_qds-glass-knob'), 'the knob stays light against a dark track').toBe('#ffffff')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-glass"]', 'border-radius'), 'blocks use the large radius').toBe('26px')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-glass"] .variant-card__nested', 'border-radius'), 'a nested block is its card radius minus the padding').toBe('10px')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-glass"] .q-btn:not(.q-btn--dense)', 'border-radius'), 'prominent buttons are capsules').toBe('9999px')
+    expect.soft(await computed(page, '.q-header', 'background-color'), 'the bar carries no fill of its own').toBe('rgba(0, 0, 0, 0)')
+    expect.soft(await computed(page, '.q-header', 'backdrop-filter', '::before'), 'a soft scroll edge blurs content under the bar').not.toBe('none')
+    expect.soft(await computed(page, '.q-header', 'mask-image', '::before'), 'the scroll edge fades instead of ruling a line').toContain('linear-gradient')
+  })
+
+  // A bare-class fallback (0,1,0) never beats the dark scope (0,3,1).
+  for (const mode of ['light', 'dark'] as const) {
+    test(`glass drops translucency under forced colors in ${mode}`, async ({ page }) => {
+      await page.goto('/#components?variant=glass')
+      await applyTheme(page, mode, 'glass')
+      await page.emulateMedia({ forcedColors: 'active' })
+
+      expect.soft(await customProperty(page, '--qds-material-thin-filter'), 'the acrylic filter is dropped').toBe('none')
+      expect.soft(await customProperty(page, '--qds-control-fill-default'), 'control fills become opaque').not.toContain('color-mix')
+      expect.soft(await customProperty(page, '--_qds-glass-fade'), 'the scroll edge becomes a plain opaque bar').toBe('none')
+    })
+
+    test(`glass resolves increased contrast to opaque glass and a deeper accent in ${mode}`, async ({ page }) => {
+      await page.goto('/#components?variant=glass')
+      await applyTheme(page, mode, 'glass')
+      await page.emulateMedia({ contrast: 'more' })
+
+      expect.soft(await customProperty(page, '--qds-material-regular-filter'), 'no blur behind controls').toBe('none')
+      expect.soft(await resolvedColor(page, '--qds-color-primary'), 'the accent moves to its increased-contrast value').toBe(mode === 'light' ? 'rgb(0, 64, 221)' : 'rgb(140, 195, 255)')
+      expect.soft(await resolvedColor(page, '--qds-stroke-strong'), 'control edges take the muted text colour').toBe(await resolvedColor(page, '--qds-text-muted'))
+    })
+  }
+
+  // Both of these were silently dead once; this is their regression gate.
+  test('glass switch keeps its capsule geometry and an on-state fill', async ({ page }) => {
+    await page.goto('/#catalog?variant=glass')
+    await applyTheme(page, 'light', 'glass')
+
+    expect.soft(await customProperty(page, '--qds-toggle-track-width'), 'the capsule survives the generic size ramp').toBe('3.1875rem')
+    const toggle = page.locator('[data-test="qds-catalog-toggle"]')
+    await expect(toggle).toBeVisible()
+    const track = toggle.locator('.q-toggle__track')
+    const inner = toggle.locator('.q-toggle__inner')
+    const startedOn = await inner.evaluate((el) => el.classList.contains('q-toggle__inner--truthy'))
+    const before = await track.evaluate((el) => getComputedStyle(el).backgroundColor)
+    await inner.click()
+    await expect(inner).toHaveClass(startedOn ? /q-toggle__inner--falsy/ : /q-toggle__inner--truthy/)
+    const after = await track.evaluate((el) => getComputedStyle(el).backgroundColor)
+    const [on, off] = startedOn ? [before, after] : [after, before]
+    expect.soft(on, 'the on track carries the role colour, not the off fill').not.toBe(off)
+    expect.soft(on, 'the on track resolves to glass primary').toBe('rgb(8, 96, 204)')
   })
 })
