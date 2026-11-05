@@ -336,7 +336,7 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
   #{$glass} .q-toggle--dense { --qds-toggle-track-width: 2.5rem; --qds-toggle-track-height: 1.5rem; }
   #{$glass} .q-toggle .q-toggle__track { background: var(--qds-stroke-strong); border-color: transparent; }
   #{$glass} .q-toggle :is(.q-toggle__inner--truthy, .q-toggle__inner--indet) .q-toggle__track { background: var(--_qds-glass-on-track); border-color: transparent; }
-  #{$glass} .q-toggle.disabled .q-toggle__inner--falsy .q-toggle__track { background: var(--qds-surface-2); }
+  #{$glass} .q-toggle.disabled .q-toggle__inner--falsy .q-toggle__track { background: var(--qds-bg-surface-2); }
   #{$glass} .q-toggle .q-toggle__thumb::after,
   #{$glass} .q-toggle .q-toggle__inner--truthy .q-toggle__thumb::after,
   #{$glass} .q-toggle.disabled .q-toggle__thumb::after { background: var(--_qds-glass-knob); box-shadow: var(--qds-shadow-sm); }
@@ -345,7 +345,7 @@ $shadcn-roles: ':is(.text-primary, .text-secondary, .text-accent, .text-positive
   #{$glass} .q-radio .q-radio__inner--truthy .q-radio__bg { background: currentColor; }
   #{$glass} .q-radio .q-radio__inner--truthy .q-radio__check { fill: var(--qds-selection-on, var(--qds-text-on-primary)); }
   #{$glass} .q-slider .q-slider__thumb { background: var(--_qds-glass-knob); border-color: transparent; box-shadow: var(--qds-shadow-sm); }
-  #{$glass} .q-slider .q-slider__inner { background: var(--qds-surface-3); }
+  #{$glass} .q-slider .q-slider__inner { background: var(--qds-stroke-strong); }
   #{$glass} .q-slider .q-slider__selection { background: var(--_qds-glass-on-track); }
 
   // Every selection control keeps a real boundary in every state.

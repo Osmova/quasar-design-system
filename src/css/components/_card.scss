@@ -8,7 +8,8 @@ $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $framed: '.q-card--bordered, .qds-card--readable, .qds-card--contrast, .qds-card--opaque, .qds-card--solid';
-$explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark)';
+$local-dark: ':is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark)';
+$explicit-dark: '.qds-ui.qds-theme-light #{$local-dark}';
 
 @mixin styles {
   // A `dark` prop on a light page re-points the semantic aliases at an inverted surface.
@@ -122,6 +123,18 @@ $explicit-dark: '.qds-ui.qds-theme-light :is(.q-card--dark, .q-table--dark, .q-t
   #{$glass} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { background: var(--_qds-glass-nested); border-radius: calc(var(--qds-card-radius) - var(--_qds-glass-pad)); box-shadow: none; }
   #{$glass} .q-card.q-card--flat { box-shadow: none; }
   #{$glass} .q-card.q-card--square { border-radius: 0; }
+  // Glass's own tokens resolved on the light root, so a dark block re-points them at its inverted surfaces.
+  .qds-ui.qds-theme-light.qds-variant-glass #{$local-dark} {
+    --qds-stroke-strong: color-mix(in srgb, var(--qds-surface-0) 48%, var(--qds-text-strong));
+    @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, control-stroke-strong {
+      --qds-#{$token}: var(--qds-stroke-strong);
+    }
+    --qds-segmented-track-bg: var(--qds-bg-surface-2);
+    --qds-segmented-thumb-bg: var(--qds-bg-layer);
+    --_qds-glass-nested: var(--qds-bg-surface-2);
+    --_qds-glass-on-track: color-mix(in srgb, currentColor 85%, var(--qds-surface-0));
+  }
+  @media (prefers-contrast: more) { .qds-ui.qds-theme-light.qds-variant-glass #{$local-dark} { --qds-material-stroke: var(--qds-stroke-strong); } }
 
   // Blocks nest by tone, never by a second drop.
   #{$zen} :is(.q-card, .qds-card, .qds-tile) { border: 1px solid var(--qds-stroke-default); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }

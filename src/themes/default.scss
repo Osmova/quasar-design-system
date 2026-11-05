@@ -278,9 +278,9 @@
     --_qds-glass-knob: #{qds-variant-token(glass, dark-text-strong)};
     --_qds-glass-nested: var(--qds-surface-2);
     // A light role on a dark track would wash out the light knob.
-    --_qds-glass-on-track: color-mix(in srgb, currentColor 70%, var(--qds-surface-1));
+    --_qds-glass-on-track: color-mix(in srgb, currentColor 70%, var(--qds-surface-0));
+    --_qds-glass-edge-bg: color-mix(in srgb, var(--qds-surface-1) 60%, transparent);
   }
-  --_qds-glass-float: var(--qds-material-edge), 0 0 0 1px var(--qds-stroke-strong), var(--qds-shadow-sm);
   --_qds-glass-fade: linear-gradient(#000 calc(100% - 1rem), transparent);
   --_qds-glass-bar-line: transparent;
   --qds-toolbar-bg: transparent;
@@ -309,14 +309,18 @@
   @include fallbacks.qds-material-tokens(solid);
   --_qds-glass-fade: none;
   --_qds-glass-bar-line: var(--qds-border);
+  --_qds-glass-edge-bg: var(--qds-material-thin-bg);
 }
 
 @mixin qds-glass-contrast($scheme) {
   --qds-stroke-strong: var(--qds-text-muted);
   --qds-border-subtle: var(--qds-stroke-strong);
+  --qds-material-stroke: var(--qds-stroke-strong);
   --qds-color-primary: #{qds-variant-token(glass, '#{$scheme}-hc-primary')};
   --qds-color-primary-rgb: #{qds-variant-token(glass, '#{$scheme}-hc-primary-rgb')};
 }
+
+$glass-dark: '.qds-theme-dark.qds-variant-glass, .qds-theme-dark .qds-variant-glass, body.qds-ui.body--dark.qds-variant-glass, body.qds-ui.body--dark .qds-variant-glass';
 
 @mixin qds-glass-scopes {
   @layer qds.tokens {
@@ -334,38 +338,24 @@
     }
   }
 
-  .qds-theme-dark.qds-variant-glass,
-  .qds-theme-dark .qds-variant-glass,
-  body.qds-ui.body--dark.qds-variant-glass,
-  body.qds-ui.body--dark .qds-variant-glass {
+  #{$glass-dark} {
     @include qds-variant-scheme(glass, true);
     @include fallbacks.qds-material-tokens(dark);
     @include qds-glass-material(dark);
-
-    // Nested so the fallback shares this scope's specificity; (0,1,0) loses.
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      @include qds-glass-solid;
-    }
-
-    @media (prefers-reduced-transparency: reduce), (forced-colors: active), (prefers-contrast: more) {
-      @include qds-glass-solid;
-    }
-
-    @media (prefers-contrast: more) {
-      @include qds-glass-contrast(dark);
-    }
   }
 
+  // One body per condition; each dark selector ties the dark scope and follows it.
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .qds-variant-glass { @include qds-glass-solid; }
+    .qds-variant-glass, #{$glass-dark} { @include qds-glass-solid; }
   }
 
   @media (prefers-reduced-transparency: reduce), (forced-colors: active), (prefers-contrast: more) {
-    .qds-variant-glass { @include qds-glass-solid; }
+    .qds-variant-glass, #{$glass-dark} { @include qds-glass-solid; }
   }
 
   @media (prefers-contrast: more) {
     .qds-variant-glass { @include qds-glass-contrast(light); }
+    #{$glass-dark} { @include qds-glass-contrast(dark); }
   }
   }
 }
