@@ -239,16 +239,16 @@
   }
 }
 
-// Glass is a quiet floating-panel system: translucent chrome over a grouped
-// background, soft rings instead of hard strokes, and capability-aware density.
-// Translucency is decoration only; every affordance must survive the opaque
-// fallback below.
+// Glass: controls and bars float on a translucent functional layer above content.
+// Translucency is decoration only; every affordance must survive the opaque fallback.
 @mixin qds-glass-material($scheme) {
   --qds-stroke-strong: #{qds-variant-token(glass, '#{$scheme}-stroke-strong')};
-  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
+  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, control-stroke-strong {
+    --qds-#{$token}: var(--qds-stroke-strong);
+  }
+  @each $token in material-stroke, menu-border {
     --qds-#{$token}: #{qds-variant-token(glass, '#{$scheme}-border')};
   }
-  --qds-control-stroke-strong: var(--qds-stroke-strong);
   --qds-bg-overlay: #{qds-variant-token(glass, '#{$scheme}-scrim')};
   --qds-fg-disabled: #{qds-variant-token(glass, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
@@ -262,6 +262,9 @@
   --qds-segmented-track-bg: var(--qds-surface-2);
   --qds-segmented-thumb-bg: var(--qds-surface-0);
   --qds-row-radius: var(--qds-radius-control);
+  --qds-button-radius: var(--qds-radius-full);
+  --qds-menu-radius: #{qds-variant-token(glass, menu-radius)};
+  --qds-menu-shadow: var(--qds-shadow-lg);
   // Capsule geometry, after qds-variant-scheme, which re-emits these three.
   --qds-toggle-track-width: 3.1875rem;
   --qds-toggle-track-height: 1.9375rem;
@@ -269,18 +272,56 @@
   // The switch and slider knob stays light in both schemes, unlike an on-fill foreground.
   @if $scheme == light {
     --_qds-glass-knob: #{qds-variant-token(glass, light-surface-0)};
+    --_qds-glass-nested: var(--qds-surface-1);
+    --_qds-glass-on-track: currentColor;
   } @else {
     --_qds-glass-knob: #{qds-variant-token(glass, dark-text-strong)};
+    --_qds-glass-nested: var(--qds-surface-2);
+    // A light role on a dark track would wash out the light knob.
+    --_qds-glass-on-track: color-mix(in srgb, currentColor 70%, var(--qds-surface-1));
   }
+  --_qds-glass-float: var(--qds-material-edge), 0 0 0 1px var(--qds-stroke-strong), var(--qds-shadow-sm);
+  --_qds-glass-fade: linear-gradient(#000 calc(100% - 1rem), transparent);
+  --_qds-glass-bar-line: transparent;
+  --qds-toolbar-bg: transparent;
+  @each $state, $mix in (default: 10%, hover: 16%, pressed: 24%) {
+    --qds-control-fill-#{$state}: color-mix(in srgb, var(--qds-text-muted) #{$mix}, var(--qds-material-regular-bg));
+  }
+}
+
+@mixin qds-glass-geometry {
+  --qds-font-family: #{qds-variant-token(glass, font-family)};
+  --qds-font-family-display: #{qds-variant-token(glass, font-family-display)};
+  --qds-motion-fast: #{qds-variant-token(glass, motion-fast)};
+  --qds-motion-ease-out: #{qds-variant-token(glass, motion-ease-out)};
+  @each $step in h1, h2, h3, h4, h5, h6 {
+    --qds-font-weight-#{$step}: var(--qds-font-weight-bold);
+  }
+  // Concentric: a nested shape's radius is its container's radius minus the padding between them.
+  --_qds-glass-pad: #{qds-variant-token(glass, pad)};
+  --_qds-glass-inset: #{qds-variant-token(glass, inset)};
+  --_qds-glass-sheet-pad: #{qds-variant-token(glass, sheet-pad)};
+  --_qds-glass-sheet-radius: calc(var(--qds-radius-control) + var(--_qds-glass-sheet-pad));
+  --_qds-glass-spring: #{qds-variant-token(glass, spring)};
+}
+
+@mixin qds-glass-solid {
+  @include fallbacks.qds-material-tokens(solid);
+  --_qds-glass-fade: none;
+  --_qds-glass-bar-line: var(--qds-border);
+}
+
+@mixin qds-glass-contrast($scheme) {
+  --qds-stroke-strong: var(--qds-text-muted);
+  --qds-border-subtle: var(--qds-stroke-strong);
+  --qds-color-primary: #{qds-variant-token(glass, '#{$scheme}-hc-primary')};
+  --qds-color-primary-rgb: #{qds-variant-token(glass, '#{$scheme}-hc-primary-rgb')};
 }
 
 @mixin qds-glass-scopes {
   @layer qds.tokens {
   .qds-variant-glass {
-    --qds-font-family: #{qds-variant-token(glass, font-family)};
-    --qds-font-family-display: #{qds-variant-token(glass, font-family-display)};
-    --qds-motion-fast: #{qds-variant-token(glass, motion-fast)};
-    --qds-motion-ease-out: #{qds-variant-token(glass, motion-ease-out)};
+    @include qds-glass-geometry;
     @include qds-variant-scheme(glass);
     @include fallbacks.qds-material-tokens(light);
     @include qds-glass-material(light);
@@ -303,20 +344,28 @@
 
     // Nested so the fallback shares this scope's specificity; (0,1,0) loses.
     @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      @include fallbacks.qds-material-tokens(solid);
+      @include qds-glass-solid;
     }
 
-    @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-      @include fallbacks.qds-material-tokens(solid);
+    @media (prefers-reduced-transparency: reduce), (forced-colors: active), (prefers-contrast: more) {
+      @include qds-glass-solid;
+    }
+
+    @media (prefers-contrast: more) {
+      @include qds-glass-contrast(dark);
     }
   }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .qds-variant-glass { @include fallbacks.qds-material-tokens(solid); }
+    .qds-variant-glass { @include qds-glass-solid; }
   }
 
-  @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-    .qds-variant-glass { @include fallbacks.qds-material-tokens(solid); }
+  @media (prefers-reduced-transparency: reduce), (forced-colors: active), (prefers-contrast: more) {
+    .qds-variant-glass { @include qds-glass-solid; }
+  }
+
+  @media (prefers-contrast: more) {
+    .qds-variant-glass { @include qds-glass-contrast(light); }
   }
   }
 }
