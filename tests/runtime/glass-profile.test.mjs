@@ -24,19 +24,29 @@ test('the glass grammar compiles identically with or without the compatibility g
   }
 })
 
+const assertScoped = ([path, body]) => {
+  assert.match(path, /\.qds-variant-glass|@keyframes qds-variant-glass-/, `unscoped glass rule: ${path}`)
+  assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|zen)/, `glass borrowed another profile scope: ${path}`)
+  assert.doesNotMatch(body, /!important/, `glass must win on specificity: ${path}`)
+}
+
 test('every glass rule is scoped to the glass profile, borrows no other scope and needs no !important', () => {
-  const css = grammar()
-  for (const [path, body] of flattenRules(css)) {
-    assert.match(path, /\.qds-variant-glass/, `unscoped glass rule: ${path}`)
-    assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|zen)/, `glass borrowed another profile scope: ${path}`)
-    assert.doesNotMatch(body, /!important/, `glass must win on specificity: ${path}`)
-  }
+  for (const rule of flattenRules(grammar())) assertScoped(rule)
 })
 
-// Reduced motion keeps the fade and drops the spring scale.
-test('menus emerge from their anchor and reduced motion drops the scale', () => {
+// Most glass grammar lives inline in its owning partials, so the whole bundle is checked too.
+test('every glass rule in the full bundle, inline partials included, is scoped and needs no !important', () => {
+  const css = compile(`@use 'src/css/index';`)
+  const rules = flattenRules(css).filter(([path, body]) => !path.startsWith('@layer qds.tokens') && (path.includes('qds-variant-glass') || body.includes('--_qds-glass')))
+  assert.ok(rules.length >= 80, `${rules.length} glass rules found`)
+  for (const rule of rules) assertScoped(rule)
+})
+
+// Either placement may flip, so the spring is direction-neutral; reduced motion drops the scale.
+test('menus spring from their centre and reduced motion drops the scale', () => {
   const css = grammar()
-  assert.match(css, /\.q-menu\{transform-origin:top\}/)
+  assert.match(css, /\.q-menu\{transform-origin:center\}/)
+  assert.match(css, /\.q-menu\.q-transition--fade-enter-from\{transform:scale3d\(0\.96, 0\.96, 1\)\}/)
   assert.match(css, /prefers-reduced-motion: ?reduce\)\{[^}]*\.q-menu\.q-transition--fade-enter-from\{transform:none\}/)
 })
 
@@ -55,11 +65,14 @@ test('no-filter, reduced transparency, forced colours and increased contrast all
     ['forced colours', /forced-colors:active/],
     ['increased contrast', /prefers-contrast:more/],
   ]) {
-    assert.ok(opaque(pattern).length >= 2, `${name} must reach both the light and the dark glass scope`)
+    const paths = opaque(pattern).map(([path]) => path).join(' ')
+    assert.match(paths, /\|\.qds-variant-glass,/, `${name} must reach the light glass scope`)
+    assert.match(paths, /body\.qds-ui\.body--dark \.qds-variant-glass/, `${name} must reach the dark glass scope`)
   }
   const contrastRules = rules.filter(([path]) => /@media ?\(prefers-contrast:more\)\|/.test(path))
   assert.ok(contrastRules.some(([, body]) => body.includes('--qds-color-primary:#0040dd')), 'light increased-contrast accent')
   assert.ok(contrastRules.some(([, body]) => body.includes('--qds-color-primary:#8cc3ff')), 'dark increased-contrast accent')
+  assert.ok(contrastRules.every(([, body]) => body.includes('--qds-material-stroke:var(--qds-stroke-strong)')), 'increased contrast restores the 3:1 ring on every glass edge')
 })
 
 // ── Contrast is a hard gate, computed from the shipped token values ──────────
@@ -117,10 +130,13 @@ export function glassPairs(scheme) {
   add('control edge', 'stroke/segmented track', token['stroke-strong'], token['surface-2'], 3)
   add('state indicator', 'knob/switch off track', parseRgb('#ffffff'), token['stroke-strong'], 3)
   // Dark tracks shade the role toward the page so the light knob keeps its edge.
-  const track = scheme === 'dark' ? mix(token.primary, token['surface-1'], 0.7) : token.primary
+  const track = scheme === 'dark' ? mix(token.primary, token['surface-0'], 0.7) : token.primary
   add('state indicator', 'knob/switch on track', parseRgb('#ffffff'), track, 3)
   add('state indicator', 'slider thumb/selection', parseRgb('#ffffff'), track, 3)
-  for (const name of ['surface-0', 'surface-1']) add('state indicator', `on track/${name}`, track, token[name], 3)
+  for (const name of ['surface-0', 'surface-1', 'surface-2']) add('state indicator', `on track/${name}`, track, token[name], 3)
+  // The empty slider track is the stroke colour, so it reads on the surfaces a slider sits on.
+  for (const name of ['surface-0', 'surface-1']) add('state indicator', `slider track/${name}`, token['stroke-strong'], token[name], 3)
+  add('state indicator', 'slider thumb/empty track', parseRgb('#ffffff'), token['stroke-strong'], 3)
   // Increased contrast: the edge becomes the muted text colour and the accent deepens.
   for (const [name, surface] of surfaces) add('increased contrast', `edge/${name}`, token['text-muted'], surface, 4.5)
   add('increased contrast', 'on-primary/hc fill', token['on-primary'], token['hc-primary'], 7)
@@ -132,6 +148,6 @@ for (const scheme of ['light', 'dark']) {
     const pairs = glassPairs(scheme)
     const failures = pairs.filter(({ ratio, minimum }) => ratio < minimum).map(({ pair, ratio, minimum }) => `${pair}: ${ratio.toFixed(2)} < ${minimum}`)
     assert.deepEqual(failures, [], `${pairs.length} ${scheme} pairings checked`)
-    assert.ok(pairs.length >= 78, `${pairs.length} pairings`)
+    assert.ok(pairs.length >= 82, `${pairs.length} pairings`)
   })
 }
