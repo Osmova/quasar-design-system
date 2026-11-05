@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Component } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type Component } from 'vue'
 import { useQuasar } from 'quasar'
 import {
   PhBookOpenText,
   PhBooks,
+  PhCaretDown,
   PhDeviceMobile,
   PhMoonStars,
   PhMonitor,
@@ -102,10 +103,11 @@ const navGroups: { label: string, tabs: { name: GalleryTab, label: string }[] }[
 
 const drawerOpen = ref(false)
 const themeMenuOpen = ref(false)
+const variantMenuOpen = ref(false)
 const modeLabels = { light: 'Light', dark: 'Dark', system: 'System' } as const
 
 // QMenu owns autofocus, Escape and refocus; its arbitrary content has no arrow navigation.
-function onThemeMenuKeydown(event: KeyboardEvent) {
+function onMenuKeydown(event: KeyboardEvent) {
   if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
   const items = Array.from((event.currentTarget as HTMLElement).querySelectorAll<HTMLElement>('[role="menuitemradio"]'))
   const current = items.indexOf(document.activeElement as HTMLElement)
@@ -115,15 +117,7 @@ function onThemeMenuKeydown(event: KeyboardEvent) {
   items[index]?.focus()
 }
 
-function revealFocusedVariant(event: FocusEvent) {
-  (event.target as HTMLElement).closest('button')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-}
-const variantOptions = variants.map((variant) => ({
-  value: variant.name,
-  slot: `variant-${variant.name}`,
-  class: 'gallery-switcher__button',
-  attrs: { 'aria-label': variant.label },
-}))
+const activeVariant = computed(() => variants.find((variant) => variant.name === ds.variant.value) ?? variants[0])
 
 function onMode(mode: DesignSystemMode) {
   ds.setMode(mode)
@@ -212,21 +206,52 @@ watch(tab, revealActiveGalleryTab)
         </q-toolbar-title>
 
         <div class="gallery-controls">
-          <q-btn-toggle
-            :model-value="ds.variant.value"
+          <q-btn
+            flat
             no-caps
-            aria-label="Variant"
-            role="group"
             class="gallery-switcher"
-            :options="variantOptions"
-            @update:model-value="onVariant"
-            @focusin="revealFocusedVariant"
+            :aria-label="`Variant: ${activeVariant.label}`"
+            aria-haspopup="menu"
+            :aria-expanded="variantMenuOpen"
+            aria-controls="gallery-variant-menu"
+            data-test="qds-variant-switcher"
           >
-            <template v-for="variant in variants" :key="variant.name" #[`variant-${variant.name}`]>
-              <component :is="variantIcons[variant.name] ?? PhPalette" :size="16" weight="duotone" />
-              <span class="gallery-switcher__label">{{ variant.label }}</span>
-            </template>
-          </q-btn-toggle>
+            <component :is="variantIcons[activeVariant.name] ?? PhPalette" :size="16" weight="duotone" aria-hidden="true" />
+            <span class="gallery-switcher__label">{{ activeVariant.label }}</span>
+            <PhCaretDown :size="12" weight="bold" class="gallery-switcher__caret" aria-hidden="true" />
+            <q-menu
+              id="gallery-variant-menu"
+              v-model="variantMenuOpen"
+              role="menu"
+              aria-label="Variant"
+              anchor="bottom left"
+              self="top left"
+              @keydown="onMenuKeydown"
+            >
+              <q-list class="gallery-variant-menu">
+                <q-item
+                  v-for="variant in variants"
+                  :key="variant.name"
+                  v-close-popup
+                  clickable
+                  :autofocus="ds.variant.value === variant.name"
+                  role="menuitemradio"
+                  :aria-checked="ds.variant.value === variant.name"
+                  :active="ds.variant.value === variant.name"
+                  :data-test="`qds-variant-option-${variant.name}`"
+                  @click="onVariant(variant.name)"
+                >
+                  <q-item-section avatar>
+                    <component :is="variantIcons[variant.name] ?? PhPalette" :size="18" weight="duotone" aria-hidden="true" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ variant.label }}</q-item-label>
+                    <q-item-label v-if="variant.description" caption lines="2">{{ variant.description }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
         </div>
 
         <div class="gallery-links">
@@ -263,7 +288,7 @@ watch(tab, revealActiveGalleryTab)
             aria-label="Theme"
             anchor="bottom right"
             self="top right"
-            @keydown="onThemeMenuKeydown"
+            @keydown="onMenuKeydown"
           >
             <q-list>
               <q-item
@@ -440,36 +465,42 @@ watch(tab, revealActiveGalleryTab)
 }
 
 .gallery-switcher.gallery-switcher.gallery-switcher {
-  flex: 0 1 auto;
-  padding: 0;
-  border: 0;
-  box-shadow: none;
-  min-width: 0;
-  max-width: 100%;
-  overflow-x: auto;
-  scrollbar-width: none;
-  border-radius: 7px;
-}
-
-.gallery-switcher.gallery-switcher.gallery-switcher :deep(.gallery-switcher__button.gallery-switcher__button) {
   flex: 0 0 auto;
-  width: 5.25rem;
-  min-width: 5.25rem;
+  width: 8rem;
   height: 32px;
   min-height: 32px;
-  padding: 0;
+  padding-inline: 0.625rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
   font-family: var(--gallery-chrome-font);
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
-  border: 0;
-  border-radius: 6px;
 }
 
 .gallery-switcher :deep(.q-btn__content) {
   flex-wrap: nowrap;
-  gap: 0.25rem;
+  justify-content: flex-start;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.gallery-switcher__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-switcher__caret {
+  flex: 0 0 auto;
+  opacity: 0.72;
+}
+
+.gallery-variant-menu {
+  width: 20rem;
+  max-width: calc(100vw - 2rem);
 }
 
 .gallery-link.gallery-link.gallery-link {

@@ -155,8 +155,8 @@ for (const variant of CANONICAL_VARIANTS) {
         })
         await waitForThemePaint(page)
       }
-      const group = page.getByRole('group', { name: 'Variant', exact: true })
-      await expect(group.getByRole('button')).toHaveCount(labels.length)
+      const switcher = page.locator('[data-test="qds-variant-switcher"]')
+      await expect(switcher).toHaveAttribute('aria-haspopup', 'menu')
       const geometry = await page.evaluate(() => {
         const rect = (selector: string) => {
           const r = document.querySelector(selector)!.getBoundingClientRect()
@@ -178,17 +178,21 @@ for (const variant of CANONICAL_VARIANTS) {
         expect(geometry.palette.right).toBeLessThanOrEqual(geometry.controls.right)
         expect(geometry.palette.width).toBeGreaterThanOrEqual(128)
       }
-      // Focus scrolls native buttons into view; no clipped offscreen controls are unreachable.
+      // Every variant stays reachable from the one menu, inside the viewport.
+      await switcher.click()
+      const menu = page.getByRole('menu', { name: 'Variant', exact: true })
+      await expect(menu.getByRole('menuitemradio')).toHaveCount(labels.length)
       for (const label of labels) {
-        const button = group.getByRole('button', { name: label, exact: true })
-        await button.focus()
-        await expect(button).toBeFocused()
-        await expect.poll(async () => {
-          const bounds = await button.boundingBox()
-          const container = await group.boundingBox()
-          return bounds!.x >= container!.x - 1 && bounds!.x + bounds!.width <= container!.x + container!.width + 1
-        }).toBe(true)
+        const item = menu.getByRole('menuitemradio', { name: new RegExp(`^${label}\\b`) })
+        await expect(item).toBeVisible()
+        const bounds = (await item.boundingBox())!
+        expect(bounds.x).toBeGreaterThanOrEqual(0)
+        expect(bounds.x + bounds.width).toBeLessThanOrEqual(geometry.viewport)
       }
+      await expect(menu.locator('[aria-checked="true"]')).toHaveCount(1)
+      await expect(menu.locator(`[data-test="qds-variant-option-${variant}"]`)).toHaveAttribute('aria-checked', 'true')
+      await page.keyboard.press('Escape')
+      await expect(page.locator('#gallery-variant-menu')).toHaveCount(0)
       await page.locator('.gallery-theme').click()
       await expect(page.getByRole('menuitemradio', { name: mode[0].toUpperCase() + mode.slice(1), exact: true })).toHaveAttribute('aria-checked', 'true')
       await page.keyboard.press('Escape')
