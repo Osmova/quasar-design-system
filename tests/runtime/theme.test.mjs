@@ -61,14 +61,13 @@ test('compiled package entrypoints expose every canonical variant and five exact
   assert.equal(runtimeExport, createDesignSystemController)
   assert.equal(themesExport, SHADCN_BASE_COLORS)
   assert.deepEqual(SHADCN_BASE_COLORS.map(({ name }) => name), ['neutral', 'gray', 'zinc', 'stone', 'slate'])
-  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn', 'zen'])
+  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn', 'zen', 'glass'])
   assert.equal(DESIGN_SYSTEM_VARIANTS.shadcn.cssClass, 'qds-variant-shadcn')
   assert.equal(isBuiltInDesignSystemVariantName('shadcn'), true)
   assert.equal(DESIGN_SYSTEM_VARIANTS.zen.cssClass, 'qds-variant-zen')
   assert.equal(isBuiltInDesignSystemVariantName('zen'), true)
-  // atrium grammar ships but is deliberately unregistered until T194 closes.
-  assert.equal(DESIGN_SYSTEM_VARIANTS.atrium, undefined)
-  assert.equal(isBuiltInDesignSystemVariantName('atrium'), false)
+  assert.equal(DESIGN_SYSTEM_VARIANTS.glass.cssClass, 'qds-variant-glass')
+  assert.equal(isBuiltInDesignSystemVariantName('glass'), true)
   assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.variant, 'fluent')
   assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.mode, 'system')
   for (const bad of [undefined, null, '', 'Gray', 'gray ', '__proto__', 'toString', {}, ['slate'], 1]) {
@@ -251,7 +250,7 @@ test('existing aliases and externally registered variants remain unchanged', () 
   c.setVariant('alternate')
   assert.equal(env.body.classes.has('custom-theme'), false)
   assert.equal(env.body.classes.has('alternate-theme'), true)
-  for (const [alias, canonical] of Object.entries({ air: 'fluent', glass: 'fluent', studio: 'fluent', feather: 'ink', mobile: 'one', terminal: 'term' })) {
+  for (const [alias, canonical] of Object.entries({ air: 'fluent', studio: 'fluent', feather: 'ink', mobile: 'one', terminal: 'term' })) {
     assert.equal(c.setVariant(alias), canonical)
     assert.equal(env.body.classes.has(`qds-variant-${canonical}`), true)
     assert.equal(Object.keys(DESIGN_SYSTEM_VARIANTS).includes(alias), false)
@@ -259,6 +258,32 @@ test('existing aliases and externally registered variants remain unchanged', () 
   assert.equal(c.shadcnBaseColor.value, 'gray')
   c.destroy()
   assert.deepEqual([...env.body.classes], ['author-class'])
+})
+
+test('glass is its own variant, no longer a fluent alias, while air and studio still are', () => {
+  const configured = browser()
+  const c = createDesignSystemController({ persist: false, variant: 'glass' })
+  c.initialize()
+  assert.equal(c.variant.value, 'glass')
+  assert.equal(configured.body.classes.has('qds-variant-glass'), true)
+  assert.equal(configured.body.classes.has('qds-variant-fluent'), false)
+  assert.equal(configured.body.dataset.qdsVariant, 'glass')
+  assert.equal(c.setVariant('glass'), 'glass')
+  for (const alias of ['air', 'studio']) {
+    assert.equal(c.setVariant(alias), 'fluent')
+    assert.equal(configured.body.classes.has('qds-variant-fluent'), true)
+    assert.equal(configured.body.classes.has('qds-variant-glass'), false)
+  }
+  c.destroy()
+
+  for (const [stored, expected] of [['glass', 'glass'], ['air', 'fluent'], ['studio', 'fluent']]) {
+    const env = browser({ mode: 'light', variant: stored })
+    const restored = createDesignSystemController()
+    restored.initialize()
+    assert.equal(restored.variant.value, expected, `stored ${stored} resolves to ${expected}`)
+    assert.equal(env.body.classes.has(`qds-variant-${expected}`), true)
+    restored.destroy()
+  }
 })
 
 test('configureDesignSystem initializes and provides the complete compiled public controller', () => {

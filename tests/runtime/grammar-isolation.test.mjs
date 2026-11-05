@@ -31,7 +31,7 @@ test('neutral mechanics emit layout/containment only, without focus, paint, typo
 // and in order, and every added rule must belong to a profile added after it.
 // The immutable baseline source hash is never regenerated.
 // data-qds-shadcn-accent: optional shadcn brand accent added after 150d952 (token-only rules).
-const PROFILE_SCOPES = /qds-variant-zen|qds-reading|qds-variant-atrium|data-qds-shadcn-accent/
+const PROFILE_SCOPES = /qds-variant-zen|qds-reading|qds-variant-glass|data-qds-shadcn-accent/
 test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only added-profile rules', () => {
   assert.equal(substrateBaseline, '150d9526aa9aad65af8259cb4aab313d7ab6cce4')
   const baselines = [

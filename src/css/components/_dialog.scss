@@ -2,7 +2,7 @@
 @use '../importance';
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$glass: ':is(.qds-ui.qds-variant-glass, .qds-ui .qds-variant-glass)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 
@@ -70,12 +70,12 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
   @media (forced-colors: active) { #{$shadcn} .q-dialog__inner > .q-card { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; } }
 
   // A dialog is the same floating panel as a card, lifted further off the page.
-  #{$atrium} .q-dialog__inner--standard > .q-card { border-color: var(--qds-border-subtle); border-radius: calc(var(--qds-card-radius) + 0.25rem); box-shadow: var(--qds-shadow-lg); }
-  #{$atrium} .q-dialog__inner--maximized > .q-card { border: 0; box-shadow: none; }
-  #{$atrium} .q-dialog__title { font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
-  #{$atrium} .q-dialog__message { color: var(--qds-fg-muted); }
-  #{$atrium} .q-dialog__inner > .q-card > .q-card__actions { justify-content: flex-end; gap: var(--qds-space-sm); }
-  #{$atrium} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); }
+  #{$glass} .q-dialog__inner--standard > .q-card { border-color: var(--qds-border-subtle); border-radius: calc(var(--qds-card-radius) + 0.25rem); box-shadow: var(--qds-shadow-lg); }
+  #{$glass} .q-dialog__inner--maximized > .q-card { border: 0; box-shadow: none; }
+  #{$glass} .q-dialog__title { font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
+  #{$glass} .q-dialog__message { color: var(--qds-fg-muted); }
+  #{$glass} .q-dialog__inner > .q-card > .q-card__actions { justify-content: flex-end; gap: var(--qds-space-sm); }
+  #{$glass} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); }
 
   // The block language lifted off the page; zen overlays stay opaque.
   #{$zen} .q-dialog__inner > .q-card { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-flyout); box-shadow: var(--qds-shadow-lg); }

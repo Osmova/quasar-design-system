@@ -1,6 +1,6 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$glass: ':is(.qds-ui.qds-variant-glass, .qds-ui .qds-variant-glass)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
@@ -27,17 +27,17 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$one} .q-drawer--mini .q-list { margin: 0; background: transparent; }
 
   // The sidebar is the same translucent sheet as the header, with capsule rows.
-  #{$atrium} .q-drawer {
+  #{$glass} .q-drawer {
     background: var(--qds-material-thin-bg);
     backdrop-filter: var(--qds-material-thin-filter);
     -webkit-backdrop-filter: var(--qds-material-thin-filter);
   }
-  #{$atrium} .q-drawer.q-drawer--bordered { border-color: var(--qds-border-subtle); }
-  #{$atrium} .q-drawer .q-list { padding: var(--qds-space-sm); }
-  #{$atrium} .q-drawer .q-item { padding-inline: var(--qds-space-sm); border-radius: var(--qds-radius-control); }
-  #{$atrium} .q-drawer .q-layout__shadow::after { box-shadow: none; }
-  #{$atrium} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
-  #{$atrium} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
+  #{$glass} .q-drawer.q-drawer--bordered { border-color: var(--qds-border-subtle); }
+  #{$glass} .q-drawer .q-list { padding: var(--qds-space-sm); }
+  #{$glass} .q-drawer .q-item { padding-inline: var(--qds-space-sm); border-radius: var(--qds-radius-control); }
+  #{$glass} .q-drawer .q-layout__shadow::after { box-shadow: none; }
+  #{$glass} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
+  #{$glass} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
 
   // A calm sheet beside the page, bounded by its edge rather than a shadow.
   #{$zen} .q-drawer { border-color: var(--qds-stroke-default); background: var(--qds-bg-card); box-shadow: none; }

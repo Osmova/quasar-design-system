@@ -239,20 +239,20 @@
   }
 }
 
-// Atrium is a quiet floating-panel system: translucent chrome over a grouped
+// Glass is a quiet floating-panel system: translucent chrome over a grouped
 // background, soft rings instead of hard strokes, and capability-aware density.
 // Translucency is decoration only; every affordance must survive the opaque
 // fallback below.
-@mixin qds-atrium-material($scheme) {
-  --qds-stroke-strong: #{qds-variant-token(atrium, '#{$scheme}-stroke-strong')};
+@mixin qds-glass-material($scheme) {
+  --qds-stroke-strong: #{qds-variant-token(glass, '#{$scheme}-stroke-strong')};
   @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
-    --qds-#{$token}: #{qds-variant-token(atrium, '#{$scheme}-border')};
+    --qds-#{$token}: #{qds-variant-token(glass, '#{$scheme}-border')};
   }
   --qds-control-stroke-strong: var(--qds-stroke-strong);
-  --qds-bg-overlay: #{qds-variant-token(atrium, '#{$scheme}-scrim')};
-  --qds-fg-disabled: #{qds-variant-token(atrium, '#{$scheme}-fg-disabled')};
+  --qds-bg-overlay: #{qds-variant-token(glass, '#{$scheme}-scrim')};
+  --qds-fg-disabled: #{qds-variant-token(glass, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
-  --qds-text-on-solid: #{map.get(qds-variant-token(atrium, '#{$scheme}-on-fill'), primary)};
+  --qds-text-on-solid: #{map.get(qds-variant-token(glass, '#{$scheme}-on-fill'), primary)};
   --qds-fg-brand: var(--qds-color-primary);
   @each $role in secondary, accent, positive, negative, warning, info {
     --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 86%, var(--qds-text-strong));
@@ -268,38 +268,38 @@
   --qds-toggle-thumb-inset: 0.125rem;
   // The switch and slider knob stays light in both schemes, unlike an on-fill foreground.
   @if $scheme == light {
-    --_qds-atrium-knob: #{qds-variant-token(atrium, light-surface-0)};
+    --_qds-glass-knob: #{qds-variant-token(glass, light-surface-0)};
   } @else {
-    --_qds-atrium-knob: #{qds-variant-token(atrium, dark-text-strong)};
+    --_qds-glass-knob: #{qds-variant-token(glass, dark-text-strong)};
   }
 }
 
-@mixin qds-atrium-scopes {
+@mixin qds-glass-scopes {
   @layer qds.tokens {
-  .qds-variant-atrium {
-    --qds-font-family: #{qds-variant-token(atrium, font-family)};
-    --qds-font-family-display: #{qds-variant-token(atrium, font-family-display)};
-    --qds-motion-fast: #{qds-variant-token(atrium, motion-fast)};
-    --qds-motion-ease-out: #{qds-variant-token(atrium, motion-ease-out)};
-    @include qds-variant-scheme(atrium);
+  .qds-variant-glass {
+    --qds-font-family: #{qds-variant-token(glass, font-family)};
+    --qds-font-family-display: #{qds-variant-token(glass, font-family-display)};
+    --qds-motion-fast: #{qds-variant-token(glass, motion-fast)};
+    --qds-motion-ease-out: #{qds-variant-token(glass, motion-ease-out)};
+    @include qds-variant-scheme(glass);
     @include fallbacks.qds-material-tokens(light);
-    @include qds-atrium-material(light);
+    @include qds-glass-material(light);
   }
 
   @media not (pointer: coarse) {
-    .qds-variant-atrium {
-      --qds-list-item-min-height-value: #{qds-variant-token(atrium, list-item-min-height)};
-      --qds-menu-item-min-height-value: #{qds-variant-token(atrium, menu-item-min-height)};
+    .qds-variant-glass {
+      --qds-list-item-min-height-value: #{qds-variant-token(glass, list-item-min-height)};
+      --qds-menu-item-min-height-value: #{qds-variant-token(glass, menu-item-min-height)};
     }
   }
 
-  .qds-theme-dark.qds-variant-atrium,
-  .qds-theme-dark .qds-variant-atrium,
-  body.qds-ui.body--dark.qds-variant-atrium,
-  body.qds-ui.body--dark .qds-variant-atrium {
-    @include qds-variant-scheme(atrium, true);
+  .qds-theme-dark.qds-variant-glass,
+  .qds-theme-dark .qds-variant-glass,
+  body.qds-ui.body--dark.qds-variant-glass,
+  body.qds-ui.body--dark .qds-variant-glass {
+    @include qds-variant-scheme(glass, true);
     @include fallbacks.qds-material-tokens(dark);
-    @include qds-atrium-material(dark);
+    @include qds-glass-material(dark);
 
     // Nested so the fallback shares this scope's specificity; (0,1,0) loses.
     @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -312,11 +312,11 @@
   }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .qds-variant-atrium { @include fallbacks.qds-material-tokens(solid); }
+    .qds-variant-glass { @include fallbacks.qds-material-tokens(solid); }
   }
 
   @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-    .qds-variant-atrium { @include fallbacks.qds-material-tokens(solid); }
+    .qds-variant-glass { @include fallbacks.qds-material-tokens(solid); }
   }
   }
 }
@@ -509,5 +509,5 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
 }
 
 @include qds-zen-scopes;
-@include qds-atrium-scopes;
+@include qds-glass-scopes;
 @include shadcn.scopes;

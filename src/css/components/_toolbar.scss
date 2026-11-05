@@ -1,6 +1,6 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$glass: ':is(.qds-ui.qds-variant-glass, .qds-ui .qds-variant-glass)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
@@ -48,18 +48,18 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$term} .q-bar:not(.q-bar--dark) { border: var(--qds-border-width-control) solid var(--qds-border-subtle); }
 
   // A thin translucent sheet; the theme owns the opaque fallback.
-  #{$atrium} :is(.q-header, .q-footer) {
+  #{$glass} :is(.q-header, .q-footer) {
     background: var(--qds-material-thin-bg);
     backdrop-filter: var(--qds-material-thin-filter);
     -webkit-backdrop-filter: var(--qds-material-thin-filter);
     border-color: var(--qds-border-subtle);
     box-shadow: none;
   }
-  #{$atrium} .q-footer { border-top: var(--qds-border-width-control) solid var(--qds-border-subtle); }
-  #{$atrium} .q-toolbar { gap: var(--qds-space-xs); padding-inline: var(--qds-space-md); }
-  #{$atrium} .q-toolbar__title { padding-inline: 0; font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
-  #{$atrium} .q-bar:not(.q-bar--dark) { background: var(--qds-surface-1); border-radius: var(--qds-radius-control); }
-  #{$atrium} .q-separator { background: var(--qds-border-subtle); }
+  #{$glass} .q-footer { border-top: var(--qds-border-width-control) solid var(--qds-border-subtle); }
+  #{$glass} .q-toolbar { gap: var(--qds-space-xs); padding-inline: var(--qds-space-md); }
+  #{$glass} .q-toolbar__title { padding-inline: 0; font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
+  #{$glass} .q-bar:not(.q-bar--dark) { background: var(--qds-surface-1); border-radius: var(--qds-radius-control); }
+  #{$glass} .q-separator { background: var(--qds-border-subtle); }
 
   // Header and footer are calm sheets with an essential edge, no elevation.
   #{$zen} :is(.q-header, .q-footer) { background: var(--qds-bg-card); color: var(--qds-fg-default); box-shadow: none; }

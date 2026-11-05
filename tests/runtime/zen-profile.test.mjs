@@ -31,7 +31,7 @@ test('every Zen rule is scoped to the Zen profile and borrows no other profile s
     ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading;`)
   for (const [path] of flattenRules(css)) {
     assert.match(path, /\.qds-variant-zen/, `unscoped Zen rule: ${path}`)
-    assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|atrium)/, `Zen borrowed another profile scope: ${path}`)
+    assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|glass)/, `Zen borrowed another profile scope: ${path}`)
   }
 })
 
@@ -168,7 +168,7 @@ test('a deliberately cross-profile-corrupted control fails the Zen scope check',
   assert.throws(() => {
     for (const path of paths) {
       assert.match(path, /\.qds-variant-zen/)
-      assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|atrium)/)
+      assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|glass)/)
     }
   }, 'the scope check must reject the corrupted control')
 })
