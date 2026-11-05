@@ -18,7 +18,7 @@ and an essential edge on every control, with an opt-in `.qds-reading` presentati
 layer above opaque content, prominent controls are capsules, nested shapes are concentric (private
 `--_qds-glass-*` geometry tokens), and tint is reserved for role fills and selection. Translucency is
 decoration only: no-filter, reduced transparency, forced colours and increased contrast all resolve
-to opaque surfaces with 3:1 control edges. `glass` was a legacy fluent alias until 0.9.2; it is now
+to opaque surfaces; increased contrast restores 3:1 edges on every control. `glass` was a legacy fluent alias before 0.10.0; it is now
 its own variant.
 
 It is a pure visual product: **no business logic, no entity/model layer, no API/transport code, no
