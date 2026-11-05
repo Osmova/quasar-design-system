@@ -1,5 +1,5 @@
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
-$glass: ':is(.qds-ui.qds-variant-glass, .qds-ui .qds-variant-glass)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 $nav-parent: ':is(.q-drawer, nav) .q-expansion-item:is(.q-expansion-item--collapsed, .q-drawer--mini *):has(.q-item--active) > .q-expansion-item__container > .q-item';

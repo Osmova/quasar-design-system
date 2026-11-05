@@ -1,7 +1,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
-$glass: ':is(.qds-ui.qds-variant-glass, .qds-ui .qds-variant-glass)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
@@ -99,9 +99,10 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
   // A grouped block: hairline rules and no rule under the last row.
   #{$glass} .q-table__container { --qds-table-divider: var(--qds-border-subtle); overflow: hidden; }
-  #{$glass} .q-table__card { box-shadow: var(--qds-shadow-md); }
+  #{$glass} .q-table__card { box-shadow: var(--qds-shadow-sm); }
   #{$glass} .q-table__container:is(.q-table--flat, .q-table--grid) { box-shadow: none; }
-  #{$glass} .q-table th { color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
+  // Pinned column headers keep the one hard edge; everything else fades.
+  #{$glass} .q-table th { border-bottom-color: var(--qds-border); color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
   #{$glass} .q-table tbody tr:last-child td { border-bottom-color: transparent; }
   #{$glass} .q-table__grid-item-card { border-radius: var(--qds-radius-control); border-color: var(--qds-border-subtle); }
   #{$glass} .q-table__container.q-table--square { border-radius: 0; }
