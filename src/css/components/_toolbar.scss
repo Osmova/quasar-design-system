@@ -1,6 +1,6 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
@@ -47,19 +47,31 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$ink} .q-header { border-bottom-color: var(--qds-separator-color); }
   #{$term} .q-bar:not(.q-bar--dark) { border: var(--qds-border-width-control) solid var(--qds-border-subtle); }
 
-  // A thin translucent sheet; the theme owns the opaque fallback.
-  #{$atrium} :is(.q-header, .q-footer) {
-    background: var(--qds-material-thin-bg);
+  // Bars carry no fill or rule: a soft scroll-edge blur under the controls keeps them legible.
+  #{$glass} :is(.q-header, .q-footer) { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); border-color: var(--_qds-glass-bar-line); box-shadow: none; }
+  #{$glass} :is(.q-header, .q-footer)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--_qds-glass-edge-bg, var(--qds-material-thin-bg));
     backdrop-filter: var(--qds-material-thin-filter);
     -webkit-backdrop-filter: var(--qds-material-thin-filter);
-    border-color: var(--qds-border-subtle);
-    box-shadow: none;
+    mask-image: var(--_qds-glass-fade);
   }
-  #{$atrium} .q-footer { border-top: var(--qds-border-width-control) solid var(--qds-border-subtle); }
-  #{$atrium} .q-toolbar { gap: var(--qds-space-xs); padding-inline: var(--qds-space-md); }
-  #{$atrium} .q-toolbar__title { padding-inline: 0; font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
-  #{$atrium} .q-bar:not(.q-bar--dark) { background: var(--qds-surface-1); border-radius: var(--qds-radius-control); }
-  #{$atrium} .q-separator { background: var(--qds-border-subtle); }
+  #{$glass} .q-header { padding-top: env(safe-area-inset-top); }
+  #{$glass} .q-footer { padding-bottom: env(safe-area-inset-bottom); border-top: var(--qds-border-width-control) solid var(--_qds-glass-bar-line); }
+  #{$glass} .q-footer::before { transform: scaleY(-1); }
+  // The edge appears only once content scrolls under the bar.
+  @supports (animation-timeline: scroll()) {
+    #{$glass} .q-header::before { animation: qds-variant-glass-edge linear both; animation-timeline: scroll(root); animation-range: 0 2rem; }
+    @keyframes qds-variant-glass-edge { from { opacity: 0; } }
+  }
+  #{$glass} .q-toolbar { gap: var(--qds-space-xs); padding-inline: var(--qds-space-md); }
+  #{$glass} .q-toolbar__title { padding-inline: 0; font-weight: var(--qds-font-weight-bold); letter-spacing: -0.01em; }
+  #{$glass} .q-bar:not(.q-bar--dark) { background: var(--qds-surface-1); border-radius: var(--qds-radius-control); }
+  #{$glass} .q-separator { background: var(--qds-border-subtle); }
 
   // Header and footer are calm sheets with an essential edge, no elevation.
   #{$zen} :is(.q-header, .q-footer) { background: var(--qds-bg-card); color: var(--qds-fg-default); box-shadow: none; }

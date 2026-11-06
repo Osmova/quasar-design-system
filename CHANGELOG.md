@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- **`glass` variant** — inspired by Apple's design language, and the seventh canonical variant.
+  Controls and navigation float on a translucent functional layer above opaque content: the header
+  and footer carry no fill or rule of their own and gain a soft scroll-edge blur once content scrolls under
+  them, related bar buttons share one glass capsule (toolbars inside content stay plain, or opt in with
+  `.qds-glass-bar`), the sidebar is an inset floating panel, dialogs and bottom
+  sheets float inset with a large radius, and menus open with a short spring.
+  Prominent controls (buttons, tab bars, segmented controls, switches) are capsules; dense controls and
+  fields are rounded rectangles; nested shapes are concentric — a nested block, menu row, sidebar row or
+  dialog field takes its container's radius minus the padding between them. Tint is reserved for role
+  fills and selection, titles are bolder, and safe-area insets reach the header, footer, sidebar and
+  bottom sheets. It uses the native system font stack and ships no Apple font, symbol or artwork.
+  Translucency is decoration only: `@supports not (backdrop-filter)`, `prefers-reduced-transparency`,
+  forced colours and `prefers-contrast: more` all resolve to opaque surfaces, and increased contrast
+  also deepens the accent and restores a 3:1 edge on every control. Every role fill clears WCAG AA
+  against its label in both modes. Fields, checkboxes, radios, switch and slider tracks, outline buttons
+  and the selected tab or segment keep a 3:1 boundary; labelled buttons, chips and bars use a hairline,
+  and disabled buttons drop to the plain border. Under forced colours the selected tab and segment
+  take a system outline.
+
+### Changed (breaking)
+
+- **`glass` no longer aliases `fluent`.** A configured or persisted `variant: 'glass'` now
+  selects the new glass variant instead of resolving to fluent. To keep the previous look, use
+  `variant: 'fluent'`; a stored `glass` record is not migrated. `air` and `studio` still resolve to
+  `fluent`.
+
 ## [0.9.1] — 2026-11-05
 
 ### Changed

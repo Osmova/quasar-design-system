@@ -1,5 +1,5 @@
-export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen'
-export type LegacyDesignSystemVariantName = 'studio' | 'air' | 'glass' | 'feather' | 'mobile' | 'terminal'
+export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
+export type LegacyDesignSystemVariantName = 'studio' | 'air' | 'feather' | 'mobile' | 'terminal'
 export type BuiltInDesignSystemVariantName = CanonicalDesignSystemVariantName | LegacyDesignSystemVariantName
 
 // Built-ins are typed narrowly while still accepting variants registered by
@@ -86,10 +86,15 @@ export const DESIGN_SYSTEM_VARIANTS = {
     description: 'Soft tinted paper blocks with a quiet reading rhythm, gentle depth and an essential boundary on every control.',
     cssClass: 'qds-variant-zen',
   },
+  glass: {
+    name: 'glass',
+    label: 'Glass',
+    description: 'Apple-inspired floating glass controls and bars, capsule and concentric shapes, and tint only for primary actions.',
+    cssClass: 'qds-variant-glass',
+  },
 } as Record<CanonicalDesignSystemVariantName, DesignSystemVariant> & {
   studio: DesignSystemVariant
   air: DesignSystemVariant
-  glass: DesignSystemVariant
   feather: DesignSystemVariant
   mobile: DesignSystemVariant
   terminal: DesignSystemVariant
@@ -104,12 +109,6 @@ const LEGACY_VARIANT_ALIASES = {
   },
   air: {
     name: 'air',
-    label: 'Fluent',
-    description: 'Legacy alias for the fluent variant.',
-    cssClass: 'qds-variant-fluent',
-  },
-  glass: {
-    name: 'glass',
     label: 'Fluent',
     description: 'Legacy alias for the fluent variant.',
     cssClass: 'qds-variant-fluent',
@@ -145,7 +144,7 @@ for (const [name, variant] of Object.entries(LEGACY_VARIANT_ALIASES)) {
 export const DEFAULT_THEME: QuasarDesignTheme = {
   name: DEFAULT_THEME_NAME,
   label: 'Default',
-  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, Term, Shadcn, and Zen variants.',
+  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, Term, Shadcn, Zen, and Glass variants.',
   variants: DESIGN_SYSTEM_VARIANTS,
 }
 
@@ -155,8 +154,8 @@ export const DESIGN_SYSTEM_THEMES = {
 
 export function isBuiltInDesignSystemVariantName(value: unknown): value is BuiltInDesignSystemVariantName {
   return value === 'fluent' || value === 'ink' || value === 'one' || value === 'term' || value === 'shadcn'
-    || value === 'zen'
-    || value === 'studio' || value === 'air' || value === 'glass' || value === 'feather'
+    || value === 'zen' || value === 'glass'
+    || value === 'studio' || value === 'air' || value === 'feather'
     || value === 'mobile' || value === 'terminal'
 }
 

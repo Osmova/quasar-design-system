@@ -163,26 +163,32 @@ const OVERLAYS: Record<Section, readonly Overlay[]> = {
 }
 
 test.describe('@screens atlas', () => {
-  for (const section of Object.keys(FAMILIES) as Section[]) {
+  // Fluent keeps its historical unprefixed names; every other atlas variant prefixes its own.
+  for (const variant of ['fluent', 'glass'] as const) for (const section of Object.keys(FAMILIES) as Section[]) {
+    const prefix = variant === 'fluent' ? 'atlas' : `atlas-${variant}`
     for (const mode of MODES) {
-      test(`${section} fluent ${mode}`, async ({ page }, testInfo) => {
+      test(`${section} ${variant} ${mode}`, async ({ page }, testInfo) => {
         test.setTimeout(240_000)
         const mobile = testInfo.project.name === 'mobile'
 
         await page.goto(`./#${section}`)
-        await applyTheme(page, mode, 'fluent')
+        await applyTheme(page, mode, variant)
         await page.evaluate(async () => {
           await document.fonts.ready
         })
 
+        // Glass keeps mobile only where its geometry differs there: overlays and the safe-area header.
         const hooks = Object.values(FAMILIES[section]).flat()
-        for (const hook of mobile ? MOBILE_HOOKS[section] : hooks) {
+        if (variant === 'glass' && section === 'components') {
+          await expect.soft(page.locator('.q-header')).toHaveScreenshot(`${prefix}-header-${mode}.png`)
+        }
+        for (const hook of mobile ? (variant === 'glass' ? [] : MOBILE_HOOKS[section]) : hooks) {
           const target = page.locator(captureTarget(hook))
           await expect(target, `${hook} is rendered exactly once`).toHaveCount(1)
           // Centre the target so the sticky gallery header never overlaps the crop.
           await target.evaluate((element) => element.scrollIntoView({ block: 'center' }))
           await expect(target, `${hook} is visible on ${testInfo.project.name}`).toBeVisible()
-          await expect.soft(target).toHaveScreenshot(`atlas-${hook}-${mode}.png`, { stylePath: HIDE_GALLERY_HEADER })
+          await expect.soft(target).toHaveScreenshot(`${prefix}-${hook}-${mode}.png`, { stylePath: HIDE_GALLERY_HEADER })
         }
 
         const overlays = OVERLAYS[section].filter((overlay) => !mobile || overlay.mobile)
@@ -194,7 +200,7 @@ test.describe('@screens atlas', () => {
           await expect(target, `${overlay.name} overlay is visible`).toBeVisible()
           const background = await target.evaluate((element) => getComputedStyle(element).backgroundColor)
           expect.soft(alpha(background), `${overlay.name} renders on the solid material fallback (${background})`).toBe(1)
-          await expect.soft(page).toHaveScreenshot(`atlas-${overlay.name}-${mode}.png`, {
+          await expect.soft(page).toHaveScreenshot(`${prefix}-${overlay.name}-${mode}.png`, {
             clip: await tightClip(page, overlay.target),
             stylePath: HIDE_PAGE_BEHIND_OVERLAYS,
           })

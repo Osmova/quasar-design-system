@@ -4,6 +4,7 @@ $ink-term: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink, .qds-ui.qds-v
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-breadcrumbs { color: var(--qds-fg-muted); font-size: var(--qds-font-size-body1); }
@@ -178,4 +179,8 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$zen} .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-bg-surface-1); padding: 0.125rem; }
   #{$zen} .q-btn-toggle > .q-btn { border: 0; border-radius: var(--qds-radius-full); background: transparent; box-shadow: none; }
   #{$zen} .q-btn-toggle > .q-btn.q-btn--active { background: var(--qds-control-fill-default); box-shadow: var(--qds-shadow-sm); }
+
+  // Related actions share one capsule.
+  #{$glass} .q-btn-group:not(.q-btn-toggle) { overflow: hidden; }
+  #{$glass} .q-btn-group:not(.q-btn-toggle) > .q-btn { border-radius: 0; }
 }

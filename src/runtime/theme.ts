@@ -127,7 +127,6 @@ const THEME_MODES: DesignSystemMode[] = ['light', 'dark', 'system']
 const DESIGN_SYSTEM_SCOPE_CLASS = 'qds-ui'
 const LEGACY_VARIANT_CLASSES = [
   'qds-variant-air',
-  'qds-variant-glass',
   'qds-variant-feather',
   'qds-variant-mobile',
   'qds-variant-terminal',
@@ -402,7 +401,7 @@ function normalizeShadcnAccent(value: unknown): ShadcnAccentColor {
 }
 
 function normalizeVariant(value: unknown): DesignSystemVariantName {
-  if (value === 'studio' || value === 'air' || value === 'glass') {
+  if (value === 'studio' || value === 'air') {
     return 'fluent'
   }
 

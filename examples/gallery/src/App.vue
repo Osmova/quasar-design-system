@@ -15,6 +15,7 @@ import {
   PhTerminal,
   PhSquaresFour,
   PhLeaf,
+  PhDrop,
 } from '@phosphor-icons/vue'
 import {
   useDesignSystem,
@@ -61,6 +62,7 @@ const variantIcons: Record<string, Component> = {
   term: PhTerminal,
   shadcn: PhSquaresFour,
   zen: PhLeaf,
+  glass: PhDrop,
 }
 const linkIcons: Record<string, Component> = {
   histoire: PhBooks,
@@ -402,6 +404,12 @@ watch(tab, revealActiveGalleryTab)
   --qds-row-min-height: 34px;
 }
 
+/* Radius never changes size, so glass may show its capsules here. */
+.qds-variant-glass .gallery-header,
+.qds-variant-glass .gallery-nav {
+  --qds-button-radius: 9999px;
+}
+
 .gallery-page {
   min-height: 0;
   padding: var(--qds-space-md);
@@ -471,7 +479,7 @@ watch(tab, revealActiveGalleryTab)
   min-height: 32px;
   padding-inline: 0.625rem 0.5rem;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--qds-button-radius);
   font-family: var(--gallery-chrome-font);
   font-size: 12px;
   font-weight: 500;
@@ -575,7 +583,7 @@ watch(tab, revealActiveGalleryTab)
   font-family: var(--gallery-chrome-font);
   margin-inline: 0.5rem;
   padding: 0 0.625rem;
-  border-radius: 6px;
+  border-radius: var(--qds-button-radius);
   font-size: 13px;
   font-weight: 450;
   letter-spacing: 0;

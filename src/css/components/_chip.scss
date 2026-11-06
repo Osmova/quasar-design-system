@@ -12,6 +12,7 @@ $tonal-fills: ();
 
 $tonal-fills: map.set($tonal-fills, 'grey', (fg: var(--qds-fg-default), bg: var(--qds-bg-layer)));
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-chip {
@@ -159,4 +160,7 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$zen} .q-chip { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-bg-surface-1); }
   #{$zen} .q-chip:is([class*='bg-']) { border-color: transparent; }
   #{$zen} .q-chip.q-chip--clickable:not(.disabled):hover { background: var(--qds-bg-surface-2); }
+
+  // A label identifies the chip, so its edge is a hairline rather than a 3:1 ring.
+  #{$glass} .q-chip:where(:not([class*='bg-'], .q-chip--outline)) { border-color: var(--qds-material-stroke); }
 }

@@ -346,7 +346,7 @@ test.describe('QDS override gate', () => {
   test('legacy aliases normalize to canonical state, classes, and four switcher entries', async ({ page }) => {
     await page.goto('/')
     const aliases = [
-      ['studio', 'fluent'], ['air', 'fluent'], ['glass', 'fluent'], ['feather', 'ink'], ['mobile', 'one'], ['terminal', 'term'],
+      ['studio', 'fluent'], ['air', 'fluent'], ['feather', 'ink'], ['mobile', 'one'], ['terminal', 'term'],
     ] as const
     for (const [input, canonical] of aliases) {
       const state = await page.evaluate(({ input, canonical }) => {
@@ -371,7 +371,7 @@ test.describe('QDS override gate', () => {
       expect.soft(state.canonicalClass, `${input} writes canonical class`).toBe(true)
       expect.soft(state.oldClass, `${input} old class is absent`).toBe(false)
       expect.soft(state.dataVariant, `${input} writes the canonical data-qds-variant`).toBe(canonical)
-      expect.soft(labels.map((label) => label.trim()), `${input} exposes only canonical switcher entries`).toEqual(['Fluent', 'Ink', 'One', 'Term', 'Shadcn', 'Zen'])
+      expect.soft(labels.map((label) => label.trim()), `${input} exposes only canonical switcher entries`).toEqual(['Fluent', 'Ink', 'One', 'Term', 'Shadcn', 'Zen', 'Glass'])
     }
   })
 

@@ -1,6 +1,6 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
@@ -26,18 +26,24 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$one} .q-drawer--mini { background: var(--qds-card-fill); }
   #{$one} .q-drawer--mini .q-list { margin: 0; background: transparent; }
 
-  // The sidebar is the same translucent sheet as the header, with capsule rows.
-  #{$atrium} .q-drawer {
-    background: var(--qds-material-thin-bg);
-    backdrop-filter: var(--qds-material-thin-filter);
-    -webkit-backdrop-filter: var(--qds-material-thin-filter);
+  // The sidebar is an inset floating glass panel; its rows are concentric with it.
+  #{$glass} .q-drawer { padding: calc(var(--_qds-glass-inset) + env(safe-area-inset-top)) var(--_qds-glass-inset) calc(var(--_qds-glass-inset) + env(safe-area-inset-bottom)); background: transparent; }
+  #{$glass} .q-drawer--left { padding-left: calc(var(--_qds-glass-inset) + env(safe-area-inset-left)); }
+  #{$glass} .q-drawer--right { padding-right: calc(var(--_qds-glass-inset) + env(safe-area-inset-right)); }
+  #{$glass} .q-drawer.q-drawer--bordered { border-color: transparent; }
+  #{$glass} .q-drawer__content {
+    border: 1px solid var(--qds-material-stroke);
+    border-radius: var(--qds-radius-lg);
+    background: var(--qds-material-regular-bg);
+    backdrop-filter: var(--qds-material-regular-filter);
+    -webkit-backdrop-filter: var(--qds-material-regular-filter);
+    box-shadow: var(--qds-material-edge), var(--qds-shadow-md);
   }
-  #{$atrium} .q-drawer.q-drawer--bordered { border-color: var(--qds-border-subtle); }
-  #{$atrium} .q-drawer .q-list { padding: var(--qds-space-sm); }
-  #{$atrium} .q-drawer .q-item { padding-inline: var(--qds-space-sm); border-radius: var(--qds-radius-control); }
-  #{$atrium} .q-drawer .q-layout__shadow::after { box-shadow: none; }
-  #{$atrium} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
-  #{$atrium} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
+  #{$glass} .q-drawer .q-list { padding: var(--_qds-glass-inset); }
+  #{$glass} .q-drawer .q-item { padding-inline: var(--qds-space-sm); border-radius: calc(var(--qds-radius-lg) - var(--_qds-glass-inset)); }
+  #{$glass} .q-drawer .q-layout__shadow::after { box-shadow: none; }
+  #{$glass} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
+  #{$glass} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
 
   // A calm sheet beside the page, bounded by its edge rather than a shadow.
   #{$zen} .q-drawer { border-color: var(--qds-stroke-default); background: var(--qds-bg-card); box-shadow: none; }
