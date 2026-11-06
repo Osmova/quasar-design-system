@@ -4,30 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.9.1] — 2026-11-05
-
-### Changed
-
-- **Zen borders in two tiers** (zen only): blocks, dividers and separators (cards, tables, bordered
-  lists, drawer/header/footer, settings cards, steppers, uploaders, editors, badges, menu and sheet
-  separators) take the quiet `--qds-stroke-default` line (about 1.6:1) instead of `--qds-stroke-strong`
-  (5.5:1 light / 5.35:1 dark). Controls and floating overlays keep `--qds-stroke-strong`, retuned to
-  `#7b756b` light and `#8b8881` dark: the softest edge that still clears 3:1 against every surface
-  step and role wash (worst pairing 3.11).
-
-### Fixed
-
-- **Shadcn switch** (shadcn only): `QToggle` follows the shadcn v4 Switch. The on track now fills with
-  the primary (it stayed grey), the off track is a borderless input fill (80% in dark), and the off thumb
-  is the foreground in dark and, in light, the background ringed in `--qds-text-muted` (at least 4.19:1 on
-  the track), so on and off read apart in both schemes. The on thumb uses the role's on-fill colour; the
-  focus halo still shows on `:focus-visible` only.
+## [Unreleased]
 
 ### Added
 
 - **`glass` variant** — inspired by Apple's design language, and the seventh canonical variant.
-  Controls and navigation float on a translucent functional layer above opaque content: header,
-  footer carry no fill or rule of their own and gain a soft scroll-edge blur once content scrolls under
+  Controls and navigation float on a translucent functional layer above opaque content: the header
+  and footer carry no fill or rule of their own and gain a soft scroll-edge blur once content scrolls under
   them, related bar buttons share one glass capsule (toolbars inside content stay plain, or opt in with
   `.qds-glass-bar`), the sidebar is an inset floating panel, dialogs and bottom
   sheets float inset with a large radius, and menus open with a short spring.
@@ -50,6 +33,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   selects the new glass variant instead of resolving to fluent. To keep the previous look, use
   `variant: 'fluent'`; a stored `glass` record is not migrated. `air` and `studio` still resolve to
   `fluent`.
+
+## [0.9.1] — 2026-11-05
+
+### Changed
+
+- **Zen borders in two tiers** (zen only): blocks, dividers and separators (cards, tables, bordered
+  lists, drawer/header/footer, settings cards, steppers, uploaders, editors, badges, menu and sheet
+  separators) take the quiet `--qds-stroke-default` line (about 1.6:1) instead of `--qds-stroke-strong`
+  (5.5:1 light / 5.35:1 dark). Controls and floating overlays keep `--qds-stroke-strong`, retuned to
+  `#7b756b` light and `#8b8881` dark: the softest edge that still clears 3:1 against every surface
+  step and role wash (worst pairing 3.11).
+
+### Fixed
+
+- **Shadcn switch** (shadcn only): `QToggle` follows the shadcn v4 Switch. The on track now fills with
+  the primary (it stayed grey), the off track is a borderless input fill (80% in dark), and the off thumb
+  is the foreground in dark and, in light, the background ringed in `--qds-text-muted` (at least 4.19:1 on
+  the track), so on and off read apart in both schemes. The on thumb uses the role's on-fill colour; the
+  focus halo still shows on `:focus-visible` only.
 
 ## [0.9.0] — 2026-11-04
 
