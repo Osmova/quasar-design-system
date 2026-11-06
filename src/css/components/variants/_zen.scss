@@ -1,147 +1,357 @@
-// Zen profile grammar: soft colored blocks, quiet reading rhythm, gently
-// raised/recessed depth and an essential boundary on every control. It owns its
-// own enclosure, segment and overlay language — no Fluent focus bar, rail or
-// acrylic, and no Ink drawn rule. This partial imports nothing from the
-// compatibility grammar, so it compiles and paints with that grammar removed.
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
-// Reading presentation is an explicit opt-in class, never a device or
-// user-agent heuristic, and makes no claim about physical e-paper hardware.
-$reading: ':is(.qds-ui.qds-variant-zen.qds-reading, .qds-ui .qds-variant-zen.qds-reading)';
+// Zen: a soft tactile reading system. Faces are raised, wells inset, pressed
+// recedes; every control keeps an essential edge so depth stays decorative.
+// Self-contained: imports no compatibility grammar and emits only zen scopes.
+$zen: '.qds-variant-zen:is(.qds-ui,.qds-ui *)';
+// An explicit opt-in class, never a device heuristic; no e-paper hardware claim.
+$reading: '.qds-variant-zen.qds-reading:is(.qds-ui,.qds-ui *)';
+$local-dark: '.qds-ui.qds-theme-light.qds-variant-zen :is(.q-card--dark, .q-table--dark, .q-tree--dark, .q-stepper--dark, .q-list--dark, .q-menu--dark, .q-uploader--dark, .q-date--dark, .q-time--dark)';
+$nav-parent: ':is(.q-drawer, nav) .q-expansion-item:is(.q-expansion-item--collapsed, .q-drawer--mini *):has(.q-item--active) > .q-expansion-item__container > .q-item';
+
+// Depth model: aliases resolve at the painted element, so local dark still inverts them.
+$base: var(--qds-bg-surface-1);
+$raised: var(--qds-bg-card);
+$inset: var(--qds-bg-surface-2);
+$lift-1: var(--qds-shadow-sm);
+$lift-2: var(--_qds-zen-lift-2);
+$lift-3: var(--_qds-zen-lift-3);
+$lift-4: var(--qds-shadow-lg);
+$lift-5: var(--qds-shadow-md);
+$edge: var(--_qds-zen-edge);
+$well: var(--_qds-zen-inset);
+$press: var(--_qds-zen-press);
+$glow: 0 0 0 0.25rem color-mix(in srgb, var(--qds-stroke-focus) 26%, transparent);
+$tint: color-mix(in srgb, var(--qds-fg-default) 6%, transparent);
+$spring: var(--_qds-zen-spring);
+$ease: var(--qds-motion-fast);
 
 @mixin button {
   #{$zen} .q-btn {
-    --_qds-zen-face: var(--qds-control-fill-default);
+    --_qds-zen-face: #{$raised};
+    --_qds-zen-depth: #{$lift-1}, #{$edge};
     min-height: var(--qds-button-min-height);
-    padding-inline: 1rem;
+    padding-inline: 1.125rem;
     border: 1px solid var(--qds-stroke-strong);
-    border-radius: var(--qds-radius-control);
+    border-radius: var(--qds-radius-full);
     background: var(--_qds-zen-face);
-    box-shadow: var(--qds-shadow-sm);
+    box-shadow: var(--_qds-zen-depth);
     color: var(--qds-fg-default);
     font-weight: var(--qds-font-weight-semibold);
     letter-spacing: 0;
     text-transform: none;
+    transition: background-color #{$ease}, border-color #{$ease}, color #{$ease}, box-shadow #{$spring}, transform #{$spring};
   }
-  #{$zen} .q-btn:not(.disabled):hover { --_qds-zen-face: var(--qds-control-fill-hover); }
+  #{$zen} .q-btn:not(.disabled):hover { --_qds-zen-depth: #{$lift-2}, #{$edge}; transform: translateY(-1px); }
   // Pressed recedes into the page instead of lifting further off it.
-  #{$zen} .q-btn:not(.disabled):active { --_qds-zen-face: var(--qds-control-fill-pressed); box-shadow: inset 0 1px 2px var(--qds-bg-overlay); }
-  #{$zen} .q-btn:is(.q-btn--flat, .q-btn--unelevated) { border-color: transparent; background: transparent; box-shadow: none; }
-  #{$zen} .q-btn--outline { border-color: currentColor; background: transparent; box-shadow: none; }
-  // Role fills already clear 3:1 against every Zen surface, so they carry
-  // their own boundary and drop the stroke rather than ringing it twice.
-  #{$zen} .q-btn:is([class*='bg-']):not(.q-btn--flat, .q-btn--outline) { border-color: transparent; }
-  #{$zen} .q-btn.disabled { box-shadow: none; }
-  #{$zen} .q-btn--dense { min-height: var(--qds-button-dense-min-height); }
+  #{$zen} .q-btn:not(.disabled):active { --_qds-zen-face: #{$inset}; --_qds-zen-depth: #{$press}; transform: translateY(1px); }
+  #{$zen} .q-btn:focus-visible { box-shadow: var(--_qds-zen-depth), #{$glow}; }
+  #{$zen} .q-btn:is(.q-btn--flat, .q-btn--outline) { --_qds-zen-face: transparent; --_qds-zen-depth: 0 0 transparent; }
+  #{$zen} .q-btn--flat { border-color: transparent; }
+  #{$zen} .q-btn--outline { border-color: currentColor; }
+  #{$zen} .q-btn:is(.q-btn--flat, .q-btn--outline):not(.disabled):hover { --_qds-zen-face: #{$tint}; --_qds-zen-depth: 0 0 transparent; transform: none; }
+  #{$zen} .q-btn:is(.q-btn--flat, .q-btn--outline):not(.disabled):active { --_qds-zen-face: color-mix(in srgb, currentColor 12%, transparent); --_qds-zen-depth: #{$press}; }
+  // Role fills clear 3:1 on every zen surface, so they are their own boundary.
+  #{$zen} .q-btn[class*='bg-']:not(.q-btn--flat, .q-btn--outline) { --_qds-zen-depth: #{$lift-1}; border-color: transparent; }
+  #{$zen} .q-btn[class*='bg-']:not(.q-btn--flat, .q-btn--outline, .disabled):hover { --_qds-zen-depth: #{$lift-2}; }
+  #{$zen} .q-btn[class*='bg-']:not(.q-btn--flat, .q-btn--outline, .disabled):active { --_qds-zen-depth: #{$press}; }
+  #{$zen} .q-btn.disabled { --_qds-zen-depth: 0 0 transparent; transform: none; }
+  #{$zen} .q-btn--dense { min-height: var(--qds-button-dense-min-height); padding-inline: 0.75rem; }
+  #{$zen} .q-btn--square { border-radius: var(--qds-radius-md); }
+  #{$zen} .q-btn:is(.q-btn--round, .q-btn--fab, .q-btn--fab-mini) { padding-inline: 0; }
   #{$zen} .q-btn__content { gap: 0.5rem; }
 }
 
 @mixin field {
-  // The field is a recessed well: an inset edge plus a real boundary, never a
-  // bottom focus bar and never depth alone.
+  // A recessed well with a real boundary; focus adds a soft glow, never a bottom bar.
   #{$zen} .q-field__control {
     height: var(--qds-field-height);
     min-height: var(--qds-field-height);
-    padding-inline: 0.875rem;
+    padding-inline: 1rem;
     border: 1px solid var(--qds-stroke-strong);
     border-radius: var(--qds-radius-control);
-    background: var(--qds-bg-surface-1);
-    box-shadow: inset 0 1px 2px var(--qds-bg-overlay);
+    background: #{$base};
+    box-shadow: #{$well};
     color: var(--qds-fg-default);
+    transition: border-color #{$ease}, box-shadow #{$ease}, background-color #{$ease};
   }
   #{$zen} .q-field__control::before,
   #{$zen} .q-field__control::after { content: none; }
-  // Hover and focus keep the well; the compatibility grammar would otherwise
-  // repaint them from its own control-fill ladder at equal specificity.
-  #{$zen} .q-field__control:hover { background: var(--qds-bg-surface-1); }
+  #{$zen} .q-field__control:hover { background: #{$base}; }
   #{$zen} .q-field--focused .q-field__control {
     border-color: var(--qds-stroke-focus);
-    background: var(--qds-bg-surface-1);
-    outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus);
-    outline-offset: 1px;
+    background: #{$base};
+    box-shadow: #{$well}, #{$glow};
+    outline: 1px solid var(--qds-stroke-focus);
+    outline-offset: -2px;
   }
+  #{$zen} .q-field--rounded .q-field__control { border-radius: var(--qds-radius-full); padding-inline: 1.25rem; }
   #{$zen} .q-field__label { color: var(--qds-fg-muted); font-size: var(--qds-field-label-size); }
   #{$zen} .q-field__native { color: var(--qds-fg-default); }
   #{$zen} .q-field__marginal { height: auto; color: var(--qds-fg-muted); }
-  #{$zen} .q-field__bottom { padding-top: 0.375rem; color: var(--qds-fg-muted); }
+  #{$zen} .q-field__bottom { padding-top: 0.375rem; padding-inline: 0.5rem; color: var(--qds-fg-muted); }
   #{$zen} .q-field__counter { font-variant-numeric: tabular-nums; }
-  // Quasar's native #c10015 validation paint never reaches a Zen field.
+  // Quasar's native #c10015 validation paint never reaches a zen field.
   #{$zen} .q-field--error .q-field__control { border-color: var(--qds-stroke-error); }
+  #{$zen} .q-field--error.q-field--focused .q-field__control { outline-color: var(--qds-stroke-error); box-shadow: #{$well}, 0 0 0 0.25rem color-mix(in srgb, var(--qds-stroke-error) 22%, transparent); }
   #{$zen} .q-field--error :is(.q-field__bottom, .q-field__marginal) { color: var(--qds-fg-negative); }
-  #{$zen} .q-field--readonly .q-field__control { background: var(--qds-control-fill-default); box-shadow: none; border-style: dashed; }
-  #{$zen} .q-field--disabled .q-field__control { background: var(--qds-bg-surface-2); box-shadow: none; }
+  #{$zen} :is(.qds-field--positive, .qds-field--warning) .q-field__control { border-color: var(--qds-field-tone-fg); }
+  #{$zen} .q-field--readonly .q-field__control { border-style: dashed; background: #{$raised}; box-shadow: none; }
+  #{$zen} .q-field--disabled .q-field__control { background: #{$inset}; box-shadow: none; }
 }
 
 @mixin tabs {
-  // Enclosed segments, not a rail: the track recedes and the active segment is
-  // raised, bounded and heavier, so it reads without shadow or colour alone.
+  // A raised tray: the active tab reads by a short drawn underline and weight, not shadow or colour alone.
   #{$zen} .q-tabs {
-    // The enclosure adds padding and a border, so it must shrink inside a narrow cell.
     max-width: 100%;
     min-width: 0;
     padding: 0.25rem;
     border: 1px solid var(--qds-stroke-strong);
-    border-radius: var(--qds-radius-control);
-    background: var(--qds-bg-surface-2);
-    box-shadow: inset 0 1px 2px var(--qds-bg-overlay);
+    border-radius: calc(var(--qds-radius-control) + 0.25rem);
+    background: #{$raised};
+    box-shadow: #{$lift-1}, #{$edge};
     color: var(--qds-fg-default);
   }
   #{$zen} .q-tab {
     min-height: var(--qds-tab-min-height);
-    padding: 0 var(--qds-space-sm);
-    border: 1px solid transparent;
-    border-radius: calc(var(--qds-radius-control) - 0.25rem);
+    padding: 0 var(--qds-space-md);
+    border-radius: var(--qds-radius-control);
     opacity: 1;
     color: var(--qds-fg-muted);
+    transition: color #{$ease}, background-color #{$ease};
   }
+  #{$zen} .q-tab:not(.disabled):hover { background: #{$tint}; color: var(--qds-fg-strong); }
   #{$zen} .q-tab__label { font-size: 0.875rem; font-weight: var(--qds-font-weight-medium); text-transform: none; letter-spacing: 0; }
-  #{$zen} .q-tab--active {
-    border-color: var(--qds-stroke-strong);
-    background: var(--qds-control-fill-default);
-    box-shadow: var(--qds-shadow-sm);
-    color: var(--qds-fg-default);
-  }
+  #{$zen} .q-tab--active { color: var(--qds-fg-strong); }
   #{$zen} .q-tab--active .q-tab__label { font-weight: var(--qds-font-weight-semibold); }
-  #{$zen} .q-tab__indicator { display: none; }
+  #{$zen} .q-tab .q-tab__indicator { height: 3px; border-radius: var(--qds-radius-full); color: var(--qds-fg-brand); }
+  #{$zen} .q-tabs--horizontal .q-tab > .q-tab__indicator { inset-inline: calc(50% - 0.75rem); bottom: 0.3125rem; }
+  #{$zen} .q-tabs--vertical .q-tab .q-tab__indicator { width: 3px; height: auto; inset-block: calc(50% - 0.625rem); }
   #{$zen} .q-tab.disabled { opacity: var(--qds-disabled-opacity); }
   #{$zen} .q-tabs__arrow { color: var(--qds-fg-muted); text-shadow: none; }
+  // Floating pill dock for footer navigation; the active stop is a filled pebble.
+  #{$zen} .q-footer:has(> .q-tabs) { padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom)); border: 0; background: transparent; box-shadow: none; }
+  #{$zen} .q-footer > .q-tabs { width: fit-content; margin-inline: auto; padding: 0.375rem; border-radius: var(--qds-radius-full); box-shadow: #{$lift-5}, #{$edge}; }
+  #{$zen} .q-footer > .q-tabs .q-tab { min-width: var(--qds-control-size-lg); border-radius: var(--qds-radius-full); }
+  #{$zen} .q-footer > .q-tabs .q-tab--active { background: var(--qds-fg-strong); color: #{$raised}; }
+  #{$zen} .q-footer > .q-tabs .q-tab__indicator { display: none; }
 }
 
 @mixin menu {
-  // Quasar teleports overlays to the body, which the runtime variant class also
-  // carries, so the Zen scope reaches them without a per-overlay opt-in.
-  #{$zen} .q-menu {
-    padding: var(--qds-space-xs);
-    border: 1px solid var(--qds-stroke-strong);
-    border-radius: var(--qds-radius-lg);
-    background: var(--qds-menu-bg);
-    box-shadow: var(--qds-shadow-md);
-    color: var(--qds-fg-default);
-  }
-  #{$zen} .q-menu .q-item {
-    min-height: var(--qds-menu-item-min-height);
-    border: 1px solid transparent;
-    border-radius: var(--qds-radius-control);
-    color: var(--qds-fg-default);
-  }
-  #{$zen} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible) { background: var(--qds-bg-surface-1); }
-  #{$zen} .q-menu .q-item--active { border-color: var(--qds-stroke-strong); background: var(--qds-surface-brand-soft); }
-  #{$zen} .q-menu .q-separator { background: var(--qds-stroke-default); }
+  // Overlays teleport to the body, which also carries the variant class.
+  #{$zen} :is(.q-menu, .q-notification, .q-popup-edit),
+  #{$zen} .q-loading .q-loading__box { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: #{$raised}; color: var(--qds-fg-default); box-shadow: #{$lift-5}, #{$edge}; backdrop-filter: none; }
+  #{$zen} .q-menu { padding: 0.375rem; }
+  #{$zen} .q-menu .q-item { min-height: var(--qds-menu-item-min-height); color: var(--qds-fg-default); }
+  #{$zen} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible) { background: #{$tint}; }
+  #{$zen} .q-menu .q-item--active { border-color: var(--qds-stroke-strong); background: var(--qds-surface-brand-soft); color: var(--qds-fg-strong); }
+  #{$zen} .q-menu .q-separator { margin-block: 0.25rem; background: var(--qds-stroke-default); }
 }
 
-// Reading presentation keeps every boundary and removes decorative depth and
-// motion. It adds no hardware detection and no continuous or simulated refresh.
+@mixin type {
+  #{$zen} :where(h1, h2, h3, h4, h5, h6, .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6, .qds-display, .q-toolbar__title) { font-style: italic; }
+  #{$zen} .q-toolbar__title { font-family: var(--qds-font-family-display); font-weight: var(--qds-font-weight-h5); letter-spacing: 0; }
+  #{$zen} :where(.text-overline, .q-item__label--header) { text-transform: uppercase; letter-spacing: var(--qds-letter-spacing-overline); }
+}
+
+@mixin selection {
+  // Checkbox, radio and switch sit in wells; a checked mark rises out of it.
+  #{$zen} :is(.q-checkbox, .q-radio):not(.q-checkbox--dense, .q-radio--dense) { --qds-selection-mark-size: 1.25rem; }
+  #{$zen} :is(.q-checkbox, .q-radio, .q-toggle) .q-icon { color: var(--qds-text-on-solid); }
+  #{$zen} :is(.q-checkbox .q-checkbox__bg, .q-radio .q-radio__bg) { background: #{$base}; box-shadow: #{$well}; transition: background-color #{$ease}, box-shadow #{$ease}; }
+  #{$zen} .q-checkbox .q-checkbox__bg { border-color: var(--qds-stroke-strong); border-radius: var(--qds-radius-sm); }
+  #{$zen} .q-radio__inner--falsy { color: var(--qds-stroke-strong); }
+  #{$zen} .q-checkbox :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet) .q-checkbox__bg { border-color: transparent; background: currentColor; box-shadow: #{$lift-1}; }
+  #{$zen} .q-radio .q-radio__inner--truthy .q-radio__bg { border-width: 2px; }
+  #{$zen} .q-toggle .q-toggle__track { position: relative; border: 1px solid var(--qds-stroke-strong); background: #{$inset}; box-shadow: #{$well}; opacity: 1; }
+  #{$zen} .q-toggle .q-toggle__inner--truthy .q-toggle__track { border-color: transparent; background: currentColor; box-shadow: inset 0 1px 2px color-mix(in srgb, var(--qds-fg-strong) 24%, transparent); }
+  #{$zen} .q-toggle .q-toggle__thumb::after { border: 1px solid var(--qds-stroke-strong); background: #{$raised}; box-shadow: #{$lift-2}, #{$edge}; }
+  #{$zen} .q-toggle .q-toggle__inner--truthy .q-toggle__thumb::after { border-color: transparent; background: #{$raised}; }
+  #{$zen} .q-toggle .q-toggle__thumb { transition: inset-inline-start #{$spring}; }
+  // In-track state glyphs drawn from borders: a bar when on, a ring when off. They survive forced colours.
+  #{$zen} .q-toggle .q-toggle__inner--truthy .q-toggle__track::before { content: ''; position: absolute; inset-inline-start: calc(var(--qds-toggle-track-height) / 2 - 1px); top: 50%; height: 40%; translate: 0 -50%; border-inline-start: 2px solid var(--qds-selection-on, var(--qds-text-on-primary)); border-radius: 1px; }
+  #{$zen} .q-toggle .q-toggle__inner--falsy .q-toggle__track::after { content: ''; position: absolute; inset-inline-end: calc(var(--qds-toggle-track-height) / 2 - 0.25rem); top: 50%; width: 0.5rem; height: 0.5rem; translate: 0 -50%; border: 1.5px solid var(--qds-fg-muted); border-radius: 50%; }
+  #{$zen} .q-toggle.disabled .q-toggle__thumb::after { background: #{$inset}; box-shadow: none; }
+  #{$zen} .q-slider__track-container { border-radius: var(--qds-radius-full); }
+  // Quasar sizes the track inline, so the well and fill grow past it instead.
+  #{$zen} .q-slider--h :is(.q-slider__inner, .q-slider__selection) { top: -0.1875rem; bottom: -0.1875rem; }
+  #{$zen} .q-slider--v :is(.q-slider__inner, .q-slider__selection) { left: -0.1875rem; right: -0.1875rem; }
+  #{$zen} .q-slider .q-slider__inner { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: #{$inset}; box-shadow: #{$well}; }
+  #{$zen} .q-slider .q-slider__selection { border-radius: var(--qds-radius-full); }
+  #{$zen} .q-slider .q-slider__thumb { border: 1px solid var(--qds-stroke-strong); background: #{$raised}; box-shadow: #{$lift-2}, #{$edge}; }
+  #{$zen} .q-slider .q-slider__thumb-shape path { fill: transparent; }
+  #{$zen} .q-slider .q-slider__text-container { border-radius: var(--qds-radius-full); padding-inline: 0.625rem; }
+}
+
+@mixin actions {
+  #{$zen} :is(.q-btn-group, .q-btn-toggle, .q-chip) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); box-shadow: #{$lift-1}, #{$edge}; }
+  // Outer corners follow the pill instead of clipping, so floating badges stay whole.
+  #{$zen} .q-btn-group > .q-btn { border: 0; border-radius: 0; --_qds-zen-depth: 0 0 transparent; transform: none; }
+  #{$zen} .q-btn-group > .q-btn:first-child { border-start-start-radius: inherit; border-end-start-radius: inherit; }
+  #{$zen} .q-btn-group > .q-btn:last-child { border-start-end-radius: inherit; border-end-end-radius: inherit; }
+  #{$zen} .q-btn-group > .q-btn + .q-btn { border-inline-start: 1px solid var(--qds-stroke-default); }
+  // Segmented control: a raised tray whose active segment is pressed into it.
+  #{$zen} .q-btn-toggle { gap: 0.125rem; padding: 0.1875rem; background: #{$raised}; }
+  #{$zen} .q-btn-toggle > .q-btn.q-btn-item { min-height: calc(var(--qds-button-min-height) - 0.5rem); border: 1px solid transparent; border-radius: var(--qds-radius-full); --_qds-zen-depth: 0 0 transparent; transform: none; }
+  #{$zen} .q-btn-toggle:has(> .q-btn--dense) { padding: 0.125rem; }
+  #{$zen} .q-btn-toggle > .q-btn.q-btn-item.q-btn--dense { min-height: calc(var(--qds-button-dense-min-height) - 0.375rem); padding-inline: 0.625rem; }
+  #{$zen} .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { --_qds-zen-depth: #{$press}; border-color: var(--qds-stroke-strong); }
+  #{$zen} :is(.q-breadcrumbs, .q-banner, .q-list--bordered, .q-table__container) { border: 1px solid var(--qds-stroke-default); border-radius: var(--qds-radius-lg); background: #{$raised}; box-shadow: #{$lift-1}, #{$edge}; }
+  #{$zen} .q-breadcrumbs { width: fit-content; max-width: 100%; padding: 0.25rem 0.75rem; }
+  #{$zen} .q-breadcrumbs .q-breadcrumbs__el:is([aria-current='page'], :not(a)) { color: var(--qds-fg-strong); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} .q-banner[class*='bg-'] { border-color: transparent; }
+  #{$zen} .q-avatar { box-shadow: 0 0 0 2px #{$raised}, 0 0 0 3px var(--qds-stroke-default); }
+}
+
+@mixin badge-chip {
+  #{$zen} .q-badge { border-radius: var(--qds-radius-full); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} .q-badge:not([class*='bg-']) { border: 1px solid var(--qds-stroke-default); background: #{$raised}; color: var(--qds-fg-default); }
+  // Chips are pebbles: raised and bounded at rest, pressed when selected.
+  #{$zen} .q-chip { background: #{$raised}; transition: box-shadow #{$spring}, background-color #{$ease}; }
+  #{$zen} .q-chip[class*='bg-'] { border-color: transparent; box-shadow: none; }
+  #{$zen} .q-chip.q-chip--clickable:not(.disabled):hover { box-shadow: #{$lift-2}, #{$edge}; }
+  #{$zen} .q-chip:is(.q-chip--selected, .q-chip--clickable:not(.disabled):active) { background: #{$inset}; box-shadow: #{$press}; }
+  #{$zen} .q-rating__icon { color: var(--qds-fg-muted); text-shadow: none; }
+  #{$zen} .q-rating__icon--active { color: var(--qds-color-warning); }
+}
+
+@mixin blocks {
+  // Blocks are raised sheets; a nested block steps down a tone instead of stacking shadows.
+  #{$zen} :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-stepper, .q-uploader, .q-editor, .q-splitter, .q-date, .q-time, .q-color-picker) { border: 1px solid var(--qds-stroke-default); border-radius: var(--qds-radius-lg); background: #{$raised}; box-shadow: #{$lift-3}, #{$edge}; }
+  #{$zen} .q-card > .q-card__section--vert { padding: var(--qds-space-md) var(--qds-space-lg); }
+  #{$zen} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { padding: var(--qds-space-md) var(--qds-space-lg); border-block-end: 1px solid var(--qds-stroke-default); background: none; }
+  #{$zen} .q-card > .q-card__actions { gap: var(--qds-space-sm); padding: var(--qds-space-sm) var(--qds-space-lg) var(--qds-space-md); }
+  #{$zen} .q-card > .q-card__actions .q-btn + .q-btn { margin-inline-start: 0; }
+  #{$zen} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile, .qds-settings-card) { border-radius: var(--qds-radius-md); background: #{$base}; box-shadow: none; }
+  #{$zen} :is(.q-card, .qds-card, .qds-tile).q-card--flat { box-shadow: none; }
+  #{$zen} .q-card.q-card--square { border-radius: 0; }
+  #{$zen} .q-card:focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); }
+  #{$zen} .qds-tile__label { color: var(--qds-fg-muted); }
+  #{$zen} .qds-settings-group > .qds-settings-card + .qds-settings-card { margin-block-start: var(--qds-space-sm); }
+  #{$zen} .q-stepper { --qds-stepper-dot-size: 2rem; --qds-stepper-rail: var(--qds-stroke-strong); }
+  #{$zen} .q-stepper__tab:not(.q-stepper__tab--active, .q-stepper__tab--done, .q-stepper__tab--error) .q-stepper__dot { border-color: var(--qds-stroke-strong); background: #{$raised}; box-shadow: #{$lift-1}, #{$edge}; color: var(--qds-fg-default); }
+  #{$zen} .q-stepper__tab--active .q-stepper__dot { box-shadow: 0 0 0 0.25rem var(--qds-surface-brand-soft), #{$lift-1}; }
+  #{$zen} .q-carousel { border-radius: var(--qds-radius-lg); background: #{$base}; }
+  #{$zen} .q-message-sent .q-message-text { --qds-chat-bubble-bg: var(--qds-surface-brand-soft); --qds-chat-bubble-fg: var(--qds-fg-default); border-color: var(--qds-stroke-default); }
+  #{$zen} .q-message-text--received { border: 1px solid var(--qds-stroke-default); background: #{$raised}; }
+  #{$zen} .q-timeline__subtitle { color: var(--qds-fg-muted); }
+  #{$zen} .q-img { border-radius: var(--qds-radius-md); }
+  #{$zen} .q-date__content { width: 100%; min-width: 0; }
+  #{$zen} .q-date__arrow { width: auto; --qds-button-dense-min-height: 1.75rem; }
+  #{$zen} .q-option-group--inline { gap: var(--qds-space-md); }
+  #{$zen} .qds-option-group--card :is(.q-radio, .q-checkbox) { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: #{$raised}; box-shadow: #{$lift-1}, #{$edge}; }
+  #{$zen} .qds-option-group--card :is(.q-radio, .q-checkbox).qds-active { border-color: var(--qds-fg-brand); background: var(--qds-surface-brand-soft); box-shadow: #{$press}; }
+  #{$zen} .qds-pin .q-field__control { justify-content: center; }
+  #{$zen} .qds-form-field__label { color: var(--qds-fg-default); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} :is(.qds-form-field__hint, .qds-form-field__description) { color: var(--qds-fg-muted); }
+  #{$zen} .qds-field-group > :is(.q-field, .q-btn) { border-radius: 0; }
+  #{$zen} .qds-field--dropzone .q-field__control { border-style: dashed; background: #{$base}; box-shadow: none; }
+  #{$zen} .qds-menu-row__title { font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} :is(.qds-menu-row__caption, .qds-menu-row__description) { color: var(--qds-fg-muted); }
+  #{$zen} .qds-subpage-tabs .q-tab--active { color: var(--qds-fg-brand); }
+}
+
+@mixin data {
+  // Lists and tables are calm grouped blocks; rows are pebbles inside them.
+  #{$zen} .q-list--bordered { padding: 0.375rem; }
+  #{$zen} :is(.q-list--bordered, .q-table__container) { overflow: hidden; }
+  #{$zen} .q-item { min-height: var(--qds-list-item-min-height); padding-inline: var(--qds-space-md); border: 1px solid transparent; border-radius: var(--qds-radius-control); }
+  #{$zen} .q-list--separator { padding-block: 0; }
+  #{$zen} .q-list--separator > .q-item { border-radius: 0; }
+  #{$zen} .q-list--separator > .q-item-type + .q-item-type { border-block-start-color: var(--qds-stroke-default); }
+  #{$zen} .q-item:not(.disabled):hover { background-color: #{$tint}; }
+  // Selection presses the row in and gives it an edge, so it survives grayscale and reading.
+  #{$zen} .q-item:is(.q-item--active, [aria-selected='true']) { border-color: var(--qds-stroke-strong); background-color: #{$inset}; box-shadow: #{$press}; color: var(--qds-fg-strong); }
+  #{$zen} .q-item:is(.q-item--active, [aria-selected='true'])::before,
+  #{$zen} #{$nav-parent}::before { display: none; }
+  #{$zen} .q-item:is(.q-item--active, [aria-selected='true']) .q-item__section--side > .q-icon { color: var(--qds-fg-brand); }
+  #{$zen} .q-list .q-item__label--header { padding: var(--qds-space-md) var(--qds-space-md) var(--qds-space-xs); color: var(--qds-fg-muted); font-size: var(--qds-font-size-overline); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} .q-item .q-item__section--side > .q-icon { color: var(--qds-fg-muted); }
+  #{$zen} .q-expansion-item { border-radius: var(--qds-radius-lg); }
+  #{$zen} .q-table thead th { color: var(--qds-fg-muted); font-weight: var(--qds-font-weight-semibold); background: #{$base}; }
+  #{$zen} .q-table :is(th, td) { border-color: var(--qds-stroke-default); }
+  #{$zen} .q-table tbody tr:last-child > td { border-bottom: 0; }
+  #{$zen} .q-table tbody tr:not(.disabled):hover > td { background: #{$tint}; }
+  #{$zen} .q-table tbody tr.selected > td { background: var(--qds-surface-brand-soft); }
+  #{$zen} .q-card > .q-table__container { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  #{$zen} .q-table__bottom--nodata { margin: var(--qds-space-sm); border: 1px dashed var(--qds-stroke-strong); border-radius: var(--qds-radius-md); color: var(--qds-fg-muted); }
+  #{$zen} .q-pagination .q-btn { min-width: var(--qds-button-min-height); padding-inline: 0.5rem; border-radius: var(--qds-radius-full); }
+  #{$zen} .q-pagination { --qds-pagination-active-bg: var(--qds-color-primary); --qds-pagination-active-text: var(--qds-text-on-solid); }
+  #{$zen} .q-pagination .q-btn[aria-current='page'] { --_qds-zen-depth: #{$lift-1}; }
+}
+
+@mixin chrome {
+  // Header, drawer and footer share the base tone, bounded by an edge; the current place is a raised pebble.
+  #{$zen} :is(.q-header, .q-footer) { background: #{$base}; color: var(--qds-fg-default); box-shadow: none; }
+  #{$zen} .q-header { border-bottom: 1px solid var(--qds-stroke-default); }
+  #{$zen} .q-footer { border-top: 1px solid var(--qds-stroke-default); }
+  #{$zen} .q-drawer { border-color: var(--qds-stroke-default); background: #{$base}; box-shadow: none; }
+  #{$zen} .q-drawer .q-item { border-radius: var(--qds-radius-full); }
+  #{$zen} .q-drawer .q-item:is(.q-item--active, [aria-selected='true']) { background-color: #{$raised}; box-shadow: #{$lift-1}, #{$edge}; color: var(--qds-fg-strong); font-weight: var(--qds-font-weight-semibold); }
+  #{$zen} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
+}
+
+@mixin overlays {
+  #{$zen} .q-dialog__inner > :is(.q-card, .q-bottom-sheet) { border: 1px solid var(--qds-stroke-strong); box-shadow: #{$lift-4}, #{$edge}; backdrop-filter: none; }
+  #{$zen} .q-dialog__inner > .q-card { border-radius: var(--qds-radius-xl); }
+  #{$zen} .q-dialog__inner--maximized > .q-card { border: 0; border-radius: 0; box-shadow: none; }
+  #{$zen} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-xl); border-start-end-radius: var(--qds-radius-xl); background: #{$raised}; }
+  #{$zen} .q-bottom-sheet .q-separator { background: var(--qds-stroke-default); }
+  #{$zen} .q-bottom-sheet__item { border: 1px solid transparent; border-radius: var(--qds-radius-control); color: var(--qds-fg-default); }
+  #{$zen} .q-bottom-sheet__item:not(.disabled):is(:hover, :focus-visible) { background: #{$tint}; }
+  #{$zen} .q-bottom-sheet__item:not(.disabled):active { background: #{$inset}; box-shadow: #{$press}; }
+  #{$zen} .q-bottom-sheet__item > .q-focus-helper { opacity: 0; }
+  #{$zen} .q-loading .q-loading__box { box-shadow: #{$lift-4}, #{$edge}; }
+  #{$zen} .q-notification[class*='bg-'] { border-color: transparent; }
+  #{$zen} .q-notification:not([class*='bg-']) .q-notification__message { color: var(--qds-fg-default); }
+  // Tooltips invert into a quiet ink pill, like a printed marginal note.
+  #{$zen} .q-tooltip { border: 1px solid transparent; border-radius: var(--qds-radius-md); background: var(--qds-fg-strong); color: #{$raised}; box-shadow: #{$lift-2}; backdrop-filter: none; }
+}
+
+@mixin feedback {
+  #{$zen} .q-skeleton { border-radius: var(--qds-radius-control); background: #{$inset}; box-shadow: #{$well}; }
+  #{$zen} .q-skeleton--type-text { border-radius: var(--qds-radius-full); }
+  #{$zen} .q-linear-progress { font-size: 0.375rem; }
+  #{$zen} .q-linear-progress__track { background: #{$inset}; box-shadow: #{$well}; }
+  #{$zen} .q-linear-progress__model { border-radius: var(--qds-radius-full); }
+  #{$zen} .q-circular-progress__track { color: var(--qds-bg-surface-2); }
+}
+
+@mixin local-dark {
+  // A light page's explicit-dark block drops the light highlight edge with the rest of its palette.
+  #{$local-dark} { --_qds-zen-edge: inset 0 0 0 transparent; }
+}
+
+// Reading presentation keeps every boundary, strengthens block edges, and drops decorative depth and motion.
 @mixin reading {
-  #{$reading} :is(.q-btn, .q-field__control, .q-tabs, .q-tab, .q-menu, .q-item) { box-shadow: none; }
-  // Decorative depth goes; the boundary each family carries is what survives.
-  #{$reading} :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-table__container, .q-stepper, .q-uploader, .q-editor, .q-splitter, .q-notification, .q-tooltip, .q-dialog__inner > .q-card, .q-dialog__inner > .q-bottom-sheet, .q-loading .q-loading__box, .q-drawer, .q-header, .q-footer) { box-shadow: none; }
-  #{$reading} .q-field__control { background: var(--qds-control-fill-default); }
-  #{$reading} .q-tab--active { background: var(--qds-control-fill-default); }
-  #{$reading} :is(.q-btn, .q-field, .q-field__control, .q-tab, .q-menu, .q-item),
-  #{$reading} :is(.q-btn, .q-field, .q-field__control, .q-tab, .q-menu, .q-item)::before,
-  #{$reading} :is(.q-btn, .q-field, .q-field__control, .q-tab, .q-menu, .q-item)::after {
+  #{$reading} :is(.q-btn, .q-field__control, .q-tabs, .q-tab, .q-menu, .q-item, .q-chip, .q-btn-toggle, .q-btn-group, .q-breadcrumbs, .q-banner, .q-toggle__track, .q-slider__inner, .q-slider__thumb, .q-checkbox__bg, .q-radio__bg, .q-skeleton, .q-linear-progress__track, .q-stepper__dot, .q-pagination .q-btn) { box-shadow: none; transform: none; }
+  #{$reading} .q-toggle__thumb::after { box-shadow: none; }
+  #{$reading} :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-list--bordered, .q-table__container, .q-stepper, .q-uploader, .q-editor, .q-splitter, .q-date, .q-time, .q-color-picker, .q-notification, .q-tooltip, .q-popup-edit, .q-dialog__inner > .q-card, .q-dialog__inner > .q-bottom-sheet, .q-loading .q-loading__box, .q-drawer, .q-header, .q-footer, .q-footer > .q-tabs) { box-shadow: none; }
+  #{$reading} :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-list--bordered, .q-table__container, .q-banner, .q-breadcrumbs) { border-color: var(--qds-stroke-strong); }
+  #{$reading} :is(.q-field__control, .q-slider__inner, .q-toggle__track, .q-checkbox__bg, .q-radio__bg) { background: var(--qds-control-fill-default); }
+  #{$reading} .q-item:is(.q-item--active, [aria-selected='true']) { background-color: var(--qds-surface-brand-soft); }
+  #{$reading} :is(.q-btn, .q-field__control, .q-tab, .q-menu, .q-item, .q-chip, .q-toggle__thumb, .q-toggle__track),
+  #{$reading} :is(.q-field__control, .q-item, .q-toggle__thumb, .q-toggle__track)::before,
+  #{$reading} :is(.q-field__control, .q-item, .q-toggle__thumb, .q-toggle__track)::after {
     transition: none;
     animation: none;
     backdrop-filter: none;
     background-image: none;
   }
+}
+
+@mixin styles {
+  @include type;
+  @include button;
+  @include field;
+  @include tabs;
+  @include menu;
+  @include selection;
+  @include actions;
+  @include badge-chip;
+  @include blocks;
+  @include data;
+  @include chrome;
+  @include overlays;
+  @include feedback;
+  @include local-dark;
+  @include reading;
 }

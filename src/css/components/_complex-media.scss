@@ -4,7 +4,6 @@ $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
 $role-fills: '.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui :is(.q-stepper, .q-uploader) {
@@ -280,13 +279,4 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
     .q-uploader__header:is(#{$role-fills}) .q-btn:hover { background: var(--_qds-uploader-hover); }
     .q-uploader__header:is(#{$role-fills}) .q-btn:active { background: var(--_qds-uploader-pressed); }
   }
-
-  #{$zen} :is(.q-stepper, .q-uploader, .q-editor, .q-splitter) { border: 1px solid var(--qds-stroke-default); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }
-  #{$zen} .q-stepper__tab--active .q-stepper__dot { background: var(--qds-color-primary); color: var(--qds-text-on-solid); }
-  #{$zen} .q-carousel { border-radius: var(--qds-radius-lg); background: var(--qds-bg-surface-1); }
-  // A tonal bubble must also rebind the on-fill foreground, or the content utility keeps the on-solid ink.
-  #{$zen} .q-message-sent .q-message-text { --qds-chat-bubble-bg: var(--qds-surface-brand-soft); --qds-chat-bubble-fg: var(--qds-fg-default); border-color: var(--qds-stroke-default); }
-  #{$zen} .q-message-text--received { border: 1px solid var(--qds-stroke-default); background: var(--qds-bg-card); }
-  #{$zen} .q-timeline__subtitle { color: var(--qds-fg-muted); }
-  #{$zen} .q-img { border-radius: var(--qds-radius-control); }
 }
