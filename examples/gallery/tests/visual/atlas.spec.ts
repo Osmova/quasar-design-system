@@ -177,8 +177,12 @@ test.describe('@screens atlas', () => {
           await document.fonts.ready
         })
 
+        // Glass keeps mobile only where its geometry differs there: overlays and the safe-area header.
         const hooks = Object.values(FAMILIES[section]).flat()
-        for (const hook of mobile ? MOBILE_HOOKS[section] : hooks) {
+        if (variant === 'glass' && section === 'components') {
+          await expect.soft(page.locator('.q-header')).toHaveScreenshot(`${prefix}-header-${mode}.png`)
+        }
+        for (const hook of mobile ? (variant === 'glass' ? [] : MOBILE_HOOKS[section]) : hooks) {
           const target = page.locator(captureTarget(hook))
           await expect(target, `${hook} is rendered exactly once`).toHaveCount(1)
           // Centre the target so the sticky gallery header never overlaps the crop.
