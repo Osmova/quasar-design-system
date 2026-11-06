@@ -2,7 +2,7 @@
 
 This package redistributes the following font files (`./files/*.woff2`). Each is licensed under the
 **SIL Open Font License, Version 1.1** (OFL-1.1). The full license text is included once below and
-applies to all three families.
+applies to all five families.
 
 - **Inter** — Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter).
   Reserved Font Name "Inter". Files: `inter-latin-wght-normal.woff2`, `inter-latin-ext-wght-normal.woff2`.
@@ -11,6 +11,10 @@ applies to all three families.
 - **Selawik** — Copyright 2015 Microsoft Corporation (https://github.com/microsoft/Selawik),
   with Reserved Font Name "Selawik". Files: `selawik-regular.woff2`, `selawik-semibold.woff2`, `selawik-bold.woff2`
   (converted from the upstream TrueType to woff2; not subset, family name unchanged).
+- **Figtree** — Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree).
+  Files: `figtree-latin-wght-normal.woff2`, `figtree-latin-ext-wght-normal.woff2` (Fontsource 5.3.0, upstream v9).
+- **Fraunces** — Copyright 2020 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces).
+  Files: `fraunces-latin-wght-italic.woff2`, `fraunces-latin-ext-wght-italic.woff2` (Fontsource 5.3.0, upstream v38).
 
 ---
 

@@ -12,6 +12,7 @@ import './gallery.css'
 import '@osmova/quasar-design-system/fonts/inter.css'
 import '@osmova/quasar-design-system/fonts/open-sans.css'
 import '@osmova/quasar-design-system/fonts/selawik.css'
+import '@osmova/quasar-design-system/fonts/zen.css'
 
 import {
   configureDesignSystem,

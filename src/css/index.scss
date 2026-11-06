@@ -32,6 +32,7 @@
 @use 'components/loading-data';
 @use 'components/complex-media';
 @use 'components/compositions';
+@use 'components/variants/zen';
 
 @include base.styles;
 @include utilities.styles;
@@ -60,3 +61,4 @@
 @include loading-data.styles;
 @include complex-media.styles;
 @include compositions.styles;
+@include zen.styles;

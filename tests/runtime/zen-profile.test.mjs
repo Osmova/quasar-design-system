@@ -15,20 +15,20 @@ const roles = ['primary', 'secondary', 'accent', 'positive', 'negative', 'warnin
 // rules with every compatibility module physically absent from the program.
 test('the Zen profile compiles and emits identically with no compatibility grammar loaded', () => {
   const standalone = compile(`@use 'src/css/components/variants/zen';
-    ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading;`)
+    @include zen.styles;`)
   const withCompatibility = compile(`@use 'src/css/components/variants/zen';
     ${families.map((family) => `@use 'src/css/components/${family}';`).join('')}
-    ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading;`)
+    @include zen.styles;`)
   assert.equal(standalone, withCompatibility)
   assert.ok(standalone.length > 0)
-  for (const selector of ['.q-btn', '.q-field__control', '.q-tab--active', '.q-menu']) {
+  for (const selector of ['.q-btn', '.q-field__control', '.q-tab--active', '.q-menu', '.q-toggle__track', '.q-chip', '.q-card', '.q-stepper__dot', '.q-breadcrumbs', '.q-drawer', '.q-notification', '.q-skeleton']) {
     assert.ok(standalone.includes(selector), `Zen grammar must own ${selector}`)
   }
 })
 
 test('every Zen rule is scoped to the Zen profile and borrows no other profile scope', () => {
   const css = compile(`@use 'src/css/components/variants/zen';
-    ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading;`)
+    @include zen.styles;`)
   for (const [path] of flattenRules(css)) {
     assert.match(path, /\.qds-variant-zen/, `unscoped Zen rule: ${path}`)
     assert.doesNotMatch(path, /qds-variant-(fluent|ink|one|term|shadcn|glass)/, `Zen borrowed another profile scope: ${path}`)
@@ -39,7 +39,7 @@ test('every Zen rule is scoped to the Zen profile and borrows no other profile s
 // no acrylic, no Ink drawn rule.
 test('Zen declares no inherited Fluent focus bar, rail, acrylic or Ink sketch treatment', () => {
   const css = compile(`@use 'src/css/components/variants/zen';
-    ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading;`)
+    @include zen.styles;`)
   for (const pattern of [/backdrop-filter:\s*(?!none)/, /saturate\(/, /tab-active-rail/, /border-image/, /repeating-linear-gradient/]) {
     assert.doesNotMatch(css, pattern, `Zen must not inherit ${pattern}`)
   }
@@ -47,14 +47,15 @@ test('Zen declares no inherited Fluent focus bar, rail, acrylic or Ink sketch tr
   // removes that pseudo entirely and rings the whole control instead.
   assert.match(css, /\.q-field__control::after\{content:none\}|\.q-field__control::before,[^{]*::after\{content:none\}/)
   assert.match(css, /\.q-field--focused .q-field__control\{[^}]*outline:/)
-  assert.match(css, /\.q-tab__indicator\{display:none\}/)
+  // The active tab is a short drawn underline, never a full-width rail.
+  assert.match(css, /\.q-tabs--horizontal \.q-tab>\.q-tab__indicator\{inset-inline:calc\(50% - 0?\.75rem\)/)
 })
 
 // Reading presentation is an explicit class, removes decorative depth and
 // motion, and keeps every boundary. It claims nothing about e-paper hardware.
 test('the .qds-reading modifier removes depth and motion while every Zen boundary survives', () => {
   const css = compile(`@use 'src/css/components/variants/zen';
-    ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading;`)
+    @include zen.styles;`)
   const reading = flattenRules(css).filter(([path]) => path.includes('.qds-reading'))
   assert.ok(reading.length >= 3)
   for (const [path] of reading) {
@@ -156,7 +157,7 @@ for (const scheme of schemes) {
 // Selector-set equality proves nothing, so the independence checks above are
 // only trustworthy if a deliberately corrupted profile makes them fail.
 const zenProgram = (extra = '') => `@use 'src/css/components/variants/zen';
-  ${families.map((family) => `@include zen.${family};`).join('')} @include zen.reading; ${extra}`
+  @include zen.styles; ${extra}`
 
 test('a deliberately cross-profile-corrupted control fails the Zen scope check', () => {
   const corrupt = compile(zenProgram(`
@@ -207,3 +208,72 @@ test('with the compatibility grammar removed the Zen field still paints its own 
     /\.q-field--focused \.q-field__control\{[^}]*background:var\(--qds-bg-surface-1\)/,
   ]) assert.match(css, expected)
 })
+
+// ── Depth model ──────────────────────────────────────────────────────────────
+// Raised faces lift, wells recess, pressed recedes; the scheme tokens carry that
+// contract and the grammar must never add lift on press.
+const tokenCss = compile("@use 'src/themes/default';")
+function zenScope(dark) {
+  const blocks = [...tokenCss.matchAll(/([^{}]*)\{([^{}]*)\}/g)]
+    .filter(([, selector]) => dark ? /\.qds-theme-dark\.qds-variant-zen/.test(selector) : selector.trim() === '.qds-variant-zen')
+  return Object.fromEntries(blocks.flatMap(([, , body]) => [...body.matchAll(/(--[\w-]+):([^;]+)/g)].map((m) => [m[1], m[2].trim()])))
+}
+
+for (const dark of [false, true]) {
+  test(`Zen ${dark ? 'dark' : 'light'} depth tokens: lifts are outset, wells and press are inset`, () => {
+    const scope = zenScope(dark)
+    for (const lift of ['--qds-shadow-sm', '--_qds-zen-lift-2', '--_qds-zen-lift-3', '--qds-shadow-md', '--qds-shadow-lg']) {
+      assert.ok(scope[lift], `${lift} is emitted`)
+      assert.doesNotMatch(scope[lift], /inset/, `${lift} lifts`)
+    }
+    for (const recess of ['--_qds-zen-inset', '--_qds-zen-press', '--_qds-zen-edge']) {
+      assert.ok(scope[recess], `${recess} is emitted`)
+      for (const layer of scope[recess].split(/,(?![^(]*\))/)) assert.match(layer, /inset/, `${recess} recesses: ${layer}`)
+    }
+  })
+}
+
+test('Zen pressed states recede: an inset shadow and no upward travel', () => {
+  const css = compile(zenProgram())
+  const pressed = flattenRules(css).filter(([path]) => /:active/.test(path))
+  assert.ok(pressed.length >= 4)
+  for (const [path, body] of pressed) {
+    assert.doesNotMatch(body, /translateY\(-/, `pressed must not lift: ${path}`)
+    assert.doesNotMatch(body, /--_qds-zen-lift|--qds-shadow-(md|lg)/, `pressed must not add elevation: ${path}`)
+  }
+  assert.match(css, /\.q-btn:not\(\.disabled\):active\{[^}]*--_qds-zen-depth: ?var\(--_qds-zen-press\)/)
+})
+
+test('Zen focus pairs the glow with a real outline or boundary, never the glow alone', () => {
+  const rules = flattenRules(compile(zenProgram()))
+  const glows = rules.filter(([, body]) => /0 0 0 0?\.25rem color-mix\(in srgb, ?var\(--qds-stroke-(focus|error)\)/.test(body))
+  assert.ok(glows.length >= 2)
+  for (const [path, body] of glows) {
+    // QBtn already carries the shared 2px outline through the importance channel.
+    if (/\.q-btn:focus-visible$/.test(path)) continue
+    assert.match(body, /outline(-color)?:/, `glow without a boundary: ${path}`)
+  }
+})
+
+test('Zen grammar is self-contained and declares no !important', () => {
+  const css = compile(zenProgram())
+  assert.doesNotMatch(css, /!important/)
+  assert.doesNotMatch(css, /@import|@layer/)
+})
+
+// Inverted ink surfaces (tooltip, value bubble, dock stop) and the switch glyphs.
+for (const scheme of schemes) {
+  test(`Zen ${scheme} inverted pills and switch glyphs clear their minimums`, () => {
+    const token = zenTokens(scheme)
+    const strong = parseRgb(token['text-strong'])
+    const raised = parseRgb(token['surface-0'])
+    const failures = []
+    const check = (pair, a, b, minimum) => { const ratio = contrast(a, b); if (ratio < minimum) failures.push(`${pair}: ${ratio.toFixed(3)} < ${minimum}`) }
+    check('raised text on ink pill', raised, strong, 4.5)
+    check('switch on glyph', parseRgb(token['on-fill']), parseRgb(token.primary), 3)
+    for (const step of [0, 1, 2, 3]) check(`switch off glyph/surface-${step}`, parseRgb(token['text-muted']), parseRgb(token[`surface-${step}`]), 3)
+    const focus = mix(parseRgb(token.primary), strong, ROLE_FG_MIX)
+    for (const step of [0, 1, 2, 3]) check(`focus outline/surface-${step}`, focus, parseRgb(token[`surface-${step}`]), 3)
+    assert.deepEqual(failures, [])
+  })
+}

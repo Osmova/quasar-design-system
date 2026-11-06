@@ -1,7 +1,7 @@
 $ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
+
 $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
@@ -45,10 +45,6 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$glass} .q-drawer--on-top .q-layout__shadow::after { box-shadow: var(--qds-shadow-lg); }
   #{$glass} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
 
-  // A calm sheet beside the page, bounded by its edge rather than a shadow.
-  #{$zen} .q-drawer { border-color: var(--qds-stroke-default); background: var(--qds-bg-card); box-shadow: none; }
-  #{$zen} .q-drawer .q-item { border-radius: var(--qds-radius-control); }
-  #{$zen} .q-drawer__backdrop { background: var(--qds-bg-overlay); }
 
 
   #{$shadcn} .q-drawer { color: var(--qds-shadcn-sidebar-foreground); background: var(--qds-shadcn-sidebar); }
