@@ -182,17 +182,14 @@
   }
 }
 
-// Zen keeps gentle raised/recessed depth, so shadows stay. Every affordance
-// must still read with shadows off, which is why control strokes resolve to the
-// 3:1 stroke-strong value rather than the quiet divider border.
+// Zen's boundary is essential and its depth decorative: control strokes resolve
+// to the 3:1 stroke-strong value so every affordance reads with shadows off.
 @mixin qds-zen-paper($scheme) {
   --qds-stroke-strong: #{qds-variant-token(zen, '#{$scheme}-stroke-strong')};
   @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
     --qds-#{$token}: var(--qds-stroke-strong);
   }
   --qds-bg-overlay: #{qds-variant-token(zen, '#{$scheme}-scrim')};
-  // Zen owns its disabled value instead of inheriting the Fluent grey, and
-  // holds it at the 3:1 non-text floor even though WCAG 1.4.3 exempts it.
   --qds-fg-disabled: #{qds-variant-token(zen, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
   --qds-text-on-solid: #{map.get(qds-variant-token(zen, '#{$scheme}-on-fill'), primary)};
@@ -200,12 +197,27 @@
   @each $role in secondary, accent, positive, negative, warning, info {
     --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 80%, var(--qds-text-strong));
   }
-  // Quasar's native #c10015 validation paint must never reach a Zen field.
   --qds-stroke-error: var(--qds-fg-negative);
   --qds-stroke-focus: var(--qds-fg-brand);
-  --qds-segmented-track-bg: var(--qds-surface-2);
-  --qds-segmented-thumb-bg: var(--qds-surface-0);
+  --qds-segmented-track-bg: var(--qds-surface-0);
+  --qds-segmented-thumb-bg: var(--qds-surface-2);
   --qds-row-radius: var(--qds-radius-control);
+  --qds-button-radius: var(--qds-radius-full);
+  --qds-tab-radius: var(--qds-radius-full);
+  --qds-menu-radius: var(--qds-radius-lg);
+  --qds-notification-radius: var(--qds-radius-lg);
+  --qds-toggle-track-width: 3rem;
+  --qds-toggle-track-height: 1.75rem;
+  --qds-toggle-thumb-inset: 0.1875rem;
+  --qds-slider-label-bg: var(--qds-text-strong);
+  --qds-slider-label-text: var(--qds-surface-0);
+  --qds-slider-label-border: var(--qds-text-strong);
+  @each $step, $level in (2: --qds-shadow-sm, 4: --qds-shadow-sm, 8: --_qds-zen-lift-3, 16: --_qds-zen-lift-3, 28: --qds-shadow-md, 64: --qds-shadow-lg) {
+    --qds-shadow-#{$step}: var(#{$level});
+  }
+  @each $level in lift-2, lift-3, edge, inset, press {
+    --_qds-zen-#{$level}: #{qds-variant-token(zen, '#{$scheme}-#{$level}')};
+  }
 }
 
 // Zen's emission is isolated in one mixin so the frozen pre-Zen default
@@ -216,6 +228,20 @@
   .qds-variant-zen {
     --qds-font-family: #{qds-variant-token(zen, font-family)};
     --qds-font-family-display: #{qds-variant-token(zen, font-family-display)};
+    @each $step in xs, sm, md, xl {
+      --qds-radius-#{$step}: #{qds-variant-token(zen, radius-#{$step})};
+    }
+    @each $size in sm, md, lg {
+      --qds-control-size-#{$size}: #{qds-variant-token(zen, control-size-#{$size})};
+    }
+    --qds-motion-fast: #{qds-variant-token(zen, motion-fast)};
+    --_qds-zen-spring: #{qds-variant-token(zen, motion-spring)};
+    @each $step in h1, h2, h3, h4 {
+      --qds-font-weight-#{$step}: 380;
+    }
+    --qds-font-weight-h5: 450;
+    --qds-font-weight-h6: 500;
+    --qds-letter-spacing-overline: 0.1em;
     @include qds-variant-scheme(zen);
     @include fallbacks.qds-material-tokens(solid);
     @include qds-zen-paper(light);
