@@ -32,7 +32,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   })
 
   test('renders accessible QRating inactive, selected, half, readonly, and disabled states', async ({ page }) => {
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const inactive = page.locator('[data-test="qds-rating-inactive"]')
     const selected = page.locator('[data-test="qds-rating-active"]')
@@ -63,7 +63,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   })
 
   test('renders QRating hover preview, no-dimming, and keyboard focus states', async ({ page }) => {
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const active = page.locator('[data-test="qds-rating-active"]')
     const iconContainers = active.locator('.q-rating__icon-container')
@@ -94,7 +94,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   })
 
   test('renders QRating semantic colors and sizes in Fluent dark, One, and Term', async ({ page }) => {
-    await applyTheme(page, 'dark', 'fluent')
+    await applyTheme(page, 'dark', 'win')
     const positive = await resolvedColor(page, '--qds-fg-positive')
     const negative = await resolvedColor(page, '--qds-fg-negative')
     const primary = await resolvedColor(page, '--qds-fg-primary')
@@ -118,7 +118,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   })
 
   test('owns QToolbar, QBar, and QSeparator direct surfaces with exact geometry', async ({ page }) => {
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const surface1 = await resolvedColor(page, '--qds-surface-1')
     const radius = await customProperty(page, '--qds-radius-control')
@@ -179,7 +179,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   })
 
   test('keeps lightweight primitives stable in dark, Ink, Term, RTL, and reduced motion', async ({ page }) => {
-    await applyTheme(page, 'dark', 'fluent')
+    await applyTheme(page, 'dark', 'win')
     await expect(page.locator('[data-test="qds-bar-standard"]')).toBeVisible()
     expect(await computed(page, '[data-test="qds-bar-standard"]', 'background-color'), 'dark standard bar sits on surface-1').toBe(
       await resolvedColor(page, '--qds-bg-surface-1'),
@@ -224,7 +224,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
   })
 
   test('honors explicit QBar dark semantics inside light QDS variants', async ({ page }) => {
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const darkBar = page.locator('[data-test="qds-bar-dark"]')
     await expect(darkBar).toHaveClass(/q-bar--dark/)
@@ -248,7 +248,7 @@ test.describe('QDS catalog lightweight primitives gate', () => {
       expect(await computed(page, '[data-test="qds-bar-dark"]', 'color')).toBe(await resolvedColor(page, '--qds-bar-dark-fg'))
     }
 
-    await applyTheme(page, 'dark', 'fluent')
+    await applyTheme(page, 'dark', 'win')
     expect(await computed(page, '[data-test="qds-bar-dark"]', 'background-color'), 'in dark mode the dark bar matches the standard bar').toBe(
       await computed(page, '[data-test="qds-bar-standard"]', 'background-color'),
     )

@@ -6,7 +6,7 @@ const MODES: Mode[] = ['light', 'dark']
 test.describe('control composition', () => {
   test('floating badge inside a button group keeps its counter width and top-end anchor', async ({ page }) => {
     await page.goto('./#components')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     const geometry = await page.locator('[data-test="qds-badge-floating-group"] .q-badge--floating').evaluate((badge) => {
       const host = badge.closest('.q-btn')!.getBoundingClientRect()
       const box = badge.getBoundingClientRect()

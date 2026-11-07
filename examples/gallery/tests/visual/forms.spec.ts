@@ -34,7 +34,7 @@ async function settle(page: Page) {
   })
 }
 
-async function openForms(page: Page, mode: Mode, variant: Variant = 'fluent') {
+async function openForms(page: Page, mode: Mode, variant: Variant = 'win') {
   await page.goto('./#forms')
   await applyTheme(page, mode, variant)
   await expectGalleryPage(page, 'Forms')

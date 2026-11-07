@@ -4,7 +4,7 @@ import { CANONICAL_VARIANTS, applyTheme, computed, customProperty, expectGallery
 test.describe('QDS variant distinctiveness lab', () => {
   test('mounts five canonical comparison cards with deliberate visual systems', async ({ page }) => {
     await page.goto('/#variants')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     await expectGalleryPage(page, 'Variants')
     for (const variant of CANONICAL_VARIANTS) {
@@ -14,10 +14,10 @@ test.describe('QDS variant distinctiveness lab', () => {
     }
     await expect(page.locator('[data-test="qds-variant-card-air"], [data-test="qds-variant-card-feather"]')).toHaveCount(0)
 
-    const fluent = page.locator('[data-test="qds-variant-card-fluent"]')
-    expect.soft(await computed(page, '[data-test="qds-variant-card-fluent"] .variant-card__nested', 'backdrop-filter'), 'Fluent content has no blur').toBe('none')
-    expect.soft(await computed(page, '[data-test="qds-variant-card-fluent"] .variant-card__nested', 'box-shadow'), 'Fluent content has no resting small shadow').toBe('none')
-    expect.soft(await computed(page, '[data-test="qds-variant-card-fluent"] .q-card', 'border-radius'), 'Fluent compact card radius').toBe(await customProperty(page, '--qds-card-radius'))
+    const fluent = page.locator('[data-test="qds-variant-card-win"]')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-win"] .variant-card__nested', 'backdrop-filter'), 'Fluent content has no blur').toBe('none')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-win"] .variant-card__nested', 'box-shadow'), 'Fluent content has no resting small shadow').toBe('none')
+    expect.soft(await computed(page, '[data-test="qds-variant-card-win"] .q-card', 'border-radius'), 'Fluent compact card radius').toBe(await customProperty(page, '--qds-card-radius'))
     expect.soft(await fluent.evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-card-border-mix').trim()), 'Fluent uses low-border content').toBe('22%')
 
     const ink = page.locator('[data-test="qds-variant-card-ink"]')

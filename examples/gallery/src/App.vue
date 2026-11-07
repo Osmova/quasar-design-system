@@ -56,7 +56,7 @@ const modeIcons = {
   system: PhMonitor,
 } as const
 const variantIcons: Record<string, Component> = {
-  fluent: PhPalette,
+  win: PhPalette,
   ink: PhPenNib,
   one: PhDeviceMobile,
   term: PhTerminal,

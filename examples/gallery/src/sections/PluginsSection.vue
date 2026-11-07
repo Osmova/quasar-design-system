@@ -36,7 +36,7 @@ const listActions = [
 ]
 
 const gridActions = [
-  { id: 'fluent', label: 'Fluent' },
+  { id: 'win', label: 'Fluent' },
   { id: 'ink', label: 'Ink' },
   { id: 'one', label: 'One' },
   { id: 'term', label: 'Term' },

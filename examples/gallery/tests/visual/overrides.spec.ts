@@ -67,13 +67,13 @@ async function renderedBoundaryContrast(page: Parameters<typeof computed>[0], se
 
 const EXPECTED: Record<Mode, Record<Variant, { surface: string; primary: string; controlRadius: string; cardRadius: string }>> = {
   light: {
-    fluent: { surface: '#ffffff', primary: 'rgb(15, 108, 189)', controlRadius: '4px', cardRadius: '8px' },
+    win: { surface: '#ffffff', primary: 'rgb(15, 108, 189)', controlRadius: '4px', cardRadius: '8px' },
     ink: { surface: '#fbf9f5', primary: 'rgb(46, 44, 40)', controlRadius: '10px', cardRadius: '16px' },
     one: { surface: '#ffffff', primary: 'rgb(27, 95, 207)', controlRadius: '14px', cardRadius: '24px' },
     term: { surface: '#f8f6f0', primary: 'rgb(252, 196, 13)', controlRadius: '6px', cardRadius: '10px' },
   },
   dark: {
-    fluent: { surface: '#292929', primary: 'rgb(25, 118, 202)', controlRadius: '4px', cardRadius: '8px' },
+    win: { surface: '#292929', primary: 'rgb(25, 118, 202)', controlRadius: '4px', cardRadius: '8px' },
     ink: { surface: '#282622', primary: 'rgb(236, 229, 216)', controlRadius: '10px', cardRadius: '16px' },
     one: { surface: '#1a1a1a', primary: 'rgb(47, 111, 220)', controlRadius: '14px', cardRadius: '24px' },
     term: { surface: '#141412', primary: 'rgb(252, 196, 13)', controlRadius: '6px', cardRadius: '10px' },
@@ -102,7 +102,7 @@ test.describe('QDS override gate', () => {
         if (variant === 'one') expect.soft(cardBorderColor, 'One blocks separate by tone and roundness, not a stroke').toBe('rgba(0, 0, 0, 0)')
         else expect.soft(cardBorderColor, `${variant} card boundary has a non-transparent color`).not.toBe('rgba(0, 0, 0, 0)')
 
-        if (variant === 'fluent') {
+        if (variant === 'win') {
           expect.soft(await computed(page, `${panel} .q-card`, 'backdrop-filter'), 'Fluent content has no blur').toBe('none')
           expect.soft(await computed(page, `${panel} .q-card`, 'box-shadow'), 'Fluent card is a flat Win11 layer').toBe('none')
           expect.soft(await computed(page, `${panel} .q-card`, 'border-top-color'), 'Fluent card stroke is the card stroke token').toBe(await resolvedColor(page, '--qds-card-stroke'))
@@ -144,7 +144,7 @@ test.describe('QDS override gate', () => {
     const roles = ['primary', 'secondary', 'accent', 'positive', 'negative', 'warning', 'info'] as const
 
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         const roleStyles = await page.evaluate((roles) => {
           const resolve = (property: string, declaration: 'backgroundColor' | 'color') => {
@@ -225,7 +225,7 @@ test.describe('QDS override gate', () => {
     const neutralBadgeVariants = ['tonal', 'outline'] as const
 
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         await page.waitForTimeout(250)
         await expect(page.locator('[data-test="qds-semantic-contrast-fixtures"]')).toBeVisible()
@@ -328,7 +328,7 @@ test.describe('QDS override gate', () => {
     const action = header.locator('.q-btn--round')
 
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         const [headerBox, actionBox, paddingEnd] = await Promise.all([
           header.boundingBox(),
@@ -346,7 +346,7 @@ test.describe('QDS override gate', () => {
   test('legacy aliases normalize to canonical state, classes, and four switcher entries', async ({ page }) => {
     await page.goto('/')
     const aliases = [
-      ['studio', 'fluent'], ['air', 'fluent'], ['feather', 'ink'], ['mobile', 'one'], ['terminal', 'term'],
+      ['studio', 'win'], ['air', 'win'], ['feather', 'ink'], ['mobile', 'one'], ['terminal', 'term'],
     ] as const
     for (const [input, canonical] of aliases) {
       const state = await page.evaluate(({ input, canonical }) => {
@@ -371,7 +371,7 @@ test.describe('QDS override gate', () => {
       expect.soft(state.canonicalClass, `${input} writes canonical class`).toBe(true)
       expect.soft(state.oldClass, `${input} old class is absent`).toBe(false)
       expect.soft(state.dataVariant, `${input} writes the canonical data-qds-variant`).toBe(canonical)
-      expect.soft(labels.map((label) => label.trim()), `${input} exposes only canonical switcher entries`).toEqual(['Fluent', 'Ink', 'One', 'Term', 'Shadcn', 'Zen', 'Glass'])
+      expect.soft(labels.map((label) => label.trim()), `${input} exposes only canonical switcher entries`).toEqual(['Win', 'Ink', 'One', 'Term', 'Shadcn', 'Zen', 'Glass'])
     }
   })
 
@@ -591,7 +591,7 @@ test.describe('QDS override gate', () => {
         })
         return (await navCard.boundingBox())!
       }
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
       const fluentCard = await settledBox()
       await applyTheme(page, mode, 'one')
       const oneCard = await settledBox()

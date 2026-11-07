@@ -3,16 +3,16 @@ import { applyTheme } from './helpers'
 
 async function gotoSection(page: Page, section: 'variants' | 'scenes') {
   await page.goto(`/#${section}`)
-  await applyTheme(page, 'light', 'fluent')
+  await applyTheme(page, 'light', 'win')
 }
 
 test.describe('Fluent composition', () => {
   test('keeps default and nested comparison cards borderless without stacked separators', async ({ page }) => {
     await gotoSection(page, 'variants')
 
-    const composition = await page.locator('[data-test="qds-variant-card-fluent"]').evaluate((root) => {
+    const composition = await page.locator('[data-test="qds-variant-card-win"]').evaluate((root) => {
       const card = root as HTMLElement
-      const nested = card.querySelector('[data-test="qds-variant-nested-fluent"]') as HTMLElement
+      const nested = card.querySelector('[data-test="qds-variant-nested-win"]') as HTMLElement
       const styles = getComputedStyle(card)
       const nestedStyles = getComputedStyle(nested)
       return {

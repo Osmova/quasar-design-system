@@ -3,7 +3,7 @@ import { readFile, readdir } from 'node:fs/promises'
 import { MATRIX_VARIANTS, customProperty, expectGalleryPage, resolvedColor, resolvedShadow } from './helpers'
 
 type Mode = 'light' | 'dark'
-type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'zen'
+type Variant = 'win' | 'ink' | 'one' | 'term' | 'zen'
 
 const componentStylesDirectory = new URL('../../../../src/css/components/', import.meta.url)
 
@@ -144,7 +144,7 @@ async function expectNoResidualGlobalSurfaces(page: Page) {
 test.describe('QDS plugin/global UI surfaces', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#plugins')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     await expectGalleryPage(page, 'Plugins')
     await expectNoResidualGlobalSurfaces(page)
   })
@@ -274,7 +274,7 @@ test.describe('QDS plugin/global UI surfaces', () => {
     }
 
     for (const proof of [
-      { mode: 'dark' as const, variant: 'fluent' as const, type: 'negative' as const },
+      { mode: 'dark' as const, variant: 'win' as const, type: 'negative' as const },
       { mode: 'dark' as const, variant: 'term' as const, type: 'info' as const },
     ]) {
       await applyTheme(page, proof.mode, proof.variant)
@@ -472,7 +472,7 @@ test.describe('QDS plugin/global UI surfaces', () => {
         }
         expect.soft(boundary.stroke !== 'rgba(0, 0, 0, 0)' || boundary.shadow !== 'none', `${mode}/${variant} overlay has a visible boundary (stroke or shadow)`).toBe(true)
         expect.soft(await computed(page, '.q-notification', 'background-color'), `${mode}/${variant} overlay has a surfaced background`).not.toBe('rgba(0, 0, 0, 0)')
-        if (variant === 'fluent') {
+        if (variant === 'win') {
           expect.soft(boundary.shadow, `${mode}/Fluent transient overlay is lifted by the flyout shadow`).toBe(await resolvedShadow(page, '--qds-shadow-md'))
           expect.soft(boundary.stroke, `${mode}/Fluent toast relies on shadow, not a stroke`).toBe('rgba(0, 0, 0, 0)')
         }

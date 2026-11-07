@@ -45,7 +45,7 @@ async function settle(page: Page) {
   })
 }
 
-async function openApps(page: Page, mode: Mode = 'light', variant: Variant = 'fluent') {
+async function openApps(page: Page, mode: Mode = 'light', variant: Variant = 'win') {
   await page.goto('./#apps')
   await applyTheme(page, mode, variant)
   await expectGalleryPage(page, 'Apps')

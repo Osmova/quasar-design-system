@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type SceneVariant = 'fluent' | 'ink' | 'one' | 'term'
+type SceneVariant = 'win' | 'ink' | 'one' | 'term'
 
 type Scene = {
   variant: SceneVariant
@@ -11,10 +11,10 @@ type Scene = {
 
 const scenes: Scene[] = [
   {
-    variant: 'fluent',
-    label: 'Fluent',
+    variant: 'win',
+    label: 'Win',
     tagline: 'Tonal workboard',
-    wallpaper: '/scenes/qds-wallpaper-fluent.svg',
+    wallpaper: '/scenes/qds-wallpaper-win.svg',
     detail: 'Calm depth, solid reading surfaces, and restrained acrylic over cool geometry.',
   },
   {
@@ -175,12 +175,12 @@ const materials = [
 }
 
 /* This owned pale wallpaper needs a solid dark reading surface, not acrylic. */
-.scene-frame--fluent .scene-panel.q-card--dark {
+.scene-frame--win .scene-panel.q-card--dark {
   background: var(--qds-bg-card);
   color: var(--qds-fg-default);
 }
 
-.scene-frame--fluent .scene-panel.q-card--dark .scene-panel__eyebrow {
+.scene-frame--win .scene-panel.q-card--dark .scene-panel__eyebrow {
   color: var(--qds-fg-brand);
 }
 

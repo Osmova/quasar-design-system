@@ -59,9 +59,9 @@ try {
     }
     if (audit) continue
     // Frozen actual native states, not selector-only or lookalike HTML comparisons.
-    for (const mode of ['light', 'dark']) for (const profile of ['one', 'term', 'ink', ...['neutral', 'gray', 'zinc', 'stone', 'slate'].map((p) => `shadcn-${p}`), 'fluent', 'default']) {
-      const fluent = ['fluent', 'default'].includes(profile)
-      const options = { layered, mode, profile, custom: profile !== 'fluent' }
+    for (const mode of ['light', 'dark']) for (const profile of ['one', 'term', 'ink', ...['neutral', 'gray', 'zinc', 'stone', 'slate'].map((p) => `shadcn-${p}`), 'win', 'default']) {
+      const fluent = ['win', 'default'].includes(profile)
+      const options = { layered, mode, profile, custom: profile !== 'win' }
       const old = await mount(browser, baseline, options)
       const now = await mount(browser, current, options)
       try {

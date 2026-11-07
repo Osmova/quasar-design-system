@@ -18,7 +18,7 @@ and an essential edge on every control, with an opt-in `.qds-reading` presentati
 layer above opaque content, prominent controls are capsules, nested shapes are concentric (private
 `--_qds-glass-*` geometry tokens), and tint is reserved for role fills and selection. Translucency is
 decoration only: no-filter, reduced transparency, forced colours and increased contrast all resolve
-to opaque surfaces; increased contrast restores 3:1 edges on every control. `glass` was a legacy fluent alias before 0.10.0; it is now
+to opaque surfaces; increased contrast restores 3:1 edges on every control. `glass` was a legacy win alias before 0.10.0; it is now
 its own variant.
 
 It is a pure visual product: **no business logic, no entity/model layer, no API/transport code, no
@@ -94,7 +94,7 @@ and `@include` it in `index.scss` (and the layered entry).
   `$q.dark`, and writes `data-qds-mode` / `data-qds-resolved` / `data-qds-variant` plus the
   `qds-theme-light|dark` and `.qds-ui` classes onto the target (default `document.body`).
 - `.qds-ui` is the scoping class the stronger overrides depend on — it is added here, not by hand.
-- Applies the `variant` as a body class (`qds-variant-fluent|ink|one|term|shadcn|zen|glass`; legacy `air`/`studio` normalize to `fluent`; legacy `feather` normalizes to `ink`; legacy `mobile`/`terminal` normalize to `one`/`term`).
+- Applies the `variant` as a body class (`qds-variant-win|ink|one|term|shadcn|zen|glass`; legacy `fluent`/`air`/`studio` normalize to `win`; legacy `feather` normalizes to `ink`; legacy `mobile`/`terminal` normalize to `one`/`term`).
 - Exposes `shadcnBaseColor` in options/state/computed refs and `setShadcnBaseColor()`; exports
   `SHADCN_BASE_COLORS` and `ShadcnBaseColor`. Invalid palettes normalize to Neutral. Selection survives
   other variants, while the active palette attribute exists only on shadcn.
@@ -113,9 +113,9 @@ and `@include` it in `index.scss` (and the layered entry).
 
 ### Themes vs variants — `src/themes/index.ts`
 
-There is **one theme** (`default`). "Variants" (`fluent`, `ink`, `one`, `term`, `shadcn`, `zen`, `glass`) are mood shifts
+There is **one theme** (`default`). "Variants" (`win`, `ink`, `one`, `term`, `shadcn`, `zen`, `glass`) are mood shifts
 expressed purely as CSS classes (`DESIGN_SYSTEM_VARIANTS[*].cssClass`) over the same token system —
-not separate brands. Legacy inputs `air`/`studio` normalize to `fluent`; `feather` normalizes
+not separate brands. Legacy inputs `fluent`/`air`/`studio` normalize to `win`; `feather` normalizes
 to `ink`. New themes start as variables-only files: `src/themes/{name}.scss` for CSS
 vars/classes + registration metadata in `src/themes/index.ts`. Keep `src/themes/` free of component
 selectors — themes define values, the implementation reads them through `var(--qds-*)`.

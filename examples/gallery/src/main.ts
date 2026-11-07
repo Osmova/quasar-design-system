@@ -22,7 +22,7 @@ import {
 import App from './App.vue'
 import { parseGalleryHash } from './gallery-url'
 
-const initialVariant = parseGalleryHash(window.location.hash).variant ?? 'fluent'
+const initialVariant = parseGalleryHash(window.location.hash).variant ?? 'win'
 
 const app = createApp(App)
 

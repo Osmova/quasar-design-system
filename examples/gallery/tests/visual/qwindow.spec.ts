@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
 import { expectGalleryPage, resolvedColor } from './helpers'
 
-async function forceTheme(page: Page, mode: 'light' | 'dark' = 'light', variant: 'fluent' | 'ink' | 'one' | 'term' = 'fluent') {
+async function forceTheme(page: Page, mode: 'light' | 'dark' = 'light', variant: 'win' | 'ink' | 'one' | 'term' = 'win') {
   await page.waitForFunction(() => Boolean((window as unknown as { __qdsGallery?: unknown }).__qdsGallery))
   await page.evaluate(({ mode, variant }) => {
-    const ds = (window as unknown as { __qdsGallery: { setMode: (mode: 'light' | 'dark') => void; setVariant: (variant: 'fluent' | 'ink' | 'one' | 'term') => void } }).__qdsGallery
+    const ds = (window as unknown as { __qdsGallery: { setMode: (mode: 'light' | 'dark') => void; setVariant: (variant: 'win' | 'ink' | 'one' | 'term') => void } }).__qdsGallery
     ds.setMode(mode)
     ds.setVariant(variant)
   }, { mode, variant })
@@ -200,7 +200,7 @@ test.describe('QDS optional QWindow extension', () => {
     const closeAction = windowShell.locator('.qds-window__action--close')
     await expect(closeAction).toHaveClass(/(?:^|\s)q-btn(?:\s|$)/)
 
-    for (const [mode, variant] of [['light', 'fluent'], ['dark', 'fluent'], ['dark', 'term']] as const) {
+    for (const [mode, variant] of [['light', 'win'], ['dark', 'win'], ['dark', 'term']] as const) {
       await forceTheme(page, mode, variant)
       await closeAction.hover()
 

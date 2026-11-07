@@ -8,7 +8,7 @@ test.describe('@screens compare oracle', () => {
   for (const mode of MODES) {
     test(`fluent ${mode}`, async ({ page }, testInfo) => {
       await page.goto('./#compare')
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
       await expect(page.locator('.compare--ready')).toBeVisible()
       await page.evaluate(() => document.fonts.ready)
 

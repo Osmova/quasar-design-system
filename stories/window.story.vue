@@ -21,7 +21,7 @@ interface WindowStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): WindowStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): WindowStoryState => ({ mode: 'light', variant: 'win' })
 </script>
 
 <template>

@@ -139,7 +139,7 @@ const carouselSlides = [
     src: mediaSvg('One', 'One UI inspired spacing', '#0f6cbd', '#14b8a6', '#ffb020'),
   },
   {
-    name: 'fluent',
+    name: 'win',
     title: 'Fluent contrast',
     caption: 'Readable captions over owned gradient surfaces.',
     src: mediaSvg('Fluent', 'Primary QDS tone', '#0f6cbd', '#2563eb', '#8b5cf6'),

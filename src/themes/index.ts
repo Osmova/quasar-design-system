@@ -1,5 +1,5 @@
-export type CanonicalDesignSystemVariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
-export type LegacyDesignSystemVariantName = 'studio' | 'air' | 'feather' | 'mobile' | 'terminal'
+export type CanonicalDesignSystemVariantName = 'win' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
+export type LegacyDesignSystemVariantName = 'fluent' | 'studio' | 'air' | 'feather' | 'mobile' | 'terminal'
 export type BuiltInDesignSystemVariantName = CanonicalDesignSystemVariantName | LegacyDesignSystemVariantName
 
 // Built-ins are typed narrowly while still accepting variants registered by
@@ -50,11 +50,11 @@ export function isShadcnAccentColor(value: unknown): value is ShadcnAccentColor 
 }
 
 export const DESIGN_SYSTEM_VARIANTS = {
-  fluent: {
-    name: 'fluent',
-    label: 'Fluent',
-    description: 'Default Fluent 2-inspired baseline with solid mica surfaces and restrained tonal color.',
-    cssClass: 'qds-variant-fluent',
+  win: {
+    name: 'win',
+    label: 'Win',
+    description: 'Default Windows 11 baseline: WinUI surfaces, solid mica layers and restrained tonal color.',
+    cssClass: 'qds-variant-win',
   },
   ink: {
     name: 'ink',
@@ -93,6 +93,7 @@ export const DESIGN_SYSTEM_VARIANTS = {
     cssClass: 'qds-variant-glass',
   },
 } as Record<CanonicalDesignSystemVariantName, DesignSystemVariant> & {
+  fluent: DesignSystemVariant
   studio: DesignSystemVariant
   air: DesignSystemVariant
   feather: DesignSystemVariant
@@ -101,17 +102,23 @@ export const DESIGN_SYSTEM_VARIANTS = {
 }
 
 const LEGACY_VARIANT_ALIASES = {
+  fluent: {
+    name: 'fluent',
+    label: 'Win',
+    description: 'Legacy alias for the win variant.',
+    cssClass: 'qds-variant-win',
+  },
   studio: {
     name: 'studio',
-    label: 'Fluent',
-    description: 'Legacy alias for the fluent variant.',
-    cssClass: 'qds-variant-fluent',
+    label: 'Win',
+    description: 'Legacy alias for the win variant.',
+    cssClass: 'qds-variant-win',
   },
   air: {
     name: 'air',
-    label: 'Fluent',
-    description: 'Legacy alias for the fluent variant.',
-    cssClass: 'qds-variant-fluent',
+    label: 'Win',
+    description: 'Legacy alias for the win variant.',
+    cssClass: 'qds-variant-win',
   },
   feather: {
     name: 'feather',
@@ -144,7 +151,7 @@ for (const [name, variant] of Object.entries(LEGACY_VARIANT_ALIASES)) {
 export const DEFAULT_THEME: QuasarDesignTheme = {
   name: DEFAULT_THEME_NAME,
   label: 'Default',
-  description: 'Fluent 2 focused Quasar 2 design language with Ink, One, Term, Shadcn, Zen, and Glass variants.',
+  description: 'Windows 11 focused Quasar 2 design language with Ink, One, Term, Shadcn, Zen, and Glass variants.',
   variants: DESIGN_SYSTEM_VARIANTS,
 }
 
@@ -153,7 +160,7 @@ export const DESIGN_SYSTEM_THEMES = {
 } as const
 
 export function isBuiltInDesignSystemVariantName(value: unknown): value is BuiltInDesignSystemVariantName {
-  return value === 'fluent' || value === 'ink' || value === 'one' || value === 'term' || value === 'shadcn'
+  return value === 'win' || value === 'fluent' || value === 'ink' || value === 'one' || value === 'term' || value === 'shadcn'
     || value === 'zen' || value === 'glass'
     || value === 'studio' || value === 'air' || value === 'feather'
     || value === 'mobile' || value === 'terminal'

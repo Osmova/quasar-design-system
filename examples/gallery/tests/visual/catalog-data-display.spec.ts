@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 import { MATRIX_VARIANTS, coarsePointer, customProperty, gotoGalleryPage, resolvedColor, resolvedShadow } from './helpers'
 
 type Mode = 'light' | 'dark'
-type Variant = 'fluent' | 'ink' | 'one'
+type Variant = 'win' | 'ink' | 'one'
 
 /** Drive the runtime controller exactly as an external app would. */
 async function applyTheme(page: Page, mode: Mode, variant: Variant) {
@@ -33,7 +33,7 @@ test.describe('QDS catalog data display gate', () => {
   test('catalog coverage tab skins remaining Quasar primitives', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     const expectVisible = async (selector: string) => {
       await expect(page.locator(selector).first(), selector).toBeVisible()
     }
@@ -98,7 +98,7 @@ test.describe('QDS catalog data display gate', () => {
   test('QExpansionItem and QTree expose deterministic deep states', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const expandedExpansion = page.locator('[data-test="qds-expansion-expanded"]')
     const expandedHeader = expandedExpansion.locator('.q-expansion-item__container > .q-item').first()
@@ -155,7 +155,7 @@ test.describe('QDS catalog data display gate', () => {
         expect.soft(await computed(page, '[data-test="qds-btn-group"]', 'border-radius'), `${mode}/${variant} action group follows the button radius`).toBe(await customProperty(page, '--qds-button-radius'))
         expect.soft(await computed(page, '[data-test="qds-linear-progress"] .q-linear-progress__model', 'background-color'), `${mode}/${variant} linear progress uses the text-safe primary foreground`).toBe(primary)
         expect.soft(await computed(page, '[data-test="qds-circular-progress"]', 'color'), `${mode}/${variant} circular progress retains contrast`).not.toBe('rgba(0, 0, 0, 0)')
-        if (variant === 'fluent') {
+        if (variant === 'win') {
           expect.soft(await computed(page, '[data-test="qds-btn-group"]', 'box-shadow'), `${mode}/Fluent action content is flat`).toBe('none')
         }
         if (variant === 'ink') {

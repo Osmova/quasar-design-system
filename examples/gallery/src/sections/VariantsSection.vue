@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { useDesignSystem } from '@osmova/quasar-design-system'
 import ShadcnPalettePanels from '../components/ShadcnPalettePanels.vue'
 
-type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
+type VariantName = 'win' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
 const ds = useDesignSystem()
 
 type VariantSample = {
@@ -15,7 +15,7 @@ type VariantSample = {
 
 const variants: VariantSample[] = [
   {
-    name: 'fluent',
+    name: 'win',
     label: 'Fluent',
     intent: 'Solid mica surfaces, low-border content, and selective transient material over cool geometry.',
     sample: 'Settings surface 01',
@@ -59,7 +59,7 @@ const variants: VariantSample[] = [
 ]
 
 const pages = reactive<Record<VariantName, number>>({
-  fluent: 3,
+  win: 3,
   ink: 3,
   one: 3,
   term: 3,

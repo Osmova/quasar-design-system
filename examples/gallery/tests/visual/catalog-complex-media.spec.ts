@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { customProperty, gotoGalleryPage, resolvedColor } from './helpers'
 
 type Mode = 'light' | 'dark'
-type Variant = 'fluent' | 'ink' | 'one' | 'term'
+type Variant = 'win' | 'ink' | 'one' | 'term'
 type ComplexMediaTestHook = {
   getRtl: () => boolean
   setRtl: (rtl: boolean) => boolean
@@ -14,8 +14,8 @@ declare global {
   }
 }
 
-const EXPECTED_MEDIA_RADIUS: Record<Extract<Variant, 'fluent' | 'one' | 'term'>, string> = {
-  fluent: '8px',
+const EXPECTED_MEDIA_RADIUS: Record<Extract<Variant, 'win' | 'one' | 'term'>, string> = {
+  win: '8px',
   one: '24px',
   term: '10px',
 }
@@ -114,7 +114,7 @@ test.describe('QDS catalog complex media gate', () => {
   test('skins chat, local media, video, scroll area, and splitter without raw seams', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const sentBubble = '[data-test="qds-chat-sent"] .q-message-text'
     const sentContent = '[data-test="qds-chat-sent"] .q-message-text-content'
@@ -274,7 +274,7 @@ test.describe('QDS catalog complex media gate', () => {
     await expect(page.locator('.catalog-fab-stage .material-icons')).toHaveCount(0)
     await expect(page.locator('.qds-editor-proof .material-icons')).toHaveCount(0)
 
-    for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+    for (const variant of ['win', 'ink', 'one', 'term'] as const) {
       await applyTheme(page, 'dark', variant)
       const sentContentFg = await computed(page, '[data-test="qds-chat-sent"] .q-message-text-content', 'color')
       const receivedContentFg = await computed(page, '[data-test="qds-chat-received"] .q-message-text-content', 'color')
@@ -331,7 +331,7 @@ test.describe('QDS catalog complex media gate', () => {
     await page.route('**/qds-media-error.svg', route => route.abort())
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     await expect(page.locator('[data-test="qds-img-loading"]')).toHaveAttribute('aria-label', 'Loading media preview')
     await expect(page.locator('[data-test="qds-img-error"]')).toHaveAttribute('aria-label', 'Unavailable media preview')
     await expect(page.locator('[data-test="qds-img-loading-state"]')).toBeVisible()
@@ -371,7 +371,7 @@ test.describe('QDS catalog complex media gate', () => {
   test('QUploader exposes deterministic queued, progress, error, and uploaded states', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const uploader = page.locator('[data-test="qds-uploader"]')
     await expect(uploader.locator('.q-uploader__file')).toHaveCount(4)
@@ -399,7 +399,7 @@ test.describe('QDS catalog complex media gate', () => {
   test('QEditor exposes focused and dropdown toolbar states', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const editor = page.locator('.qds-editor-proof')
     await page.focus('.qds-editor-proof .q-editor__content')
@@ -426,7 +426,7 @@ test.describe('QDS catalog complex media gate', () => {
     test.setTimeout(60_000)
     await page.goto('/#catalog')
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         await expect(page.locator('[data-test="qds-stepper"]')).toBeVisible()
         await expect(page.locator('[data-test="qds-timeline"]')).toBeVisible()

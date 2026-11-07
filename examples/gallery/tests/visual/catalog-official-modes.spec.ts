@@ -52,7 +52,7 @@ function durationInMs(value: string): number {
 test.describe('QDS official stable data and layout modes', () => {
   test('QTable exposes dark, custom controls, visible columns, fullscreen, and chrome-free modes', async ({ page }) => {
     await openComponents(page)
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const table = page.locator('[data-test="qds-table-official-modes"]')
     await expect(table).toHaveClass(/q-table--dark/)
@@ -81,7 +81,7 @@ test.describe('QDS official stable data and layout modes', () => {
 
   test('QTree represents dark and connector-free public modes', async ({ page }) => {
     await openCatalog(page)
-    await applyTheme(page, 'dark', 'fluent')
+    await applyTheme(page, 'dark', 'win')
 
     const tree = page.locator('[data-test="qds-tree-dark-no-connectors"]')
     await expect(tree).toHaveClass(/q-tree--dark/)
@@ -171,7 +171,7 @@ test.describe('QDS official stable data and layout modes', () => {
     await expect(pagination.locator('.q-btn').first(), 'One input-mode buttons use the button radius').toHaveCSS('border-top-left-radius', await resolvedRadius(page, '--qds-button-radius'))
     await expect(input).toHaveCSS('color', await resolvedColor(page, '--qds-text'))
 
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     for (const button of await pagination.locator('.q-btn').all()) {
       await expect(button, 'Fluent input-mode buttons use the 6px control radius').toHaveCSS('border-top-left-radius', await resolvedRadius(page, '--qds-radius-control'))
     }
@@ -196,7 +196,7 @@ test.describe('QDS official stable data and layout modes', () => {
   })
 
   for (const [mode, variant] of [
-    ['dark', 'fluent'],
+    ['dark', 'win'],
     ['light', 'ink'],
     ['light', 'one'],
     ['dark', 'term'],

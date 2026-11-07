@@ -57,7 +57,7 @@ for (const variant of CANONICAL_VARIANTS) {
 
 test('UI, page and controller changes replace URL while preserving outer URL, state and unknown params', async ({ page }) => {
   await page.goto('/?campaign=outer#compare?keep=a%26b&keep=two')
-  await expectState(page, 'compare', 'fluent')
+  await expectState(page, 'compare', 'win')
   const length = await page.evaluate(() => {
     history.replaceState({ owner: 'gallery-host' }, '', location.href)
     return history.length
@@ -71,7 +71,7 @@ test('UI, page and controller changes replace URL while preserving outer URL, st
   await expect(page).toHaveURL(/#tokens\?keep=a%26b&keep=two&variant=ink$/)
   await setVariant(page, 'term')
   await expect(page).toHaveURL(/variant=term$/)
-  await setVariant(page, 'fluent')
+  await setVariant(page, 'win')
   await expect(page).toHaveURL(/#tokens\?keep=a%26b&keep=two$/)
   expect(new URL(page.url()).pathname).toBe('/')
   expect(new URL(page.url()).search).toBe('?campaign=outer')
@@ -115,7 +115,7 @@ test('same-page hash navigation and back/forward apply variant without feedback 
 for (const hash of ['', '#compare', '#/compare', '#compare?variant=invalid', '#compare?variant=air', '#compare?variant=%E0%A4%A', '#%3Cscript%3E?variant=%3Csvg%20onload%3Dalert(1)%3E', '#%']) {
   test(`safe initial fallback and unchanged legacy hash: ${hash || '(empty)'}`, async ({ page }) => {
     await page.goto(`/${hash}`)
-    await expectState(page, hash.includes('compare') ? 'compare' : 'tokens', 'fluent')
+    await expectState(page, hash.includes('compare') ? 'compare' : 'tokens', 'win')
     expect(new URL(page.url()).hash).toBe(hash)
   })
 }
@@ -132,7 +132,7 @@ test('in-session missing/invalid variants retain selection and unknown pages can
   await navigateHash(page, '#%3Csvg%20onload%3Dalert(1)%3E?variant=one&extra=ok')
   await expectState(page, 'tokens', 'one')
   await expect(page).toHaveURL(/#tokens\?extra=ok&variant=one$/)
-  await setVariant(page, 'fluent')
+  await setVariant(page, 'win')
   await expect(page).toHaveURL(/#tokens\?extra=ok$/)
 })
 

@@ -1,14 +1,14 @@
 import { expect, type Page } from '@playwright/test'
 
 export type Mode = 'light' | 'dark'
-export type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
+export type Variant = 'win' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
 export type LegacyVariant = Exclude<Variant, 'shadcn'>
 export type BaseColor = 'neutral' | 'gray' | 'zinc' | 'stone' | 'slate'
 
-export const CANONICAL_VARIANTS: Variant[] = ['fluent', 'ink', 'one', 'term', 'shadcn', 'zen', 'glass']
+export const CANONICAL_VARIANTS: Variant[] = ['win', 'ink', 'one', 'term', 'shadcn', 'zen', 'glass']
 // Existing grammar tests deliberately keep their four-variant expectations.
-export const LEGACY_VARIANTS: LegacyVariant[] = ['fluent', 'ink', 'one', 'term']
-export const MATRIX_VARIANTS: Exclude<LegacyVariant, 'term'>[] = ['fluent', 'ink', 'one']
+export const LEGACY_VARIANTS: LegacyVariant[] = ['win', 'ink', 'one', 'term']
+export const MATRIX_VARIANTS: Exclude<LegacyVariant, 'term'>[] = ['win', 'ink', 'one']
 export const SHADCN_PALETTES: BaseColor[] = ['neutral', 'gray', 'zinc', 'stone', 'slate']
 
 export async function waitForThemePaint(page: Page) {

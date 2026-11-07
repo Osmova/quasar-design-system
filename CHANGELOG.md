@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- **`fluent` is now `win`** — the default variant follows Windows 11 / WinUI 3 rather than Fluent 2. The
+  body class is `qds-variant-win`; `fluent` (like `air` and `studio`) stays accepted as a legacy input
+  and normalizes to `win`, so stored preferences and `?variant=fluent` links keep working. Selectors that
+  targeted `.qds-variant-fluent` must move to `.qds-variant-win`.
+
 ### Added
 
 - **`glass` variant** — inspired by Apple's design language, and the seventh canonical variant.

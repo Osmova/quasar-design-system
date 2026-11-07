@@ -54,7 +54,7 @@ interface ComplexMediaStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): ComplexMediaStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): ComplexMediaStoryState => ({ mode: 'light', variant: 'win' })
 
 function svgData(svg: string): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`

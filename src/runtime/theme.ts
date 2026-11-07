@@ -114,7 +114,7 @@ export const DEFAULT_DESIGN_SYSTEM_OPTIONS: Required<
 > = {
   enabled: true,
   mode: 'system',
-  variant: 'fluent',
+  variant: 'win',
   shadcnBaseColor: 'neutral',
   shadcnAccent: 'none',
   syncWithSystem: true,
@@ -401,8 +401,8 @@ function normalizeShadcnAccent(value: unknown): ShadcnAccentColor {
 }
 
 function normalizeVariant(value: unknown): DesignSystemVariantName {
-  if (value === 'studio' || value === 'air') {
-    return 'fluent'
+  if (value === 'fluent' || value === 'studio' || value === 'air') {
+    return 'win'
   }
 
   if (value === 'feather') {

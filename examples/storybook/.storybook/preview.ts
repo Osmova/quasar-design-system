@@ -67,7 +67,7 @@ setup((app) => {
   const controller = configureDesignSystem(app, {
     persist: false,
     mode: 'light',
-    variant: 'fluent',
+    variant: 'win',
   })
 
   // Explicit dispose: a destroyed app removes the body attributes/classes it
@@ -135,7 +135,7 @@ const preview: Preview = {
   },
   initialGlobals: {
     mode: 'light',
-    variant: 'fluent',
+    variant: 'win',
     shadcnBaseColor: 'neutral',
   },
   decorators: [

@@ -44,8 +44,8 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
 
 test('Fluent dark scenic reading surface is opaque with AA text contrast', async ({ page }, info) => {
   await page.goto('/#scenes')
-  await applyTheme(page, 'dark', 'fluent')
-  const frame = page.locator('[data-test="qds-scene-fluent"]')
+  await applyTheme(page, 'dark', 'win')
+  const frame = page.locator('[data-test="qds-scene-win"]')
   const paint = await frame.locator('.scene-panel').evaluate(card => {
     // Canvas normalizes browser CSS colors (including color-mix's color(srgb))
     // to sRGB channels and retains alpha instead of discarding the wallpaper.

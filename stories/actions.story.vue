@@ -41,7 +41,7 @@ interface ActionStoryState {
 
 const initState = (): ActionStoryState => ({
   mode: 'light',
-  variant: 'fluent',
+  variant: 'win',
 })
 
 const cadenceOptions = [

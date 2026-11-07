@@ -164,8 +164,8 @@ const OVERLAYS: Record<Section, readonly Overlay[]> = {
 
 test.describe('@screens atlas', () => {
   // Fluent keeps its historical unprefixed names; every other atlas variant prefixes its own.
-  for (const variant of ['fluent', 'glass'] as const) for (const section of Object.keys(FAMILIES) as Section[]) {
-    const prefix = variant === 'fluent' ? 'atlas' : `atlas-${variant}`
+  for (const variant of ['win', 'glass'] as const) for (const section of Object.keys(FAMILIES) as Section[]) {
+    const prefix = variant === 'win' ? 'atlas' : `atlas-${variant}`
     for (const mode of MODES) {
       test(`${section} ${variant} ${mode}`, async ({ page }, testInfo) => {
         test.setTimeout(240_000)
@@ -214,7 +214,7 @@ test.describe('@screens atlas', () => {
   for (const mode of MODES) {
     test(`scenes materials fluent ${mode}`, async ({ page }) => {
       await page.goto('./#scenes')
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
       await page.evaluate(async () => {
         await document.fonts.ready
       })

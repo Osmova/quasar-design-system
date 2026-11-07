@@ -26,7 +26,7 @@ interface OverviewStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): OverviewStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): OverviewStoryState => ({ mode: 'light', variant: 'win' })
 
 function notify() {
   $q.notify({

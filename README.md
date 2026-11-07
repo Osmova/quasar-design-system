@@ -80,7 +80,7 @@ import { configureDesignSystem } from '@osmova/quasar-design-system'
 
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'fluent',
+  variant: 'win',
   persist: true,
 })
 ```
@@ -191,7 +191,7 @@ Tokens: `--qds-material-{thin,regular,thick}-{bg,blur,filter}`, `--qds-material-
 
 The package is structured around `src/themes/`. For now there is one real theme, `default`, plus small runtime variants layered over it:
 
-- `fluent`: default Fluent 2-inspired direction with a Mica app backdrop, acrylic overlays, solid reading surfaces, and low-border content. Absorbs the legacy Air translucency behavior.
+- `win`: default Windows 11 (WinUI 3) direction, formerly named `fluent`, with a Mica app backdrop, acrylic overlays, solid reading surfaces, and low-border content. Absorbs the legacy Air translucency behavior.
 - `ink`: paper-neutral editorial surfaces with charcoal type and coordinated pastel role washes.
 - `one`: Samsung One UI-inspired neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent, and touch-friendly rhythm.
 - `term`: opaque amber developer UI on warm cream or near-black panes, with crisp hairline rules, amber fills carrying dark ink, and a monospace-forward feel.
@@ -206,11 +206,11 @@ Choose the variant once at app startup and let the runtime keep the matching bod
 ```ts
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'ink', // fluent | ink | one | term | shadcn | zen | glass
+  variant: 'ink', // win | ink | one | term | shadcn | zen | glass
 })
 ```
 
-Legacy inputs `air` and `studio` resolve to `fluent` (`glass` did too before 0.10.0 and is now its own variant); `feather` resolves to `ink`; `mobile` resolves to `one`; `terminal` resolves to `term`. The runtime accepts these legacy names for options, `setVariant` and persisted state, but writes only the canonical body classes; new apps should use the canonical names above.
+Legacy inputs `fluent`, `air` and `studio` resolve to `win` (`glass` did too before 0.10.0 and is now its own variant); `feather` resolves to `ink`; `mobile` resolves to `one`; `terminal` resolves to `term`. The runtime accepts these legacy names for options, `setVariant` and persisted state, but writes only the canonical body classes; new apps should use the canonical names above.
 
 ### Shadcn adoption and compatibility
 

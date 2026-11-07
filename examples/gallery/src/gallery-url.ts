@@ -10,7 +10,7 @@ export function parseGalleryHash(hash: string) {
   const params = new URLSearchParams(separator < 0 ? '' : fragment.slice(separator + 1))
   const value = params.get('variant')
   // Enumerable metadata contains only canonical variants, not legacy aliases.
-  const variant = Object.values(DESIGN_SYSTEM_VARIANTS).find(item => item.name === value)?.name
+  const variant = Object.values(DESIGN_SYSTEM_VARIANTS).find(item => item.name === (value === 'fluent' ? 'win' : value))?.name
   return {
     tab: tabs.includes(page as GalleryTab) ? page as GalleryTab : 'tokens' as const,
     variant,
@@ -20,9 +20,9 @@ export function parseGalleryHash(hash: string) {
 
 export function galleryHash(tab: GalleryTab, variant: DesignSystemVariantName, hash: string): string {
   const { params } = parseGalleryHash(hash)
-  // Fluent keeps the legacy page-only shape. Unknown parameters remain author-owned.
+  // Win keeps the legacy page-only shape. Unknown parameters remain author-owned.
   params.delete('variant')
-  if (variant !== 'fluent') params.set('variant', variant)
+  if (variant !== 'win') params.set('variant', variant)
   const query = params.toString()
   return tab === 'tokens' && !query ? '' : `#${tab}${query ? `?${query}` : ''}`
 }

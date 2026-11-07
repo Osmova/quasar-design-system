@@ -31,7 +31,7 @@ interface FeedbackStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): FeedbackStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): FeedbackStoryState => ({ mode: 'light', variant: 'win' })
 
 function notify() {
   $q.notify({
