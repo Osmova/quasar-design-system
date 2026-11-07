@@ -118,6 +118,7 @@ $ease: var(--qds-motion-fast);
     color: var(--qds-fg-muted);
     transition: color #{$ease}, background-color #{$ease};
   }
+  @media (max-width: 30rem) { #{$zen} .q-tabs--horizontal .q-tab { padding-inline: 0.5rem; } }
   #{$zen} .q-tab:not(.disabled):hover { background: #{$tint}; color: var(--qds-fg-strong); }
   #{$zen} .q-tab__label { font-size: 0.875rem; font-weight: var(--qds-font-weight-medium); text-transform: none; letter-spacing: 0; }
   #{$zen} .q-tab--active { color: var(--qds-fg-strong); }
