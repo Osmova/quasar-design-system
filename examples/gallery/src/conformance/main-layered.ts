@@ -1,5 +1,5 @@
 import './quasar-layered.css'
-import '@osmova/quasar-design-system/css/layered'
+import '@osmova/quasar-design-system/css/all/layered'
 import '@osmova/quasar-design-system/css/extensions/qwindow/layered'
 import '@osmova/quasar-design-system/fonts/inter.css'
 import './bootstrap'

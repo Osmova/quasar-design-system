@@ -3,6 +3,8 @@ import { test } from 'node:test'
 import { compile } from 'sass'
 import { createHash } from 'node:crypto'
 import { gzipSync } from 'node:zlib'
+import postcss from 'postcss'
+import { compileEntry, partitionCss, VARIANT_SCOPES } from '../../scripts/css-partition.mjs'
 import { readFileSync } from 'node:fs'
 import { compileMechanics, compilePilot, families, root } from './grammar-fixture.mjs'
 import { compileSubstrateBaseline, substrateBaseline } from './grammar-fixture-baseline.mjs'
@@ -68,12 +70,41 @@ test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only
 
 // css:budget owns these caps; this gate repeats them so a runtime-only run
 // cannot report green while the shipped bundle is over budget.
-test('both entries stay inside the reviewed CSS budget', () => {
+test('the shared core and every variant bundle stay inside the reviewed CSS budget', () => {
   for (const entry of ['index.scss', 'index.layered.scss']) {
-    const { css } = compile(new URL(`src/css/${entry}`, root).pathname, { style: 'compressed', loadPaths: [new URL('node_modules/', root).pathname], silenceDeprecations: ['if-function'] })
-    const bytes = Buffer.byteLength(css)
-    const gzip = gzipSync(css, { level: 9 }).length
-    assert.ok(bytes <= 600000 && gzip <= 58000, `${entry}: measured min ${bytes} / gzip ${gzip} against caps 600000 / 58000`)
+    const parts = partitionCss(compileEntry(new URL(`src/css/${entry}`, root).pathname))
+    for (const [name, css] of Object.entries(parts)) {
+      const [maxMin, maxGzip] = name === 'core' ? [210000, 26000] : [190000, 23000]
+      const bytes = Buffer.byteLength(css)
+      const gzip = gzipSync(css, { level: 9 }).length
+      assert.ok(bytes <= maxMin && gzip <= maxGzip, `${entry} ${name}: measured min ${bytes} / gzip ${gzip} against caps ${maxMin} / ${maxGzip}`)
+    }
+  }
+})
+
+test('opt-in bundles partition the full stylesheet without losing or leaking a rule', () => {
+  const flatten = (css) => {
+    const out = []
+    postcss.parse(css).walkRules((rule) => {
+      const at = []
+      for (let p = rule.parent; p && p.type !== 'root'; p = p.parent) at.unshift(`${p.name} ${p.params}`)
+      for (const selector of rule.selectors) out.push(`${at.join('>')}|${selector}|${rule.nodes.map((n) => n.toString()).join(';')}`)
+    })
+    return out.sort()
+  }
+  for (const entry of ['index.scss', 'index.layered.scss']) {
+    const full = compileEntry(new URL(`src/css/${entry}`, root).pathname)
+    const parts = partitionCss(full)
+    assert.deepEqual(flatten(Object.values(parts).join('\n')), flatten(full), `${entry}: the parts reassemble the full bundle`)
+    for (const name of VARIANT_SCOPES) {
+      const own = new RegExp(`qds-variant-${name}\\b${name === 'zen' ? '|qds-reading' : ''}`)
+      for (const key of flatten(parts[name] ?? '')) assert.match(key.split('|')[1], own, `${entry}: ${name} bundle holds only ${name}-scoped selectors`)
+    }
+    for (const key of flatten(parts.core)) {
+      const [, selector] = key.split('|')
+      const owners = VARIANT_SCOPES.filter((name) => new RegExp(`qds-variant-${name}\\b`).test(selector))
+      assert.notEqual(owners.length, 1, `${entry}: core keeps no single-variant selector: ${selector.slice(0, 120)}`)
+    }
   }
 })
 

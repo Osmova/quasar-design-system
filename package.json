@@ -43,8 +43,12 @@
       "types": "./dist/qwindow.d.ts",
       "import": "./dist/qwindow.js"
     },
-    "./css": "./src/css/index.scss",
-    "./css/layered": "./src/css/index.layered.scss",
+    "./css": "./dist/css/index.css",
+    "./css/layered": "./dist/css/layered/index.css",
+    "./css/variants/*": "./dist/css/variants/*.css",
+    "./css/layered/variants/*": "./dist/css/layered/variants/*.css",
+    "./css/all": "./src/css/index.scss",
+    "./css/all/layered": "./src/css/index.layered.scss",
     "./css/extensions/qwindow": "./src/css/extensions/qwindow.scss",
     "./css/extensions/qwindow/layered": "./src/css/extensions/qwindow.layered.scss",
     "./quasar-variables": "./src/quasar.variables.scss",
@@ -57,7 +61,7 @@
     "./fonts/*": "./src/fonts/*"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node scripts/build-css.mjs",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "stories": "pnpm build && histoire dev",
     "stories:build": "pnpm build && histoire build",
@@ -85,7 +89,7 @@
     "pack:dry": "npm pack --dry-run --json",
     "css:budget": "node scripts/css-budget.mjs",
     "verify:publish": "pnpm css:budget && pnpm build && pnpm typecheck && pnpm test:runtime && pnpm pack:dry",
-    "prepare": "tsc -p tsconfig.build.json",
+    "prepare": "tsc -p tsconfig.build.json && node scripts/build-css.mjs",
     "prepublishOnly": "pnpm verify:publish"
   },
   "publishConfig": {
@@ -134,6 +138,7 @@
     "@vitejs/plugin-vue": "^6.0.9",
     "colorjs.io": "0.7.1",
     "histoire": "1.0.0-beta.1",
+    "postcss": "^8.5.32",
     "quasar": "^2.35.0",
     "sass": "^1.105.1",
     "typescript": "^5.9.3",

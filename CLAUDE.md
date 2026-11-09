@@ -77,6 +77,14 @@ on-fill foreground over text utilities/normal inline color, while author inline 
 Arbitrary consumer titlebar/background paint remains author-owned, including its text/focus contrast;
 do not silently recolor it or extend library-palette guarantees to arbitrary authored combinations.
 
+### CSS delivery
+
+`pnpm build` compiles `src/css/index(.layered).scss` and `scripts/css-partition.mjs` splits the output by variant
+scope selector into `dist/css/index.css` (shared + `win`) and `dist/css/variants/<name>.css` (plus `layered/`
+twins). `./css`, `./css/layered` and `./css/variants/*` export those files; `./css/all` keeps the SCSS source.
+A new variant needs no extra wiring as long as every rule is scoped by `.qds-variant-<name>`; add the name to
+`VARIANT_SCOPES` in the partition script. Mixed selector lists are split per selector.
+
 ### CSS entry point
 
 `src/css/index.scss` (the `./css` export) `@use`s `themes/fallbacks` (a guaranteed base layer defining

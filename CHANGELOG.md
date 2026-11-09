@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **Opt-in variant bundles (breaking)** — `@osmova/quasar-design-system/css` (and `css/layered`) now ships the
+  shared grammar plus the default `win` variant, built to `dist/css` (about 24 KB gzipped, down from 58.5 KB).
+  Every other variant is its own stylesheet, `css/variants/<name>` and `css/layered/variants/<name>`
+  (`ink`, `one`, `term`, `shadcn`, `zen`, `glass`; 4–22 KB gzipped each), imported after `./css`.
+  Apps that used a non-default variant must add that variant's import; `css/all` and `css/all/layered`
+  keep the previous everything-in-one SCSS entries. The CSS budget now applies to the core and to each variant.
 - **`fluent` is now `win`** — the default variant follows Windows 11 / WinUI 3 rather than Fluent 2. The
   body class is `qds-variant-win`; `fluent` (like `air` and `studio`) stays accepted as a legacy input
   and normalizes to `win`, so stored preferences and `?variant=fluent` links keep working. Selectors that

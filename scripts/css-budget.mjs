@@ -4,6 +4,7 @@ import { posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gzipSync } from 'node:zlib'
 import { compileString } from 'sass'
+import { compileEntry, partitionCss } from './css-partition.mjs'
 
 const ROOT = new URL('../', import.meta.url)
 const BASELINE = '71bb9d52bf483a93de0b50202df122b73f70ed9e'
@@ -23,10 +24,10 @@ const BASELINE = '71bb9d52bf483a93de0b50202df122b73f70ed9e'
  * full catalog ~570000 min / ~56800 gzip / ~4450 component lines; caps set just above that.
  */
 const LIMITS = { important: 46, doubled: 0, lines: 4600 }
-const BUNDLES = [
-  ['src/css/index.scss', { min: 600000, gzip: 58000 }],
-  ['src/css/index.layered.scss', { min: 600000, gzip: 58000 }],
-]
+// Opt-in delivery: ./css is the shared grammar plus the unscoped win default; each variant is its own file.
+const ENTRIES = ['src/css/index.scss', 'src/css/index.layered.scss']
+const CORE_CAP = { min: 210000, gzip: 26000 }
+const VARIANT_CAP = { min: 190000, gzip: 23000 }
 const EXTENSION_ALLOWANCE = { lines: 80, min: 4096, gzip: 1024 }
 const failures = []
 const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
@@ -105,7 +106,12 @@ function compiledMetrics(file, baseline = false) {
 const components = currentRows('src/css/components')
 for (const row of components) console.log(JSON.stringify(row))
 enforce('components', total(components), LIMITS)
-for (const [file, limits] of BUNDLES) enforce(file, compiledMetrics(file), limits)
+for (const file of ENTRIES) {
+  const parts = partitionCss(compileEntry(fileURLToPath(new URL(file, ROOT))))
+  for (const [name, css] of Object.entries(parts)) {
+    enforce(`${file} ${name}`, { min: Buffer.byteLength(css), gzip: gzipSync(css, { level: 9 }).length }, name === 'core' ? CORE_CAP : VARIANT_CAP)
+  }
+}
 
 // Optional extensions have their own immutable pre-variant baseline; they cannot borrow core headroom.
 const extensionRows = currentRows('src/css/extensions')
