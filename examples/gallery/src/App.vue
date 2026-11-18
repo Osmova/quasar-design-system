@@ -20,7 +20,9 @@ import {
 import {
   useDesignSystem,
   DESIGN_SYSTEM_VARIANTS,
+  INK_COLORS,
   SHADCN_BASE_COLORS,
+  type InkColor,
   type ShadcnBaseColor,
   type DesignSystemMode,
   type DesignSystemVariantName,
@@ -131,6 +133,10 @@ function onVariant(variant: DesignSystemVariantName) {
 
 function onBaseColor(color: ShadcnBaseColor) {
   ds.setShadcnBaseColor(color)
+}
+
+function onInkColor(color: InkColor) {
+  ds.setInkColor(color)
 }
 
 function syncUrl() {
@@ -327,6 +333,26 @@ watch(tab, revealActiveGalleryTab)
                   class="gallery-palette"
                   data-test="qds-shadcn-palette"
                   @update:model-value="onBaseColor"
+                />
+              </div>
+            </template>
+            <template v-if="ds.variant.value === 'ink'">
+              <q-separator />
+              <div class="gallery-palette-slot">
+                <q-select
+                  :model-value="ds.inkColor.value"
+                  :options="INK_COLORS"
+                  option-value="name"
+                  option-label="label"
+                  emit-value
+                  map-options
+                  dense
+                  outlined
+                  label="Ink colour"
+                  aria-label="Ink colour"
+                  class="gallery-palette"
+                  data-test="qds-ink-color"
+                  @update:model-value="onInkColor"
                 />
               </div>
             </template>

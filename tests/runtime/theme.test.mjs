@@ -3,9 +3,10 @@ import { afterEach, test } from 'node:test'
 import {
   createDesignSystemController, configureDesignSystem, DEFAULT_DESIGN_SYSTEM_OPTIONS,
   DESIGN_SYSTEM_VARIANTS, SHADCN_ACCENT_COLORS, SHADCN_BASE_COLORS, isShadcnBaseColor, isBuiltInDesignSystemVariantName,
+  INK_COLORS, isInkColor,
 } from '@osmova/quasar-design-system'
 import { createDesignSystemController as runtimeExport } from '@osmova/quasar-design-system/runtime'
-import { SHADCN_BASE_COLORS as themesExport } from '@osmova/quasar-design-system/themes'
+import { SHADCN_BASE_COLORS as themesExport, INK_COLORS as inkThemesExport } from '@osmova/quasar-design-system/themes'
 
 const storageKey = DEFAULT_DESIGN_SYSTEM_OPTIONS.storageKey
 const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
@@ -119,7 +120,7 @@ test('all palettes switch on the same custom target and persist with mode and va
     assert.equal(subtree.dataset.qdsShadcnBaseColor, name)
     assert.equal(subtree.dataset.qdsVariant, 'shadcn')
     assert.equal(subtree.dataset.qdsMode, 'light')
-    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'shadcn', shadcnBaseColor: name, shadcnAccent: 'none' })
+    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'shadcn', shadcnBaseColor: name, shadcnAccent: 'none', inkColor: 'navy' })
   }
   controller.setDark()
   assert.equal(subtree.dataset.qdsResolved, 'dark')
@@ -156,6 +157,87 @@ test('shadcn accent applies only on shadcn, persists, and falls back to none', (
   assert.ok(SHADCN_ACCENT_COLORS.some((accent) => accent.name === 'blue'))
   controller.destroy()
   assert.deepEqual(subtree.dataset, { author: 'retained' })
+})
+
+test('ink colours: exports, attribute only on ink (legacy feather too), persistence, cleanup', () => {
+  assert.equal(inkThemesExport, INK_COLORS)
+  assert.deepEqual(INK_COLORS.map(({ name, label }) => [name, label]), [['navy', 'Navy'], ['black', 'Black'], ['charcoal', 'Charcoal']])
+  assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.inkColor, 'navy')
+  for (const bad of [undefined, null, '', 'Navy', 'navy ', '__proto__', 'toString', {}, ['black'], 1]) {
+    assert.equal(isInkColor(bad), false)
+  }
+  const env = browser()
+  const subtree = target()
+  const controller = createDesignSystemController({ target: subtree, variant: 'ink', mode: 'light' })
+  controller.initialize()
+  assert.equal(controller.inkColor.value, 'navy')
+  assert.equal(subtree.dataset.qdsInk, 'navy')
+  for (const { name } of INK_COLORS) {
+    assert.equal(controller.setInkColor(name), name)
+    assert.equal(subtree.dataset.qdsInk, name)
+    assert.equal(controller.state.inkColor, name)
+    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'ink', shadcnBaseColor: 'neutral', shadcnAccent: 'none', inkColor: name })
+  }
+  controller.setVariant('shadcn')
+  assert.equal(subtree.dataset.qdsInk, undefined)
+  assert.equal(subtree.dataset.qdsShadcnBaseColor, 'neutral')
+  assert.equal(controller.inkColor.value, 'charcoal')
+  controller.setInkColor('black')
+  assert.equal(subtree.dataset.qdsInk, undefined)
+  assert.equal(controller.setVariant('feather'), 'ink')
+  assert.equal(subtree.dataset.qdsInk, 'black')
+  assert.equal(subtree.dataset.qdsShadcnBaseColor, undefined)
+  controller.destroy()
+  assert.deepEqual(subtree.dataset, { author: 'retained' })
+  assert.deepEqual(env.body.dataset, { author: 'retained' })
+
+  browser()
+  const legacy = createDesignSystemController({ persist: false, variant: 'feather', inkColor: 'charcoal' })
+  legacy.initialize()
+  assert.equal(document.body.dataset.qdsInk, 'charcoal')
+  legacy.destroy()
+  assert.equal(document.body.dataset.qdsInk, undefined)
+})
+
+test('stored ink colour wins; absent old field preserves configured colour; invalid values normalise Navy', () => {
+  for (const [stored, config, expected] of [
+    [{ mode: 'dark', variant: 'ink', inkColor: 'black' }, 'charcoal', 'black'],
+    [{ mode: 'dark', variant: 'ink', shadcnBaseColor: 'slate' }, 'charcoal', 'charcoal'],
+    [{ mode: 'light', variant: 'term' }, undefined, 'navy'],
+    [{ inkColor: null }, 'black', 'navy'],
+    [{ inkColor: 'unknown' }, 'charcoal', 'navy'],
+  ]) {
+    const env = browser(stored)
+    const controller = createDesignSystemController({ mode: 'light', variant: 'ink', inkColor: config })
+    controller.initialize()
+    assert.equal(controller.inkColor.value, expected)
+    assert.equal(env.body.dataset.qdsInk, controller.variant.value === 'ink' ? expected : undefined)
+    controller.destroy()
+  }
+  browser()
+  for (const bad of [null, 'Black', 'bad', '', '__proto__', 'toString', {}, ['black'], 42, false]) {
+    const controller = createDesignSystemController({ inkColor: bad, persist: false, variant: 'ink' })
+    controller.initialize()
+    assert.equal(controller.inkColor.value, 'navy')
+    controller.setInkColor('black')
+    assert.equal(controller.setInkColor(bad), 'navy')
+    assert.equal(document.body.dataset.qdsInk, 'navy')
+    controller.destroy()
+  }
+})
+
+test('mandatory SSR: ink colour switches and persists state without any DOM', () => {
+  delete globalThis.window
+  delete globalThis.document
+  const controller = createDesignSystemController({ target: null, persist: true, variant: 'ink', inkColor: 'black' })
+  controller.initialize()
+  assert.equal(controller.inkColor.value, 'black')
+  for (const { name } of INK_COLORS) assert.equal(controller.setInkColor(name), name)
+  controller.setVariant('win')
+  controller.destroy()
+  controller.initialize()
+  assert.equal(controller.inkColor.value, 'charcoal')
+  controller.destroy()
 })
 
 test('stored palette wins; absent old field preserves configured palette or defaults Neutral', () => {

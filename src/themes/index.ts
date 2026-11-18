@@ -37,6 +37,18 @@ export function isShadcnBaseColor(value: unknown): value is ShadcnBaseColor {
   return SHADCN_BASE_COLORS.some((color) => color.name === value)
 }
 
+export const INK_COLORS = [
+  { name: 'navy', label: 'Navy' },
+  { name: 'black', label: 'Black' },
+  { name: 'charcoal', label: 'Charcoal' },
+] as const
+
+export type InkColor = (typeof INK_COLORS)[number]['name']
+
+export function isInkColor(value: unknown): value is InkColor {
+  return INK_COLORS.some((color) => color.name === value)
+}
+
 // Optional brand accent over the shadcn base palette ('none' keeps the palette's own primary).
 export const SHADCN_ACCENT_COLORS = [
   { name: 'none', label: 'None' },
