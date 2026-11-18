@@ -33,7 +33,24 @@ test('neutral mechanics emit layout/containment only, without focus, paint, typo
 // and in order, and every added rule must belong to a profile added after it.
 // The immutable baseline source hash is never regenerated.
 // data-qds-shadcn-accent: optional shadcn brand accent added after 150d952 (token-only rules).
-const PROFILE_SCOPES = /qds-variant-zen|qds-reading|qds-variant-glass|data-qds-shadcn-accent/
+// Ink is rebuilt for 0.10.0 as a new design language: its 150d952 rules are
+// retired, not immutable, and its new rules are an added profile.
+const PROFILE_SCOPES = /qds-variant-zen|qds-reading|qds-variant-glass|qds-variant-ink|data-qds-shadcn-accent/
+const RETIRED_PROFILE = 'ink'
+const selectorsOf = (rule) => {
+  const path = rule.slice(0, rule.indexOf('{')).split('|')
+  const list = path[path.length - 1]
+  const parts = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < list.length; i++) {
+    if (list[i] === '(') depth++
+    else if (list[i] === ')') depth--
+    else if (list[i] === ',' && depth === 0) { parts.push(list.slice(start, i)); start = i + 1 }
+  }
+  return [...parts, list.slice(start)]
+}
+const retired = (rule) => selectorsOf(rule).every((selector) => ownerOfSelector(selector) === RETIRED_PROFILE)
 // The runtime's per-variant stylesheet sentinel, one declaration per variant scope.
 const VARIANT_SENTINEL = /\.qds-variant-([a-z]+)\{--_qds-variant: ?\1\}$/
 test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only added-profile rules', () => {
@@ -52,7 +69,7 @@ test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only
     const current = ruleKeys(css)
     // The frozen hash above still covers the untouched baseline; only the
     // enumerated declared changes are normalised before the rule-by-rule compare.
-    const expected = ruleKeys(applyDeclaredShadcnChanges(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') })))
+    const expected = ruleKeys(applyDeclaredShadcnChanges(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') }))).filter((rule) => !retired(rule))
     const added = []
     let cursor = 0
     for (const rule of expected) {

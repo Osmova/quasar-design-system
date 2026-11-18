@@ -15,6 +15,11 @@ applies to all five families.
   Files: `figtree-latin-wght-normal.woff2`, `figtree-latin-ext-wght-normal.woff2` (Fontsource 5.3.0, upstream v9).
 - **Fraunces** — Copyright 2020 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces).
   Files: `fraunces-latin-wght-italic.woff2`, `fraunces-latin-ext-wght-italic.woff2` (Fontsource 5.3.0, upstream v38).
+- **Atkinson Hyperlegible Next** — Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors
+  (https://github.com/googlefonts/atkinson-hyperlegible-next). Files: `atkinson-hyperlegible-next-latin-wght-normal.woff2`,
+  `atkinson-hyperlegible-next-latin-ext-wght-normal.woff2` (Fontsource 5.3.0, upstream v7).
+- **Caveat** — Copyright 2014 The Caveat Project Authors (https://github.com/googlefonts/caveat).
+  Files: `caveat-latin-wght-normal.woff2`, `caveat-latin-ext-wght-normal.woff2` (Fontsource 5.3.0, upstream v23).
 
 ---
 

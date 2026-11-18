@@ -159,6 +159,8 @@
   --qds-table-header-height-value: #{qds-variant-token(term, table-header-height)};
 }
 
+// Ink draws every affordance with a pen stroke and owns no blur depth: control
+// edges resolve to the 3:1 ink stroke, elevation is drawn by the grammar.
 @mixin qds-ink-paper($scheme) {
   @each $step, $geometry in tokens.$shadow-steps {
     --qds-shadow-#{$step}: none;
@@ -167,19 +169,19 @@
     --qds-#{$token}: none;
   }
   --qds-stroke-strong: #{qds-variant-token(ink, '#{$scheme}-stroke-strong')};
-  --qds-control-stroke-strong: var(--qds-stroke-strong);
-  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom {
-    --qds-#{$token}: var(--qds-border);
+  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
+    --qds-#{$token}: var(--qds-stroke-strong);
   }
-  --qds-material-stroke: var(--qds-stroke-strong);
-  --qds-menu-border: var(--qds-stroke-strong);
   --qds-bg-overlay: #{qds-variant-token(ink, '#{$scheme}-scrim')};
-  --qds-color-primary-pressed: color-mix(in srgb, var(--qds-color-primary) 70%, var(--qds-surface-0));
+  --qds-fg-disabled: #{qds-variant-token(ink, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
-  --qds-text-on-solid: #{map.get(qds-variant-token(ink, light-on-fill), primary)};
+  --qds-text-on-solid: #{map.get(qds-variant-token(ink, '#{$scheme}-on-fill'), primary)};
+  --qds-fg-brand: var(--qds-color-primary);
   @each $role in secondary, accent, positive, negative, warning, info {
-    --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 80%, var(--qds-text-strong));
+    --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 85%, var(--qds-text-strong));
   }
+  --qds-stroke-error: var(--qds-fg-negative);
+  --qds-stroke-focus: var(--qds-color-primary);
 }
 
 // Zen's boundary is essential and its depth decorative: control strokes resolve
@@ -217,6 +219,43 @@
   }
   @each $level in lift-2, lift-3, edge, inset, press {
     --_qds-zen-#{$level}: #{qds-variant-token(zen, '#{$scheme}-#{$level}')};
+  }
+}
+
+// Ink's emission is isolated like zen's: it was rebuilt for 0.10.0, and the
+// frozen default-theme hash re-inserts the retired emission it replaced.
+@mixin qds-ink-scopes {
+  @layer qds.tokens {
+  .qds-variant-ink {
+    --qds-font-family: #{qds-variant-token(ink, font-family)};
+    --qds-font-family-display: #{qds-variant-token(ink, font-family-display)};
+    @each $step in xs, sm, md, xl {
+      --qds-radius-#{$step}: #{qds-variant-token(ink, radius-#{$step})};
+    }
+    --qds-motion-fast: #{qds-variant-token(ink, motion-fast)};
+    @each $step in h1, h2, h3, h4 {
+      --qds-font-weight-#{$step}: 600;
+    }
+    @include qds-variant-scheme(ink);
+    @include fallbacks.qds-material-tokens(solid);
+    @include qds-ink-paper(light);
+  }
+
+  @media not (pointer: coarse) {
+    .qds-variant-ink {
+      --qds-list-item-min-height-value: #{qds-variant-token(ink, list-item-min-height)};
+      --qds-menu-item-min-height-value: #{qds-variant-token(ink, menu-item-min-height)};
+    }
+  }
+
+  .qds-theme-dark.qds-variant-ink,
+  .qds-theme-dark .qds-variant-ink,
+  body.qds-ui.body--dark.qds-variant-ink,
+  body.qds-ui.body--dark .qds-variant-ink {
+    @include qds-variant-scheme(ink, true);
+    @include fallbacks.qds-material-tokens(solid);
+    @include qds-ink-paper(dark);
+  }
   }
 }
 
@@ -481,30 +520,6 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
     @include fallbacks.qds-material-tokens(dark);
   }
 
-  .qds-variant-ink {
-    --qds-font-family: #{qds-variant-token(ink, font-family)};
-    --qds-font-family-display: #{qds-variant-token(ink, font-family-display)};
-    @include qds-variant-scheme(ink);
-    @include fallbacks.qds-material-tokens(solid);
-    @include qds-ink-paper(light);
-  }
-
-  @media not (pointer: coarse) {
-    .qds-variant-ink {
-      --qds-list-item-min-height-value: #{qds-variant-token(ink, list-item-min-height)};
-      --qds-menu-item-min-height-value: #{qds-variant-token(ink, menu-item-min-height)};
-    }
-  }
-
-  .qds-theme-dark.qds-variant-ink,
-  .qds-theme-dark .qds-variant-ink,
-  body.qds-ui.body--dark.qds-variant-ink,
-  body.qds-ui.body--dark .qds-variant-ink {
-    @include qds-variant-scheme(ink, true);
-    @include fallbacks.qds-material-tokens(solid);
-    @include qds-ink-paper(dark);
-  }
-
   .qds-variant-one {
     --qds-font-family: #{qds-variant-token(one, font-family)};
     --qds-font-family-display: #{qds-variant-token(one, font-family-display)};
@@ -575,6 +590,7 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
 
 @include qds-zen-scopes;
 @include qds-glass-scopes;
+@include qds-ink-scopes;
 @include shadcn.scopes;
 
 // Runtime sentinel: the controller warns in development when the active variant's stylesheet is missing.

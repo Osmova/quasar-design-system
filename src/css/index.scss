@@ -33,6 +33,7 @@
 @use 'components/complex-media';
 @use 'components/compositions';
 @use 'components/variants/zen';
+@use 'components/variants/ink';
 
 @include base.styles;
 @include utilities.styles;
@@ -62,3 +63,4 @@
 @include complex-media.styles;
 @include compositions.styles;
 @include zen.styles;
+@include ink.styles;

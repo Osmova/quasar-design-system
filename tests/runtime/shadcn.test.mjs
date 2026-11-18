@@ -67,6 +67,7 @@ test('existing default-theme values stay byte-identical with only the two static
     .replace('@include qds-zen-scopes;\n', '')
     .replace('@include qds-glass-scopes;\n', '')
     .replace('\n@include qds-variant-sentinels;\n', '\n')
+    .replace('@include qds-ink-scopes;\n', '')
   const options = { url: path, loadPaths: [root.pathname], silenceDeprecations: ['if-function'] }
   const baseline = sass.compileString(old, options).css
   const current = sass.compile(path.pathname, options).css
@@ -75,7 +76,10 @@ test('existing default-theme values stay byte-identical with only the two static
   for (const token of additions) assert.ok(QDS_TOKENS.includes(token), `registered geometry: ${token}`)
   assert.match(baseline, /--qds-spinner-static-arc: 89 200;/)
   assert.match(baseline, /--qds-spinner-static-offset: 0;/)
-  const oldDeclarations = baseline.replace(/^\s*--qds-spinner-static-(?:arc|offset):[^;]*;\n/gm, '')
+  // Ink was rebuilt for 0.10.0; its retired emission is re-inserted where it stood.
+  const retiredInk = readFileSync(new URL('retired-ink-tokens.txt', import.meta.url), 'utf8')
+  assert.ok(baseline.includes('  .qds-variant-one {\n'), 'retired ink anchor')
+  const oldDeclarations = baseline.replace('  .qds-variant-one {\n', `${retiredInk}  .qds-variant-one {\n`).replace(/^\s*--qds-spinner-static-(?:arc|offset):[^;]*;\n/gm, '')
   // Captured before adding the two allowlisted properties, not regenerated from
   // the new output. This protects every prior default/variant value and order.
   assert.equal(createHash('sha256').update(revertDeclaredFluentChanges(oldDeclarations)).digest('hex'), 'd81f65b10c6fe6455f719961a6b6465b374d760f781f45e1ab733e1b22fe4749')

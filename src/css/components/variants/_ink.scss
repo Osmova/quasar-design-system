@@ -1,0 +1,214 @@
+// Ink: pen and ink on warm paper. Every affordance is a drawn stroke with a
+// deterministic hand-cut corner and a lighter overdraw; overlays sit on a second sheet, never blur.
+// Handwriting is reserved for short accents; reading and dense UI stay in the text face.
+$ink: '.qds-variant-ink:is(.qds-ui,.qds-ui *)';
+
+$line: 1.5px;
+$hand-sm: 0.55rem 0.3rem 0.5rem 0.25rem / 0.3rem 0.5rem 0.25rem 0.55rem;
+$hand-md: 0.75rem 0.35rem 0.65rem 0.3rem / 0.35rem 0.7rem 0.3rem 0.75rem;
+$hand-round: 52% 48% 50% 46% / 46% 52% 48% 54%;
+$hand-round-sketch: 46% 54% 44% 56% / 55% 45% 53% 47%;
+$hand-sketch: 0.35rem 0.7rem 0.3rem 0.65rem / 0.6rem 0.3rem 0.7rem 0.35rem;
+$paper: var(--qds-surface-0);
+$wash: color-mix(in srgb, var(--qds-color-primary) 9%, transparent);
+$hover: color-mix(in srgb, currentColor 8%, transparent);
+// Pressed is shaded in with fine hatching in the current ink, never a texture behind reading text.
+$hatch: repeating-linear-gradient(-45deg, color-mix(in srgb, currentColor 16%, transparent) 0 1px, transparent 1px 4px);
+$hand: var(--qds-font-family-display);
+$ease: var(--qds-motion-fast);
+$focus: 2px solid var(--qds-stroke-focus);
+// A second sheet: an offset outline whose inside shows paper, so it reads as a drawn edge.
+@function sheet($offset, $edge: var(--qds-stroke-strong), $face: $paper) {
+  @return #{$offset} #{$offset} 0 (-$line) #{$face}, #{$offset} #{$offset} 0 0 #{$edge};
+}
+// One deterministic pen stroke, drawn by mask so it takes the current ink colour.
+$stroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M2 5.6C18 3.4 42 6.4 66 4.3S92 3.4 98 4.9' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+
+$stroke-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 100' preserveAspectRatio='none'%3E%3Cpath d='M4.6 2C3.2 20 5.8 44 4 68S3.4 92 4.8 98' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+
+@mixin pen-stroke($path: $stroke) {
+  background: currentColor;
+  mask: #{$path} center / 100% 100% no-repeat;
+}
+
+@mixin button {
+  // A sketched frame: the stroke plus one lighter overdraw on a different hand-cut
+  // corner. State is a wash (hover) or hatching (pressed) on Quasar's own layer.
+  #{$ink} .q-btn {
+    --_qds-ink-edge: var(--qds-stroke-strong);
+    --_qds-ink-state: transparent;
+    --qds-button-disabled-fill: transparent;
+    --qds-button-disabled-stroke: var(--qds-fg-disabled);
+    --qds-focus-ring-width: 2px;
+    --qds-focus-ring-offset: 4px;
+    min-height: var(--qds-button-min-height);
+    padding-inline: 1rem;
+    border: #{$line} solid var(--_qds-ink-edge);
+    border-radius: #{$hand-sm};
+    background: #{$paper};
+    box-shadow: none;
+    color: var(--qds-fg-default);
+    font-weight: var(--qds-font-weight-semibold);
+    letter-spacing: 0.01em;
+    text-transform: none;
+    transition: transform #{$ease};
+  }
+  #{$ink} .q-btn::before { display: block; border: 0; background: var(--_qds-ink-state); box-shadow: none; }
+  #{$ink} .q-btn::after {
+    position: absolute;
+    inset: -4px -2px -1px -3px;
+    border: 1px solid var(--_qds-ink-edge);
+    border-radius: #{$hand-sketch};
+    content: '';
+    opacity: 0.5;
+    pointer-events: none;
+    transform: rotate(-0.6deg);
+  }
+  #{$ink} .q-btn > .q-focus-helper { display: none; }
+  #{$ink} .q-btn:not(.disabled):hover { --_qds-ink-state: #{$hover}; }
+  #{$ink} .q-btn:not(.disabled):active { --_qds-ink-state: #{$hatch}; transform: translate(1px, 1px); }
+  #{$ink} .q-btn:is(.q-btn--flat, .q-btn--outline) { background: transparent; }
+  #{$ink} .q-btn--flat { border-color: transparent; }
+  #{$ink} .q-btn--outline { --_qds-ink-edge: currentColor; }
+  #{$ink} .q-btn:is(.q-btn--flat, .disabled)::after { content: none; }
+  // A role fill is solid ink; its overdraw is drawn in the same ink.
+  @each $role in primary, secondary, accent, positive, negative, warning, info {
+    #{$ink} .q-btn.bg-#{$role}:not(.q-btn--flat, .q-btn--outline) { --_qds-ink-edge: var(--qds-color-#{$role}); }
+  }
+  // Unavailable reads as struck through with light hatching inside a dashed frame.
+  #{$ink} .q-btn.disabled { --_qds-ink-edge: var(--qds-fg-disabled); --_qds-ink-state: #{$hatch}; border-style: dashed; transform: none; }
+  #{$ink} .q-btn--dense { min-height: var(--qds-button-dense-min-height); padding-inline: 0.625rem; }
+  #{$ink} .q-btn--square { border-radius: var(--qds-radius-xs); }
+  #{$ink} .q-btn:is(.q-btn--round, .q-btn--fab, .q-btn--fab-mini) { padding-inline: 0; }
+  #{$ink} .q-btn--round { border-radius: #{$hand-round}; }
+  #{$ink} .q-btn--round::after { border-radius: #{$hand-round-sketch}; }
+  #{$ink} .q-btn--rounded { border-radius: 2rem 1.6rem 2.2rem 1.7rem / 1.7rem 2.2rem 1.6rem 2rem; }
+  #{$ink} .q-btn__content { gap: 0.5rem; }
+  #{$ink} .q-btn-group { gap: 0; border-radius: #{$hand-sm}; box-shadow: none; }
+  #{$ink} .q-btn-group > .q-btn:not(:first-child) { margin-inline-start: -#{$line}; }
+}
+
+@mixin field {
+  #{$ink} .q-field {
+    --qds-field-radius: #{$hand-md};
+    --qds-field-shadow: none;
+    --qds-field-focus-halo: none;
+    --qds-field-stroke: var(--qds-stroke-strong);
+    --qds-field-focus-stroke: var(--qds-stroke-focus);
+    --qds-field-fill: var(--qds-surface-2);
+    --qds-control-fill-default: #{$paper};
+    --qds-control-fill-hover: #{$paper};
+    --qds-control-fill-input-active: #{$paper};
+  }
+  #{$ink} .q-field__control { border-radius: var(--qds-field-radius); }
+  #{$ink} .q-field .q-field__control::before { border-color: var(--qds-stroke-strong); }
+  #{$ink} .q-field--outlined .q-field__control::before { border-width: #{$line}; }
+  // Standard and filled fields sit on a ruled line, like a form on paper.
+  #{$ink} :is(.q-field--standard, .q-field--filled) .q-field__control { border-radius: var(--qds-radius-sm) var(--qds-radius-sm) 0 0; }
+  #{$ink} :is(.q-field--standard, .q-field--filled) .q-field__control::before { border-bottom-width: #{$line}; }
+  // Focus draws a pen stroke under the field instead of scaling a bar.
+  #{$ink} .q-field .q-field__control::after {
+    inset: auto -2px -4px;
+    height: 7px;
+    border: 0;
+    border-radius: 0;
+    clip-path: inset(0 100% 0 0);
+    transform: none;
+    color: var(--qds-stroke-focus);
+    @include pen-stroke;
+    transition: clip-path var(--qds-motion-duration-base) var(--qds-motion-ease-out);
+  }
+  #{$ink} .q-field--highlighted .q-field__control::after { clip-path: inset(0); transform: none; }
+  #{$ink} .q-field--outlined.q-field--highlighted .q-field__control::before { border-width: #{$line * 1.5}; }
+  #{$ink} .q-field__label { color: var(--qds-fg-muted); }
+  #{$ink} .q-field--highlighted .q-field__label { color: var(--qds-fg-brand); }
+  #{$ink} .q-field__native { color: var(--qds-fg-default); }
+  #{$ink} .q-field--error .q-field__control::after { color: var(--qds-stroke-error); clip-path: inset(0); }
+  #{$ink} .q-field--error .q-field__label { color: var(--qds-fg-negative); }
+  #{$ink} .q-field--readonly .q-field__control::before,
+  #{$ink} .q-field--readonly .q-field__control:hover::before { border-style: dashed; border-color: var(--qds-stroke-strong); }
+  #{$ink} .q-field--disabled .q-field__control::before { border-style: dotted; border-color: var(--qds-fg-disabled); }
+  #{$ink} .q-field--disabled .q-field__control { background: transparent; }
+}
+
+@mixin tabs {
+  // Handwritten labels; the active one is underlined with a single pen stroke.
+  #{$ink} .q-tabs { color: var(--qds-fg-default); }
+  #{$ink} .q-tab {
+    min-height: var(--qds-tab-min-height);
+    padding-inline: 0.875rem;
+    border-radius: #{$hand-sm};
+    color: var(--qds-fg-muted);
+    opacity: 1;
+    transition: color #{$ease}, background-color #{$ease};
+  }
+  @media (max-width: 30rem) { #{$ink} .q-tabs--horizontal .q-tab { padding-inline: 0.5rem; } }
+  #{$ink} .q-tab__label { font-family: #{$hand}; font-size: 1.3125rem; font-weight: 600; line-height: 1.1; letter-spacing: 0; text-transform: none; }
+  #{$ink} .q-tab:not(.disabled):hover { color: var(--qds-fg-strong); background: #{$wash}; }
+  #{$ink} .q-tab--active { color: var(--qds-fg-brand); }
+  #{$ink} .q-tab:focus-visible { outline: #{$focus}; outline-offset: -3px; }
+  #{$ink} .q-tab .q-tab__indicator { height: 7px; border-radius: 0; color: var(--qds-fg-brand); @include pen-stroke; }
+  #{$ink} .q-tabs--horizontal .q-tab > .q-tab__indicator { inset-inline: 0.5rem; bottom: 0.25rem; }
+  #{$ink} .q-tabs--vertical .q-tab .q-tab__indicator { width: 7px; height: auto; inset-block: 0.375rem; @include pen-stroke($stroke-down); }
+  #{$ink} .q-tab.disabled { color: var(--qds-fg-disabled); opacity: 1; }
+  #{$ink} .q-tabs__arrow { color: var(--qds-fg-muted); text-shadow: none; }
+}
+
+@mixin menu {
+  // Overlays teleport to the body, which also carries the variant class.
+  #{$ink} .q-menu {
+    padding: 0.375rem;
+    border: #{$line} solid var(--qds-stroke-strong);
+    border-radius: #{$hand-md};
+    background: #{$paper};
+    color: var(--qds-fg-default);
+    box-shadow: sheet(5px);
+    backdrop-filter: none;
+  }
+  #{$ink} .q-menu .q-item { min-height: var(--qds-menu-item-min-height); border-radius: #{$hand-sm}; color: var(--qds-fg-default); }
+  #{$ink} .q-menu .q-item > .q-focus-helper { display: none; }
+  #{$ink} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible) { background: #{$wash}; }
+  #{$ink} .q-menu .q-item:focus-visible { outline: #{$focus}; outline-offset: -3px; }
+  #{$ink} .q-menu .q-item--active::before { content: none; }
+  #{$ink} .q-menu .q-item--active { background: var(--qds-surface-brand-soft); color: var(--qds-fg-brand); font-weight: var(--qds-font-weight-semibold); }
+  #{$ink} .q-menu .q-item__label--header {
+    padding-block: 0.5rem 0.25rem;
+    color: var(--qds-fg-brand);
+    font-family: #{$hand};
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    text-decoration: underline #{$line};
+    text-underline-offset: 0.3em;
+  }
+  #{$ink} .q-menu .q-separator { margin-block: 0.25rem; background: var(--qds-border); }
+}
+
+@mixin type {
+  // Small headings return to the text face; handwriting stays a large accent.
+  #{$ink} :is(h5, h6, .text-h5, .text-h6) { font-family: var(--qds-font-family); }
+}
+
+@mixin fallbacks {
+  @media (forced-colors: active) {
+    #{$ink} .q-tab .q-tab__indicator,
+    #{$ink} .q-field .q-field__control::after { mask: none; background: CanvasText; }
+    #{$ink} .q-btn::after { content: none; }
+    #{$ink} .q-menu { box-shadow: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #{$ink} :is(.q-btn, .q-tab),
+    #{$ink} .q-field__control::after { transition: none; }
+    #{$ink} .q-btn:not(.disabled):active { transform: none; }
+  }
+}
+
+@mixin styles {
+  @include type;
+  @include button;
+  @include field;
+  @include tabs;
+  @include menu;
+  @include fallbacks;
+}
