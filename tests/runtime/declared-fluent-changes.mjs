@@ -51,10 +51,19 @@ const CARD_CHROME = [
 ]
 const TERM_BAR = /((?:\.qds-variant-term\)\) )?\.q-bar:not\(\.q-bar--dark\)\{background:)var\(--qds-surface-0\)(\})/g
 
+// F04: bare headings drop to element specificity. `body.qds-ui :where(h3)` was
+// (0,1,1) and overrode every class-styled heading in consuming apps (a card
+// title class rendered at the h3 size). `:where(body.qds-ui) h3` is (0,0,1): it
+// still beats Quasar's bare `h3` by source order and loses to any class.
+const HEADING_FAMILY = ['body.qds-ui :where(h1,h2,h3,h4,h5,h6),', ':where(body.qds-ui) :is(h1,h2,h3,h4,h5,h6),']
+const HEADING_WEIGHT = /body\.qds-ui :where\((h[1-6])(:not\([^)]*\))\)/g
+const HEADING_STEP = /body\.qds-ui :where\((h[1-6])\)\{/g
+const headingChanges = (css) => css.replace(HEADING_FAMILY[0], HEADING_FAMILY[1]).replace(HEADING_WEIGHT, ':where(body.qds-ui) $1:where($2)').replace(HEADING_STEP, ':where(body.qds-ui) $1{')
+
 export const ADDED_IMPORTANT_RULE = /^@layer qds-important\|[^|]*\.q-field__focusable-action:focus-visible\{outline:[^}]*!important\}$/
 
 export function applyDeclaredFluentChanges(css, { layered = false } = {}) {
-  const text = css.replaceAll(ON_FILL[0], ON_FILL[1]).replace(CARD_CHROME[0], CARD_CHROME.join(''))
+  const text = headingChanges(css.replaceAll(ON_FILL[0], ON_FILL[1]).replace(CARD_CHROME[0], CARD_CHROME.join('')))
   return layered
     ? text.replace(FOCUS_RING, '$1$2').replace(TERM_BAR, '$1var(--qds-bg-card)$2')
     : text.replace(FOCUS_RING, '$1outline:var(--qds-focus-ring-width) solid var(--qds-stroke-focus) !important;$2').replace(TERM_BAR, '$1var(--qds-bg-card)$2')
@@ -68,4 +77,7 @@ export function revertDeclaredFluentChanges(css) {
   return css.split('}').map(block => block.replace(ON_FILL[1], ON_FILL[0])).join('}')
     .replace(CARD_CHROME.join(''), CARD_CHROME[0])
     .replace(TERM_BAR, '$1var(--qds-surface-0)$2')
+    .replace(HEADING_FAMILY[1], HEADING_FAMILY[0])
+    .replace(/:where\(body\.qds-ui\) (h[1-6]):where\((:not\([^)]*\))\)/g, 'body.qds-ui :where($1$2)')
+    .replace(/:where\(body\.qds-ui\) (h[1-6])\{/g, 'body.qds-ui :where($1){')
 }

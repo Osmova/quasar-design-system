@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Bare heading styles no longer override app heading classes** — `body.qds-ui :where(h3)` had specificity
+  (0,1,1), so an app's `.card__title` on an `h3` rendered at the h3 type step. Headings now use
+  `:where(body.qds-ui) h3` (element specificity): they still replace Quasar's bare `h1`–`h6` sizes and lose to any class.
+
 ### Changed
 
 - **Opt-in variant bundles (breaking)** — `@osmova/quasar-design-system/css` (and `css/layered`) now ships the
