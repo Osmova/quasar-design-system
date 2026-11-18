@@ -250,6 +250,7 @@ try {
         await page.screenshot({ path: `${shots}/pilot-${scheme}-states.png`, clip: { x: 0, y: 0, width: 964, height: 420 } })
       }
       await page.focus('#field input')
+      await page.waitForSelector('#field .q-field--highlighted')
       const pen = await read(page, '#field .q-field__control', ['clip-path', 'background-color'], '::after')
       assert.equal(pen['clip-path'], 'inset(0px)', `${scheme} focused field draws its full pen stroke`)
       record(scheme, 'field focus pen stroke', contrast(rgb(pen['background-color']), pageFill), 3)
@@ -279,6 +280,7 @@ try {
     for (const selector of ['#button', '#tabs .q-tab']) {
       assert.equal((await read(still, selector, ['transition-property']))['transition-property'], 'none', `reduced motion stills ${selector}`)
     }
+    assert.equal((await read(still, '#field .q-field__control', ['transition-property'], '::after'))['transition-property'], 'none', 'reduced motion stills the field pen stroke')
   } finally { await still.close() }
 } finally { await browser.close() }
 

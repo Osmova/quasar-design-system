@@ -199,7 +199,7 @@ $stroke-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   }
   @media (prefers-reduced-motion: reduce) {
     #{$ink} :is(.q-btn, .q-tab),
-    #{$ink} .q-field__control::after { transition: none; }
+    #{$ink} .q-field .q-field__control::after { transition: none; }
     #{$ink} .q-btn:not(.disabled):active { transform: none; }
   }
 }
