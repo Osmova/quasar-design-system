@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:map';
 @use '../tokens/default' as tokens;
 @use 'fallbacks' as fallbacks;
@@ -168,20 +169,58 @@
   @each $token in button-elevated-shadow-hover, elevation-card, elevation-flyout, elevation-dialog {
     --qds-#{$token}: none;
   }
-  --qds-stroke-strong: #{qds-variant-token(ink, '#{$scheme}-stroke-strong')};
-  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
+  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border, stroke-subtle, stroke-divider, stroke-error, stroke-focus, card-stroke, card-border {
     --qds-#{$token}: var(--qds-stroke-strong);
   }
-  --qds-bg-overlay: #{qds-variant-token(ink, '#{$scheme}-scrim')};
-  --qds-fg-disabled: #{qds-variant-token(ink, '#{$scheme}-fg-disabled')};
-  --qds-fg-on-brand: var(--qds-text-on-primary);
-  --qds-text-on-solid: #{map.get(qds-variant-token(ink, '#{$scheme}-on-fill'), primary)};
-  --qds-fg-brand: var(--qds-color-primary);
-  @each $role in secondary, accent, positive, negative, warning, info {
-    --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 85%, var(--qds-text-strong));
+  --qds-bg-overlay: transparent;
+  // E-ink has no tinted states: hover, press and selection are drawn by the component rules.
+  @each $token in state-hover, state-pressed, state-selected, tab-hover-bg, tab-active-bg {
+    --qds-#{$token}: transparent;
   }
-  --qds-stroke-error: var(--qds-fg-negative);
-  --qds-stroke-focus: var(--qds-color-primary);
+  @each $token in separator-color, scrollbar-thumb, stepper-rail, timeline-rail, pagination-active-bg, pagination-active-border {
+    --qds-#{$token}: var(--qds-stroke-strong);
+  }
+  --qds-pagination-active-text: var(--qds-surface-0);
+  --qds-mica-alt: var(--qds-surface-1);
+  --qds-backdrop: var(--qds-surface-1);
+  --qds-toolbar-bg: var(--qds-surface-1);
+  --qds-focus-ring-width: 2px;
+  --qds-focus-ring-offset: 2px;
+  --qds-fg-on-brand: var(--qds-text-on-primary);
+  @each $role in brand, primary, secondary, accent, positive, negative, warning, info {
+    --qds-fg-#{$role}: var(--qds-text-strong);
+  }
+  @include qds-ink-colour('navy', $scheme);
+}
+
+// One ink and one paper per scheme; every derived alias on the same element follows them.
+@mixin qds-ink-colour($name, $scheme) {
+  $c: map.get(tokens.$ink-colors, $name);
+  $ink: map.get($c, '#{$scheme}-ink');
+  $paper: map.get($c, '#{$scheme}-paper');
+  $ink-rgb: '#{color.channel($ink, "red", $space: rgb)}, #{color.channel($ink, "green", $space: rgb)}, #{color.channel($ink, "blue", $space: rgb)}';
+  --_qds-ink: #{$ink};
+  --_qds-paper: #{$paper};
+  @each $color in primary, primary-light, primary-dark, secondary, accent, positive, negative, warning, info {
+    --qds-color-#{$color}: #{$ink};
+    --qds-color-#{$color}-rgb: #{$ink-rgb};
+  }
+  @each $role in primary, secondary, accent, positive, negative, warning, info {
+    --qds-text-on-#{$role}: #{$paper};
+  }
+  @each $step in 0, 1, 2, 3 {
+    --qds-surface-#{$step}: #{$paper};
+  }
+  @each $token in surface-brand-soft, surface-accent-soft, surface-positive-soft, surface-warning-soft, surface-negative-soft, surface-info-soft, surface-focus-block, surface-transient {
+    --qds-#{$token}: #{$paper};
+  }
+  @each $token in text, text-strong, border, border-subtle, stroke-strong {
+    --qds-#{$token}: #{$ink};
+  }
+  --qds-text-muted: #{map.get($c, '#{$scheme}-muted')};
+  --qds-fg-disabled: #{map.get($c, '#{$scheme}-disabled')};
+  --qds-text-on-solid: #{$paper};
+  --qds-card-acrylic-tint-rgb: #{$ink-rgb};
 }
 
 // Zen's boundary is essential and its depth decorative: control strokes resolve
@@ -233,6 +272,12 @@
       --qds-radius-#{$step}: #{qds-variant-token(ink, radius-#{$step})};
     }
     --qds-motion-fast: #{qds-variant-token(ink, motion-fast)};
+    --qds-motion-duration-fast: 60ms;
+    --qds-motion-duration-base: 80ms;
+    --qds-motion-duration-medium: 80ms;
+    --qds-motion-duration-slow: 100ms;
+    --qds-motion-ease-out: linear;
+    --qds-motion-ease-in-out: linear;
     @each $step in h1, h2, h3, h4 {
       --qds-font-weight-#{$step}: 600;
     }
@@ -248,6 +293,11 @@
     }
   }
 
+  // Selected inks are listed before the dark scopes, which outrank them only by order.
+  @each $name in 'black', 'charcoal' {
+    .qds-variant-ink[data-qds-ink="#{$name}"] { @include qds-ink-colour($name, light); }
+  }
+
   .qds-theme-dark.qds-variant-ink,
   .qds-theme-dark .qds-variant-ink,
   body.qds-ui.body--dark.qds-variant-ink,
@@ -255,6 +305,14 @@
     @include qds-variant-scheme(ink, true);
     @include fallbacks.qds-material-tokens(solid);
     @include qds-ink-paper(dark);
+  }
+
+  @each $name in 'black', 'charcoal' {
+    $ink: '.qds-variant-ink[data-qds-ink="#{$name}"]';
+    .qds-theme-dark#{$ink},
+    .qds-theme-dark #{$ink},
+    body.qds-ui.body--dark#{$ink},
+    body.qds-ui.body--dark #{$ink} { @include qds-ink-colour($name, dark); }
   }
   }
 }

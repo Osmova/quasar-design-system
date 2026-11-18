@@ -129,8 +129,8 @@ const carouselSlides = [
   {
     name: 'ink',
     title: 'Editorial surface',
-    caption: 'Paper-neutral surface with pastel role washes and charcoal type.',
-    src: mediaSvg('Ink', 'Editorial pastel roles', '#5f6f52', '#a98255', '#6366f1'),
+    caption: 'One ink on flat paper, rendered like an e-reader screen.',
+    src: mediaSvg('Ink', 'One ink on paper', '#5f6f52', '#a98255', '#6366f1'),
   },
   {
     name: 'one',

@@ -71,7 +71,7 @@ export const DESIGN_SYSTEM_VARIANTS = {
   ink: {
     name: 'ink',
     label: 'Ink',
-    description: 'Paper-neutral editorial surfaces with charcoal type and coordinated pastel role washes.',
+    description: 'One ink on paper, like an e-reader: navy, black or charcoal strokes, inverted selection and patterned roles.',
     cssClass: 'qds-variant-ink',
   },
   one: {

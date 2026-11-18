@@ -23,7 +23,7 @@ const variants: VariantSample[] = [
   {
     name: 'ink',
     label: 'Ink',
-    intent: 'Paper-neutral editorial surfaces with charcoal type and coordinated pastel role washes.',
+    intent: 'One ink on paper, like an e-reader: navy, black or charcoal strokes, inverted selection and patterned roles.',
     sample: 'Editorial spread 07',
   },
   {

@@ -1,94 +1,153 @@
-// Ink: pen and ink on warm paper. Every affordance is a drawn stroke with a
-// deterministic hand-cut corner and a lighter overdraw; overlays sit on a second sheet, never blur.
-// Handwriting is reserved for short accents; reading and dense UI stay in the text face.
-@use '../../materials';
+// Ink: one ink on paper, rendered like an e-reader screen. Crisp 1.5px strokes with
+// deterministic hand-cut corners, no blur, tint or soft shadow. Greys are patterns
+// (dot screen, hatching); selection inverts; depth is a hard offset sheet.
+// Print face everywhere; handwriting only for display titles and opt-in classes.
+@use 'sass:map';
 
 $ink: '.qds-variant-ink:is(.qds-ui,.qds-ui *)';
-$ink-legacy: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 
 $line: 1.5px;
+$i: var(--qds-fg-strong);
+$p: var(--qds-bg-card);
 $hand-sm: 0.55rem 0.3rem 0.5rem 0.25rem / 0.3rem 0.5rem 0.25rem 0.55rem;
 $hand-md: 0.75rem 0.35rem 0.65rem 0.3rem / 0.35rem 0.7rem 0.3rem 0.75rem;
 $hand-round: 52% 48% 50% 46% / 46% 52% 48% 54%;
-$hand-round-sketch: 46% 54% 44% 56% / 55% 45% 53% 47%;
-$hand-sketch: 0.35rem 0.7rem 0.3rem 0.65rem / 0.6rem 0.3rem 0.7rem 0.35rem;
-$paper: var(--qds-surface-0);
-$wash: color-mix(in srgb, var(--qds-color-primary) 9%, transparent);
-$hover: color-mix(in srgb, currentColor 8%, transparent);
-// Pressed is shaded in with fine hatching in the current ink, never a texture behind reading text.
-$hatch: repeating-linear-gradient(-45deg, color-mix(in srgb, currentColor 16%, transparent) 0 1px, transparent 1px 4px);
 $hand: var(--qds-font-family-display);
-$ease: var(--qds-motion-fast);
-$focus: 2px solid var(--qds-stroke-focus);
-// A second sheet: an offset outline whose inside shows paper, so it reads as a drawn edge.
-@function sheet($offset, $edge: var(--qds-stroke-strong), $face: $paper) {
-  @return #{$offset} #{$offset} 0 (-$line) #{$face}, #{$offset} #{$offset} 0 0 #{$edge};
+$print: var(--qds-font-family);
+$focus: var(--qds-focus-ring-width) solid var(--qds-stroke-focus);
+// Patterns in the current ink. The 16-20% lines keep ink text above 4.5:1 on top of them.
+@function tone($weight, $color: currentColor) { @return color-mix(in srgb, #{$color} #{$weight}, transparent); }
+$dots: radial-gradient(#{tone(24%)} 0.75px, transparent 1px) 0 0 / 4px 4px;
+$hatch: repeating-linear-gradient(-45deg, #{tone(18%)} 0 1px, transparent 1px 4px);
+$rule-dotted: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 4px);
+$rule-dotted-down: repeating-linear-gradient(180deg, currentColor 0 1px, transparent 1px 4px);
+@function sheet($offset, $edge: $i) { @return #{$offset} #{$offset} 0 0 #{$edge}; }
+// Roles without hue: primary is solid ink; the others are paper with an edge or a fill pattern.
+$role-fill: (
+  secondary: $p,
+  accent: $p,
+  positive: repeating-linear-gradient(-45deg, #{tone(20%, $i)} 0 1px, #{$p} 1px 5px),
+  negative: (repeating-linear-gradient(45deg, #{tone(20%, $i)} 0 1px, transparent 1px 5px), repeating-linear-gradient(-45deg, #{tone(20%, $i)} 0 1px, #{$p} 1px 5px)),
+  warning: radial-gradient(#{tone(30%, $i)} 0.9px, #{$p} 1.2px) 0 0 / 5px 5px,
+  info: repeating-linear-gradient(180deg, #{$p} 0 4px, #{tone(22%, $i)} 4px 5px),
+);
+$role-edge: (
+  secondary: inset 0 0 0 #{$line} #{$i},
+  accent: (inset 0 0 0 1px #{$i}, inset 0 0 0 3px #{$p}, inset 0 0 0 4px #{$i}),
+  positive: inset 0 0 0 #{$line} #{$i},
+  negative: inset 0 0 0 2.5px #{$i},
+  warning: inset 0 0 0 #{$line} #{$i},
+  info: inset 0 0 0 #{$line} #{$i},
+);
+$fills: '.bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info';
+
+@mixin type {
+  #{$ink} :is(h1, h2, h3, h4, h5, h6, .text-h4, .text-h5, .text-h6) { font-family: #{$print}; }
+  #{$ink} :is(.text-h1, .text-h2, .text-h3) { font-family: #{$hand}; font-weight: 600; letter-spacing: 0; }
+  // Opt-in handwriting; font-size-adjust matches Caveat's small x-height to the print face.
+  #{$ink} :is(.qds-display, .qds-hand, .text-hand) { font-family: #{$hand}; font-size-adjust: 0.5; letter-spacing: 0.01em; }
+  #{$ink} .qds-display { font-weight: 600; }
+  #{$ink} a:not([class*='q-']) { color: inherit; text-decoration: underline 1px; text-underline-offset: 0.2em; }
+  #{$ink} a:not([class*='q-']):hover { text-decoration-thickness: 2px; }
+  #{$ink} ::selection { color: #{$p}; background: #{$i}; }
+  #{$ink} .q-separator { background: #{$rule-dotted}; color: var(--qds-stroke-strong); opacity: 1; }
+  #{$ink} .q-separator--vertical { background: #{$rule-dotted-down}; }
+  #{$ink} .q-separator.q-separator--horizontal-inset, #{$ink} .q-separator--spaced { color: var(--qds-stroke-strong); }
+  #{$ink} .q-icon { color: inherit; }
 }
-// One deterministic pen stroke, drawn by mask so it takes the current ink colour.
-$stroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M2 5.6C18 3.4 42 6.4 66 4.3S92 3.4 98 4.9' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
 
-$stroke-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 100' preserveAspectRatio='none'%3E%3Cpath d='M4.6 2C3.2 20 5.8 44 4 68S3.4 92 4.8 98' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
-
-@mixin pen-stroke($path: $stroke) {
-  background: currentColor;
-  mask: #{$path} center / 100% 100% no-repeat;
+// Owner decision pending: italic text written by hand. Drop this include to remove it.
+@mixin italic-hand {
+  #{$ink} :is(em, i:not(.q-icon, [class*='material-'], [class*='ph-'], [class*='fa-'], [class*='mdi'])) { font-family: #{$hand}; font-style: normal; font-size-adjust: 0.5; }
 }
 
 @mixin button {
-  // A sketched frame: the stroke plus one lighter overdraw on a different hand-cut
-  // corner. State is a wash (hover) or hatching (pressed) on Quasar's own layer.
   #{$ink} .q-btn {
     --_qds-ink-edge: var(--qds-stroke-strong);
-    --_qds-ink-state: transparent;
+    --_qds-ink-state: none;
     --qds-button-disabled-fill: transparent;
     --qds-button-disabled-stroke: var(--qds-fg-disabled);
-    --qds-focus-ring-width: 2px;
-    --qds-focus-ring-offset: 4px;
     min-height: var(--qds-button-min-height);
     padding-inline: 1rem;
     border: #{$line} solid var(--_qds-ink-edge);
     border-radius: #{$hand-sm};
-    background: #{$paper};
+    background: #{$p};
     box-shadow: none;
     color: var(--qds-fg-default);
     font-weight: var(--qds-font-weight-semibold);
     letter-spacing: 0.01em;
     text-transform: none;
-    transition: transform #{$ease};
+    transition: none;
   }
-  #{$ink} .q-btn::before { display: block; border: 0; background: var(--_qds-ink-state); box-shadow: none; }
-  #{$ink} .q-btn::after {
-    position: absolute;
-    inset: -4px -2px -1px -3px;
-    border: 1px solid var(--_qds-ink-edge);
-    border-radius: #{$hand-sketch};
-    content: '';
-    opacity: 0.5;
-    pointer-events: none;
-    transform: rotate(-0.6deg);
-  }
+  // Quasar's own layer carries state: a dot screen on hover, hatching while pressed.
+  #{$ink} .q-btn::before { display: block; inset: 0; border: 0; border-radius: inherit; background: var(--_qds-ink-state); box-shadow: none; }
+  #{$ink} .q-btn::after { content: none; }
   #{$ink} .q-btn > .q-focus-helper { display: none; }
-  #{$ink} .q-btn:not(.disabled):hover { --_qds-ink-state: #{$hover}; }
+  #{$ink} .q-btn:not(.disabled):hover { --_qds-ink-state: #{$dots}; }
   #{$ink} .q-btn:not(.disabled):active { --_qds-ink-state: #{$hatch}; transform: translate(1px, 1px); }
   #{$ink} .q-btn:is(.q-btn--flat, .q-btn--outline) { background: transparent; }
   #{$ink} .q-btn--flat { border-color: transparent; }
   #{$ink} .q-btn--outline { --_qds-ink-edge: currentColor; }
-  #{$ink} .q-btn:is(.q-btn--flat, .disabled)::after { content: none; }
-  // A role fill is solid ink; its overdraw is drawn in the same ink.
-  @each $role in primary, secondary, accent, positive, negative, warning, info {
-    #{$ink} .q-btn.bg-#{$role}:not(.q-btn--flat, .q-btn--outline) { --_qds-ink-edge: var(--qds-color-#{$role}); }
-  }
-  // Unavailable reads as struck through with light hatching inside a dashed frame.
+  #{$ink} .q-btn:is(.q-btn--push, .q-btn--glossy) { background-image: none; }
+  #{$ink} .q-btn.bg-primary:not(.q-btn--flat, .q-btn--outline) { --_qds-ink-edge: #{$i}; }
+  #{$ink} .q-btn:is(#{$fills}):not(.q-btn--flat, .q-btn--outline) { border-color: #{$i}; box-shadow: none; }
+  #{$ink} .q-btn.bg-negative:not(.q-btn--flat, .q-btn--outline) { border-width: 2.5px; }
+  #{$ink} .q-btn.bg-accent:not(.q-btn--flat, .q-btn--outline) { border-style: double; border-width: 4px; }
+  #{$ink} .q-btn.qds-tonal:not(.q-btn--flat, .q-btn--outline) { border-color: currentColor; }
   #{$ink} .q-btn.disabled { --_qds-ink-edge: var(--qds-fg-disabled); --_qds-ink-state: #{$hatch}; border-style: dashed; transform: none; }
   #{$ink} .q-btn--dense { min-height: var(--qds-button-dense-min-height); padding-inline: 0.625rem; }
   #{$ink} .q-btn--square { border-radius: var(--qds-radius-xs); }
   #{$ink} .q-btn:is(.q-btn--round, .q-btn--fab, .q-btn--fab-mini) { padding-inline: 0; }
   #{$ink} .q-btn--round { border-radius: #{$hand-round}; }
-  #{$ink} .q-btn--round::after { border-radius: #{$hand-round-sketch}; }
   #{$ink} .q-btn--rounded { border-radius: 2rem 1.6rem 2.2rem 1.7rem / 1.7rem 2.2rem 1.6rem 2rem; }
   #{$ink} .q-btn__content { gap: 0.5rem; }
+  #{$ink} .q-btn.qds-active { color: #{$p}; background: #{$i}; }
+  // Groups and toggles share one frame; the selected segment inverts.
   #{$ink} .q-btn-group { gap: 0; border-radius: #{$hand-sm}; box-shadow: none; }
+  #{$ink} .q-btn-group > .q-btn { border-radius: 0; }
+  #{$ink} .q-btn-group > .q-btn:first-child { border-start-start-radius: 0.45rem; border-end-start-radius: 0.3rem; }
+  #{$ink} .q-btn-group > .q-btn:last-child { border-start-end-radius: 0.3rem; border-end-end-radius: 0.5rem; }
   #{$ink} .q-btn-group > .q-btn:not(:first-child) { margin-inline-start: -#{$line}; }
+  #{$ink} .q-btn-toggle { gap: 0; padding: 0; border: #{$line} solid #{$i}; border-radius: #{$hand-sm}; background: #{$p}; }
+  #{$ink} .q-btn-toggle > .q-btn.q-btn-item { min-height: calc(var(--qds-button-min-height) - 3px); border: 0; border-radius: 0; box-shadow: none; }
+  #{$ink} .q-btn-toggle > .q-btn.q-btn-item:not(:first-child) { border-inline-start: 1px solid #{$i}; }
+  #{$ink} .q-btn-toggle > .q-btn.q-btn-item:where(:not(.disabled)) { --qds-fg-muted: #{$i}; }
+  #{$ink} .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { --qds-segmented-thumb-bg: var(--qds-text-strong); --qds-fg-strong: var(--qds-bg-card); box-shadow: none; }
+  #{$ink} .q-btn-dropdown--split > .q-btn-dropdown__arrow-container { border-inline-start: 1px solid currentColor; }
+  #{$ink} .q-fab .q-btn--fab { border-radius: #{$hand-round}; }
+}
+
+@mixin roles {
+  // The role token feeds Quasar's !important background shorthand, so a pattern there paints the fill.
+  @each $role, $fill in $role-fill {
+    #{$ink} .bg-#{$role} { --qds-color-#{$role}: #{$fill}; --qds-text-on-#{$role}: #{$i}; --qds-color-#{$role}-hover: #{$p}; --qds-color-#{$role}-pressed: #{$p}; }
+    #{$ink} .bg-#{$role}:not(.q-btn, .q-chip, .q-badge, .q-field, .q-banner) { box-shadow: map.get($role-edge, $role); }
+  }
+  #{$ink} :is(.q-chip, .q-badge):is(#{$fills}) { border-color: #{$i}; }
+  #{$ink} :is(.q-chip, .q-badge).bg-negative { border-width: 2px; }
+  #{$ink} :is(.q-chip, .q-badge).bg-accent { border-style: double; border-width: 3px; }
+  #{$ink} .bg-primary { --qds-color-primary-hover: #{$i}; --qds-color-primary-pressed: #{$i}; }
+}
+
+@mixin chips {
+  #{$ink} .q-chip { border: #{$line} solid #{$i}; border-radius: #{$hand-sm}; background: #{$p}; box-shadow: none; color: #{$i}; font-weight: var(--qds-font-weight-medium); }
+  #{$ink} .q-chip.bg-primary, #{$ink} .q-chip--selected, #{$ink} .q-chip.qds-solid:not(#{$fills}) { color: #{$p}; background: #{$i}; }
+  // QDS chips are tonal by default; in ink the primary tone is the solid ink itself.
+  #{$ink} .q-chip.bg-primary:not(.qds-solid) { --qds-surface-brand-soft: #{$i}; --qds-fg-primary: #{$p}; }
+  #{$ink} .q-chip--clickable:not(.q-chip--selected, .bg-primary):hover { background-image: #{$dots}; }
+  #{$ink} .q-chip > .q-focus-helper { display: none; }
+  #{$ink} .q-chip--outline { border-style: dashed; }
+  #{$ink} .q-chip .q-chip__icon { color: inherit; opacity: 1; }
+  #{$ink} .q-chip--dense { border-width: 1px; }
+  #{$ink} .q-badge { border: 1px solid #{$i}; border-radius: 0.4rem 0.25rem 0.4rem 0.3rem; color: #{$p}; background: #{$i}; box-shadow: none; font-weight: var(--qds-font-weight-semibold); }
+  #{$ink} .q-badge:is(#{$fills}) { color: #{$i}; }
+  #{$ink} .q-badge--outline, #{$ink} .q-badge.qds-tonal { color: #{$i}; background: #{$p}; }
+  #{$ink} .q-badge--floating { box-shadow: 0 0 0 2px #{$p}; }
+  #{$ink} .q-avatar { border-radius: #{$hand-round}; color: #{$p}; background: #{$i}; box-shadow: none; }
+  #{$ink} .q-avatar--square, #{$ink} .q-avatar--rounded { border-radius: #{$hand-sm}; }
+  #{$ink} .q-avatar:is(#{$fills}) { color: #{$i}; }
+  #{$ink} :is(.q-avatar, .q-img, .q-carousel__slide, .q-parallax__media, .q-video) :is(img, video) { filter: grayscale(1) contrast(1.05); }
+  #{$ink} :is(.q-carousel__slide, .q-parallax__media) { filter: grayscale(1) contrast(1.05); }
 }
 
 @mixin field {
@@ -98,150 +157,347 @@ $stroke-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     --qds-field-focus-halo: none;
     --qds-field-stroke: var(--qds-stroke-strong);
     --qds-field-focus-stroke: var(--qds-stroke-focus);
-    --qds-field-fill: var(--qds-surface-2);
-    --qds-control-fill-default: #{$paper};
-    --qds-control-fill-hover: #{$paper};
-    --qds-control-fill-input-active: #{$paper};
+    --qds-field-fill: transparent;
+    --qds-control-fill-default: #{$p};
+    --qds-control-fill-hover: #{$p};
+    --qds-control-fill-input-active: #{$p};
   }
-  #{$ink} .q-field__control { border-radius: var(--qds-field-radius); }
-  #{$ink} .q-field .q-field__control::before { border-color: var(--qds-stroke-strong); }
+  #{$ink} .q-field__control { border-radius: var(--qds-field-radius); background: transparent; box-shadow: none; }
+  #{$ink} .q-field .q-field__control::before { border-color: var(--qds-stroke-strong); background: transparent; }
   #{$ink} .q-field--outlined .q-field__control::before { border-width: #{$line}; }
-  // Standard and filled fields sit on a ruled line, like a form on paper.
-  #{$ink} :is(.q-field--standard, .q-field--filled) .q-field__control { border-radius: var(--qds-radius-sm) var(--qds-radius-sm) 0 0; }
-  #{$ink} :is(.q-field--standard, .q-field--filled) .q-field__control::before { border-bottom-width: #{$line}; }
-  // Focus draws a pen stroke under the field instead of scaling a bar.
-  #{$ink} .q-field .q-field__control::after {
-    inset: auto -2px -4px;
-    height: 7px;
-    border: 0;
-    border-radius: 0;
-    clip-path: inset(0 100% 0 0);
-    transform: none;
-    color: var(--qds-stroke-focus);
-    @include pen-stroke;
-    transition: clip-path var(--qds-motion-duration-base) var(--qds-motion-ease-out);
-  }
-  #{$ink} .q-field--highlighted .q-field__control::after { clip-path: inset(0); transform: none; }
-  #{$ink} .q-field--outlined.q-field--highlighted .q-field__control::before { border-width: #{$line * 1.5}; }
+  // Standard, filled and borderless fields sit on a ruled line, like a form on paper.
+  #{$ink} :is(.q-field--standard, .q-field--filled, .q-field--borderless) .q-field__control { border-radius: 0; }
+  #{$ink} :is(.q-field--standard, .q-field--filled) .q-field__control::before { border-width: 0 0 #{$line}; border-style: solid; }
+  #{$ink} .q-field--filled .q-field__control::before { border-width: 1px 1px #{$line}; border-style: dotted dotted solid; border-radius: 0.3rem 0.4rem 0 0; }
+  #{$ink} .q-field--borderless .q-field__control::before { border-width: 0 0 1px; border-style: dotted; }
+  #{$ink} .q-field--standout .q-field__control { border: 1px solid var(--qds-stroke-strong); }
+  #{$ink} .q-field--standout.q-field--highlighted .q-field__control { color: #{$p}; background: #{$i}; box-shadow: none; }
+  #{$ink} .q-field--standout.q-field--highlighted :is(.q-field__native, .q-field__input, .q-field__label, .q-field__marginal, .q-field__prefix, .q-field__suffix) { color: #{$p}; }
+  // Focus draws one heavier ruled stroke under the field; no animated bar.
+  #{$ink} .q-field .q-field__control::after { inset: auto 0 -1px; height: 0; border: 0; border-bottom: 3px solid var(--qds-stroke-focus); border-radius: 0; background: none; opacity: 0; transform: none; transition: none; }
+  #{$ink} .q-field--highlighted .q-field__control::after { opacity: 1; transform: none; }
+  #{$ink} .q-field--standout .q-field__control::after { content: none; }
+  #{$ink} .q-field--outlined.q-field--highlighted .q-field__control::before { border-width: 2.5px; }
   #{$ink} .q-field__label { color: var(--qds-fg-muted); }
-  #{$ink} .q-field--highlighted .q-field__label { color: var(--qds-fg-brand); }
-  #{$ink} .q-field__native { color: var(--qds-fg-default); }
-  #{$ink} .q-field--error .q-field__control::after { color: var(--qds-stroke-error); clip-path: inset(0); }
-  #{$ink} .q-field--error .q-field__label { color: var(--qds-fg-negative); }
+  #{$ink} .q-field--highlighted .q-field__label, #{$ink} .q-field__native { color: var(--qds-fg-default); }
+  // Errors cannot use red: a double frame plus the message and icon carry them.
+  #{$ink} .q-field--error .q-field__control::before { border-style: double; border-width: 0 0 4px; }
+  #{$ink} .q-field--error.q-field--outlined .q-field__control::before { border-width: 4px; }
+  #{$ink} .q-field--error .q-field__control::after { content: none; }
+  #{$ink} .q-field--error :is(.q-field__label, .q-field__bottom, .q-field__marginal) { color: #{$i}; }
+  #{$ink} .q-field--error .q-field__bottom { font-weight: var(--qds-font-weight-semibold); }
   #{$ink} .q-field--readonly .q-field__control::before,
   #{$ink} .q-field--readonly .q-field__control:hover::before { border-style: dashed; border-color: var(--qds-stroke-strong); }
   #{$ink} .q-field--disabled .q-field__control::before { border-style: dotted; border-color: var(--qds-fg-disabled); }
   #{$ink} .q-field--disabled .q-field__control { background: transparent; }
+  #{$ink} .q-field__marginal { color: var(--qds-fg-default); }
+  #{$ink} .q-field .q-chip { margin-block: 0.125rem; }
+}
+
+@mixin selection {
+  #{$ink} :is(.q-checkbox, .q-radio, .q-toggle) { --qds-selection-fill: #{$i}; --qds-selection-on: #{$p}; }
+  #{$ink} .q-checkbox__bg { border: #{$line} solid #{$i}; border-radius: 0.3rem 0.2rem 0.32rem 0.18rem; background: #{$p}; box-shadow: none; }
+  #{$ink} :is(.q-checkbox__inner--truthy, .q-checkbox__inner--indet) .q-checkbox__bg { background: #{$i}; }
+  #{$ink} .q-checkbox__svg { color: #{$p}; }
+  #{$ink} .q-radio__bg { color: #{$i}; }
+  #{$ink} .q-radio__bg path:first-child { stroke-width: 0.8; }
+  #{$ink} :is(.q-checkbox, .q-radio, .q-toggle) .q-checkbox__inner::before,
+  #{$ink} :is(.q-checkbox, .q-radio, .q-toggle) :is(.q-radio__inner, .q-toggle__inner)::before { display: none; }
+  #{$ink} :is(.q-checkbox, .q-radio, .q-toggle).disabled { opacity: 1; color: var(--qds-fg-disabled); }
+  #{$ink} .q-checkbox.disabled .q-checkbox__bg { border-style: dashed; border-color: var(--qds-fg-disabled); background: #{$hatch}; }
+  // Toggle: drawn capsule; on fills it with ink and moves a paper knob across.
+  #{$ink} .q-toggle__track { height: 0.875rem; border: #{$line} solid #{$i}; border-radius: 0.5rem 0.4rem 0.55rem 0.35rem; background: #{$p}; opacity: 1; box-shadow: none; }
+  #{$ink} .q-toggle__inner--truthy .q-toggle__track { background: #{$i}; }
+  #{$ink} .q-toggle__thumb::after { border: #{$line} solid #{$i}; border-radius: #{$hand-round}; background: #{$p}; box-shadow: none; }
+  #{$ink} .q-toggle__thumb::before { display: none; }
+  #{$ink} .q-toggle.disabled .q-toggle__track { border-style: dashed; border-color: var(--qds-fg-disabled); }
+  #{$ink} :is(.q-checkbox, .q-radio, .q-toggle):focus-visible :is(.q-checkbox__bg, .q-radio__bg, .q-toggle__track) { outline: #{$focus}; outline-offset: 2px; }
+  // Slider: a ruled track, a solid ink selection and a drawn knob.
+  #{$ink} .q-slider { --qds-selection-fill: #{$i}; }
+  #{$ink} .q-slider__track { height: 2px; border-radius: 0; background: #{$rule-dotted}; color: #{$i}; }
+  #{$ink} .q-slider__selection { height: 4px; margin-block: -1px; border-radius: 0; background: #{$i}; }
+  #{$ink} .q-slider__thumb { color: #{$i}; }
+  #{$ink} .q-slider__thumb-shape path { fill: #{$p}; stroke: #{$i}; stroke-width: 2.5; }
+  #{$ink} .q-slider__focus-ring { background: none; box-shadow: none; opacity: 1; }
+  #{$ink} .q-slider--focus .q-slider__focus-ring { outline: #{$focus}; outline-offset: 1px; border-radius: 50%; }
+  #{$ink} .q-slider { --qds-slider-label-bg: #{$i}; --qds-slider-label-text: #{$p}; --qds-slider-label-border: #{$i}; }
+  #{$ink} .q-slider__marker-labels { color: var(--qds-fg-default); }
+  #{$ink} .q-rating__icon { color: #{$i}; text-shadow: none; opacity: 1; }
+  #{$ink} .q-rating__icon:not(.q-rating__icon--active) { opacity: 0.55; }
+  #{$ink} .q-option-group .q-separator { margin-block: 0.25rem; }
 }
 
 @mixin tabs {
-  // Handwritten labels; the active one is underlined with a single pen stroke.
   #{$ink} .q-tabs { color: var(--qds-fg-default); }
   #{$ink} .q-tab {
     min-height: var(--qds-tab-min-height);
     padding-inline: 0.875rem;
     border-radius: #{$hand-sm};
-    color: var(--qds-fg-muted);
+    color: var(--qds-fg-default);
+    background: none;
     opacity: 1;
-    transition: color #{$ease}, background-color #{$ease};
+    transition: none;
   }
   @media (max-width: 30rem) { #{$ink} .q-tabs--horizontal .q-tab { padding-inline: 0.5rem; } }
-  #{$ink} .q-tab__label { font-family: #{$hand}; font-size: 1.3125rem; font-weight: 600; line-height: 1.1; letter-spacing: 0; text-transform: none; }
-  #{$ink} .q-tab:not(.disabled):hover { color: var(--qds-fg-strong); background: #{$wash}; }
-  #{$ink} .q-tab--active { color: var(--qds-fg-brand); }
-  #{$ink} .q-tab:focus-visible { outline: #{$focus}; outline-offset: -3px; }
-  #{$ink} .q-tab .q-tab__indicator { height: 7px; border-radius: 0; color: var(--qds-fg-brand); @include pen-stroke; }
-  #{$ink} .q-tabs--horizontal .q-tab > .q-tab__indicator { inset-inline: 0.5rem; bottom: 0.25rem; }
-  #{$ink} .q-tabs--vertical .q-tab .q-tab__indicator { width: 7px; height: auto; inset-block: 0.375rem; @include pen-stroke($stroke-down); }
+  #{$ink} .q-tab__label { font-family: #{$print}; font-weight: var(--qds-font-weight-medium); letter-spacing: 0.01em; text-transform: none; }
+  #{$ink} .q-tab > .q-focus-helper, #{$ink} .q-tab .q-tab__indicator { display: none; }
+  #{$ink} .q-tab:not(.disabled, .q-tab--active):hover { background: #{$dots}; }
+  // Active inverts, like a selected entry on an e-reader menu.
+  #{$ink} .q-tab.q-tab--active { color: #{$p}; background: #{$i}; }
+  #{$ink} .q-tab--active .q-tab__label { font-weight: var(--qds-font-weight-semibold); }
+  #{$ink} .q-tab:focus-visible { outline: #{$focus}; outline-offset: 2px; }
   #{$ink} .q-tab.disabled { color: var(--qds-fg-disabled); opacity: 1; }
-  #{$ink} .q-tabs__arrow { color: var(--qds-fg-muted); text-shadow: none; }
+  #{$ink} .q-tab .q-badge { box-shadow: 0 0 0 1.5px #{$p}; }
+  #{$ink} .q-tabs--horizontal:not(.q-tabs--dense) .q-tab { margin-block: 0.25rem; }
+  #{$ink} .q-tabs__arrow { color: #{$i}; text-shadow: none; }
+  #{$ink} .q-tabs--horizontal.qds-tabs--underline, #{$ink} .q-tabs--horizontal:has(+ .q-separator) { border-block-end: 0; }
+  #{$ink} .q-tab-panels { background: transparent; }
+  // A coloured tab bar is an inverted ink bar: the active tab then turns back to paper.
+  #{$ink} .q-tabs.bg-primary .q-tab.q-tab--active { color: #{$i}; background: #{$p}; }
 }
 
-@mixin menu {
-  // Overlays teleport to the body, which also carries the variant class.
+@mixin lists {
+  #{$ink} .q-item { border-radius: #{$hand-sm}; color: var(--qds-fg-default); }
+  #{$ink} .q-item::before { content: none; }
+  #{$ink} .q-item > .q-focus-helper { display: none; }
+  #{$ink} .q-item.q-item--clickable:not(.q-item--active, .disabled):hover,
+  #{$ink} .q-expansion-item__container > .q-item:not(.disabled):hover,
+  #{$ink} .q-tree__node-header:not(.q-tree__node--selected, .q-tree__node--disabled):hover { background: #{$dots}; }
+  #{$ink} .q-item:is(.q-item--active, .q-router-link--exact-active),
+  #{$ink} .q-tree__node--selected { color: #{$p}; background: #{$i}; }
+  #{$ink} .q-item:is(.q-item--active, .q-router-link--exact-active) :is(.q-item__label, .q-item__label--caption, .q-icon) { color: inherit; }
+  #{$ink} .q-item:focus-visible, #{$ink} .q-tree__node-header:focus-visible { outline: #{$focus}; outline-offset: -2px; }
+  #{$ink} .q-item__label--caption { color: var(--qds-fg-muted); }
+  #{$ink} .q-item__label--header { color: var(--qds-fg-default); font-weight: var(--qds-font-weight-semibold); letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.75rem; }
+  #{$ink} .q-item.disabled { color: var(--qds-fg-disabled); opacity: 1; }
+  #{$ink} .q-list--bordered { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; }
+  #{$ink} .q-list--separator > .q-item-type + .q-item-type, #{$ink} .q-list--separator > .q-virtual-scroll__content > .q-item-type + .q-item-type { border-top: 1px dotted #{$i}; }
+  #{$ink} .q-expansion-item { border-radius: #{$hand-md}; }
+  #{$ink} .q-expansion-item--expanded > .q-expansion-item__container > .q-item { background: none; border-bottom: 1px dotted #{$i}; border-radius: 0; }
+  #{$ink} .q-expansion-item--popup > .q-expansion-item__container { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; box-shadow: none; }
+  #{$ink} .q-expansion-item--popup.q-expansion-item--expanded > .q-expansion-item__container { box-shadow: sheet(4px); }
+  #{$ink} .q-expansion-item__toggle-icon { color: #{$i}; }
+  // Tree and virtual rows: dotted connectors and rules.
+  #{$ink} .q-tree { color: var(--qds-fg-default); }
+  #{$ink} .q-tree__node-header { border-radius: #{$hand-sm}; }
+  #{$ink} .q-tree__node-header::before, #{$ink} .q-tree__node::after, #{$ink} .q-tree__children::before { border-color: #{$i}; border-style: dotted; }
+  #{$ink} .q-tree__node--selected::after { content: none; }
+  #{$ink} .q-tree__node--selected :is(.q-tree__node-header-content, .q-tree__arrow, .q-tree__icon, .q-icon) { color: inherit; }
+  #{$ink} .q-tree__node--selected .q-checkbox__bg { border-color: currentColor; }
+  #{$ink} .q-tree__node--disabled { color: var(--qds-fg-disabled); opacity: 1; }
+  #{$ink} :is(.q-virtual-scroll__content > .q-item + .q-item, .qds-virtual-row + .qds-virtual-row) { border-top: 1px dotted #{$i}; }
+}
+
+@mixin surfaces {
+  #{$ink} :is(.q-card, .qds-card) { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; background: #{$p}; box-shadow: none; color: var(--qds-fg-default); backdrop-filter: none; }
+  #{$ink} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile) { border-width: 1px; }
+  #{$ink} .q-card--flat:not(.q-card--bordered) { border-style: dotted; border-width: 1px; }
+  #{$ink} .q-card > .q-separator, #{$ink} .q-card__actions:not(:first-child) { border-top: 0; }
+  #{$ink} .qds-glass { border: #{$line} solid #{$i}; background: #{$p}; backdrop-filter: none; }
+  #{$ink} .q-card--dark, #{$ink} .q-card.bg-primary { border-color: #{$i}; }
+  // App chrome: paper bars ruled off in ink.
+  #{$ink} :is(.q-header, .q-footer, .q-toolbar) { color: var(--qds-fg-default); background: #{$p}; box-shadow: none; backdrop-filter: none; }
+  #{$ink} .q-header { border-bottom: #{$line} solid #{$i}; }
+  #{$ink} .q-footer { border-top: #{$line} solid #{$i}; }
+  #{$ink} :is(.q-header, .q-footer) .q-toolbar { background: transparent; }
+  #{$ink} .q-toolbar__title { font-weight: var(--qds-font-weight-semibold); letter-spacing: 0; }
+  #{$ink} .q-bar { color: var(--qds-fg-default); background: #{$p}; border-bottom: 1px solid #{$i}; }
+  #{$ink} .q-bar.q-bar--dark { color: #{$p}; background: #{$i}; }
+  #{$ink} .q-drawer { color: var(--qds-fg-default); background: #{$p}; box-shadow: none; }
+  #{$ink} .q-drawer.q-drawer--bordered, #{$ink} .q-drawer--left.q-drawer--bordered { border-color: #{$i}; border-width: 0 #{$line} 0 0; }
+  #{$ink} .q-drawer--right.q-drawer--bordered { border-width: 0 0 0 #{$line}; }
+  #{$ink} .q-layout__shadow::after { box-shadow: none; }
+  #{$ink} .q-drawer .q-item { margin-block: 1px; }
+  #{$ink} .q-drawer__backdrop, #{$ink} .q-dialog__backdrop { background: #{repeating-linear-gradient(-45deg, tone(30%, var(--qds-text-strong)) 0 1px, transparent 1px 5px)}; backdrop-filter: none; }
+  #{$ink} .q-breadcrumbs, #{$ink} .q-breadcrumbs__el { color: var(--qds-fg-default); }
+  #{$ink} .q-breadcrumbs a.q-breadcrumbs__el { text-decoration: underline 1px; text-underline-offset: 0.2em; background: none; }
+  #{$ink} .q-breadcrumbs a.q-breadcrumbs__el:hover { text-decoration-thickness: 2px; background: none; }
+  #{$ink} .q-breadcrumbs__separator { color: #{$i}; }
+  #{$ink} .q-banner { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; background: #{$p}; box-shadow: none; color: var(--qds-fg-default); }
+  #{$ink} .q-banner:is(.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info, .text-primary, .text-secondary, .text-accent, .text-positive, .text-negative, .text-warning, .text-info) { border: #{$line} solid #{$i}; }
+  #{$ink} .q-banner__avatar > .q-icon { padding: 0.25rem; border: #{$line} solid currentColor; border-radius: #{$hand-sm}; }
+  #{$ink} .q-splitter__separator { background: #{$i}; }
+  #{$ink} .q-splitter--vertical > .q-splitter__separator { width: #{$line}; }
+  #{$ink} .q-splitter--horizontal > .q-splitter__separator { height: #{$line}; }
+  #{$ink} .q-scrollarea__thumb { background: #{$i}; border-radius: 0; opacity: 0.7; }
+  #{$ink} .q-scrollarea__bar { background: none; }
+}
+
+@mixin overlays {
   #{$ink} .q-menu {
     padding: 0.375rem;
-    border: #{$line} solid var(--qds-stroke-strong);
+    border: #{$line} solid #{$i};
     border-radius: #{$hand-md};
-    background: #{$paper};
+    background: #{$p};
     color: var(--qds-fg-default);
     box-shadow: sheet(5px);
     backdrop-filter: none;
   }
-  #{$ink} .q-menu .q-item { min-height: var(--qds-menu-item-min-height); border-radius: #{$hand-sm}; color: var(--qds-fg-default); }
-  #{$ink} .q-menu .q-item > .q-focus-helper { display: none; }
-  #{$ink} .q-menu .q-item:not(.disabled):is(:hover, :focus-visible) { background: #{$wash}; }
-  #{$ink} .q-menu .q-item:focus-visible { outline: #{$focus}; outline-offset: -3px; }
-  #{$ink} .q-menu .q-item--active::before { content: none; }
-  #{$ink} .q-menu .q-item--active { background: var(--qds-surface-brand-soft); color: var(--qds-fg-brand); font-weight: var(--qds-font-weight-semibold); }
-  #{$ink} .q-menu .q-item__label--header {
-    padding-block: 0.5rem 0.25rem;
-    color: var(--qds-fg-brand);
-    font-family: #{$hand};
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: 0;
-    text-transform: none;
-    text-decoration: underline #{$line};
-    text-underline-offset: 0.3em;
+  #{$ink} .q-menu .q-item { min-height: var(--qds-menu-item-min-height); }
+  #{$ink} .q-menu .q-item__label--header { padding-block: 0.5rem 0.25rem; text-decoration: underline 1px; text-underline-offset: 0.3em; }
+  #{$ink} .q-menu .q-separator { margin-block: 0.25rem; }
+  #{$ink} .q-tooltip { padding: 0.375rem 0.625rem; border-radius: #{$hand-sm}; color: var(--qds-surface-0); background: var(--qds-text-strong); box-shadow: none; font-size: 0.8125rem; backdrop-filter: none; }
+  #{$ink} .q-dialog__inner > :is(.q-card, .q-bottom-sheet, div > .q-card) { border: 2px solid #{$i}; box-shadow: sheet(6px); }
+  #{$ink} .q-dialog__inner--maximized > .q-card { box-shadow: none; border-radius: 0; }
+  #{$ink} .q-dialog__inner > .q-bottom-sheet { border-width: 2px 2px 0; box-shadow: none; }
+  #{$ink} .q-dialog .q-card__section .text-h6 { font-weight: var(--qds-font-weight-semibold); }
+  #{$ink} .q-notification {
+    --qds-notify-bg: #{$p};
+    --qds-notify-accent: #{$i};
+    --qds-notify-on-accent: #{$p};
+    --qds-notify-wash: #{$p};
+    border: #{$line} solid #{$i};
+    border-radius: #{$hand-md};
+    box-shadow: sheet(4px);
+    backdrop-filter: none;
   }
-  #{$ink} .q-menu .q-separator { margin-block: 0.25rem; background: var(--qds-border); }
+  #{$ink} .q-notification::before { content: none; }
+  #{$ink} .q-notification :is(.q-notification__message, .q-notification__caption, .q-notification__icon, .q-btn) { color: #{$i}; }
+  #{$ink} .q-notification__badge { color: #{$p}; background: #{$i}; box-shadow: none; }
+  #{$ink} .q-loading { color: #{$i}; }
+  #{$ink} .q-loading .q-loading__backdrop { background: #{repeating-linear-gradient(-45deg, tone(30%, var(--qds-text-strong)) 0 1px, var(--qds-surface-1) 1px 5px)}; opacity: 1; }
+  #{$ink} .q-loading__box { border: 2px solid var(--qds-text-strong); border-radius: #{$hand-md}; color: var(--qds-text-strong); background: var(--qds-surface-0); box-shadow: sheet(5px, var(--qds-text-strong)); }
+  #{$ink} .q-bottom-sheet__item:hover { background: #{$dots}; }
 }
 
-@mixin type {
-  // Small headings return to the text face; handwriting stays a large accent.
-  #{$ink} :is(h5, h6, .text-h5, .text-h6) { font-family: var(--qds-font-family); }
+@mixin data {
+  #{$ink} .q-table__container { --qds-table-divider: #{$i}; --qds-table-header-bg: transparent; border: #{$line} solid #{$i}; border-radius: #{$hand-md}; background: #{$p}; box-shadow: none; }
+  #{$ink} .q-table__container.q-table--flat:not(.q-table--bordered) { border-width: 0; }
+  #{$ink} .q-table thead tr th { border-bottom: #{$line} solid #{$i}; color: var(--qds-fg-default); font-weight: var(--qds-font-weight-semibold); background: transparent; }
+  #{$ink} .q-table tbody td { border-bottom: 1px dotted #{$i}; }
+  #{$ink} .q-table tbody tr:last-child > td { border-bottom: 0; }
+  #{$ink} .q-table tbody tr:not(.selected):hover > td { background: #{$dots}; }
+  #{$ink} .q-table tbody tr > td::before, #{$ink} .q-table tbody tr > td::after { content: none; }
+  #{$ink} .q-table tbody tr.selected > td { color: #{$p}; background: #{$i}; box-shadow: none; }
+  #{$ink} .q-table tbody tr.selected .q-checkbox__bg { border-color: #{$p}; }
+  #{$ink} .q-table__bottom { border-top: 1px dotted #{$i}; color: var(--qds-fg-default); }
+  #{$ink} .q-table__top { color: var(--qds-fg-default); }
+  #{$ink} .q-markup-table { overflow: hidden; }
+  #{$ink} .q-pagination .q-btn { border-color: transparent; }
+  #{$ink} .q-pagination .q-btn[aria-current='page'] { border-color: #{$i}; border-radius: #{$hand-sm}; }
+  // Progress and loading: crisp frames, solid ink, no shimmer.
+  #{$ink} :is(.q-ajax-bar, .q-loading-bar) { background: var(--qds-text-strong); box-shadow: none; }
+  #{$ink} .q-linear-progress { height: 0.5rem; border: 1px solid #{$i}; border-radius: 0.25rem 0.15rem 0.25rem 0.1rem; color: #{$i}; font-size: inherit; }
+  #{$ink} .q-linear-progress__track { background: transparent; opacity: 1; }
+  #{$ink} .q-linear-progress__model { border-radius: 0; background: currentColor; }
+  #{$ink} .q-linear-progress--striped .q-linear-progress__model { background-image: #{$hatch}; }
+  #{$ink} .q-circular-progress { color: #{$i}; }
+  #{$ink} .q-circular-progress__track { color: #{$i}; opacity: 1; stroke-dasharray: 1 3; }
+  #{$ink} .q-knob { color: #{$i}; }
+  #{$ink} .q-skeleton { background: #{$hatch}; color: var(--qds-text-strong); border-radius: #{$hand-sm}; animation: none; }
+  #{$ink} .q-skeleton::before { content: none; }
+  #{$ink} .q-skeleton--type-circle, #{$ink} .q-skeleton--type-QAvatar, #{$ink} .q-skeleton--type-QRadio { border-radius: #{$hand-round}; }
+  #{$ink} .q-skeleton--bordered { border: 1px dotted var(--qds-text-strong); }
+  #{$ink} .q-spinner { color: inherit; }
+  #{$ink} .q-inner-loading { background: #{$p}; backdrop-filter: none; }
+  #{$ink} .q-inner-loading .q-spinner { color: #{$i}; }
+}
+
+@mixin pickers {
+  #{$ink} :is(.q-date, .q-time, .q-color-picker) { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; background: #{$p}; box-shadow: none; }
+  #{$ink} :is(.q-date__header, .q-time__header) { color: #{$p}; background: #{$i}; border-radius: 0; }
+  #{$ink} :is(.q-date__header, .q-time__header) :is(div, span, .q-btn) { color: inherit; }
+  #{$ink} .q-date__calendar-item > .q-btn, #{$ink} :is(.q-date__months-item, .q-date__years-item) > .q-btn { border-color: transparent; border-radius: #{$hand-sm}; }
+  #{$ink} .q-date__calendar-item > .q-btn.bg-primary, #{$ink} :is(.q-date__months-item, .q-date__years-item) > .q-btn.bg-primary { border-color: #{$i}; }
+  #{$ink} .q-date__today { border-color: #{$i}; box-shadow: none; }
+  #{$ink} .q-date__range::before, #{$ink} :is(.q-date__range-from, .q-date__range-to)::before { background: #{$hatch}; color: #{$i}; }
+  #{$ink} .q-date__edit-range::after { border-color: #{$i}; }
+  #{$ink} .q-time__clock { border: #{$line} solid #{$i}; background: #{$p}; }
+  #{$ink} .q-time__clock-pointer { color: #{$i}; background: #{$i}; }
+  #{$ink} .q-time__clock-pointer::before, #{$ink} .q-time__clock-pointer::after { background: #{$i}; }
+  #{$ink} .q-time__clock-position--active { color: #{$p}; background: #{$i}; }
+  #{$ink} .q-time__clock-position--disable { opacity: 0.5; }
+  #{$ink} .q-time__header-label .q-time__link { opacity: 0.7; }
+  #{$ink} .q-time__header-label .q-time__link--active { opacity: 1; text-decoration: underline 2px; text-underline-offset: 0.15em; }
+  #{$ink} .q-color-picker__header-tabs .q-tab--active { color: #{$p}; }
+  #{$ink} .q-editor { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; background: #{$p}; }
+  #{$ink} .q-editor__toolbar { border-bottom: #{$line} solid #{$i}; background: transparent; }
+  #{$ink} .q-editor__toolbar-group + .q-editor__toolbar-group::before { background: #{$rule-dotted-down}; }
+  #{$ink} .q-editor__toolbar .q-btn { border-color: transparent; }
+  #{$ink} .q-editor--fullscreen { box-shadow: none; }
+  #{$ink} .q-popup-edit { border: #{$line} solid #{$i}; box-shadow: sheet(5px); }
+}
+
+@mixin flows {
+  #{$ink} :is(.q-stepper, .q-uploader, .q-carousel) { border: #{$line} solid #{$i}; border-radius: #{$hand-md}; background: #{$p}; box-shadow: none; }
+  #{$ink} .q-stepper--flat:not(.q-stepper--bordered) { border-style: dotted; border-width: 1px; }
+  #{$ink} .q-stepper__header--border { border-bottom: #{$line} solid #{$i}; }
+  #{$ink} .q-stepper__tab { color: var(--qds-fg-default); }
+  #{$ink} .q-stepper__dot { border: #{$line} solid #{$i}; border-radius: #{$hand-round}; color: #{$i}; background: #{$p}; box-shadow: none; }
+  #{$ink} :is(.q-stepper__tab--active, .q-stepper__tab--done, .q-stepper__tab--error) .q-stepper__dot { color: #{$p}; background: #{$i}; }
+  // Error has no red: the dot keeps the ink fill and gains a double ring.
+  #{$ink} .q-stepper__tab--error .q-stepper__dot { --qds-color-negative: #{$i}; --qds-text-on-negative: #{$p}; box-shadow: 0 0 0 2px #{$p}, 0 0 0 3.5px #{$i}; }
+  #{$ink} .q-stepper__tab--error :is(.q-stepper__title, .q-stepper__caption) { color: #{$i}; font-weight: var(--qds-font-weight-semibold); }
+  #{$ink} .q-stepper__tab--active .q-stepper__title { font-weight: var(--qds-font-weight-semibold); text-decoration: underline 1.5px; text-underline-offset: 0.25em; }
+  #{$ink} .q-stepper__tab--disabled { color: var(--qds-fg-disabled); }
+  #{$ink} .q-stepper__tab--disabled .q-stepper__dot { border-style: dashed; border-color: var(--qds-fg-disabled); color: var(--qds-fg-disabled); }
+  #{$ink} .q-stepper__line::before, #{$ink} .q-stepper__line::after, #{$ink} .q-stepper--vertical .q-stepper__dot::before, #{$ink} .q-stepper--vertical .q-stepper__dot::after { background: #{$rule-dotted}; color: #{$i}; }
+  #{$ink} .q-stepper--vertical .q-stepper__dot::before, #{$ink} .q-stepper--vertical .q-stepper__dot::after { background: #{$rule-dotted-down}; width: 1.5px; }
+  #{$ink} .q-stepper--horizontal .q-stepper__line::before, #{$ink} .q-stepper--horizontal .q-stepper__line::after { height: 1.5px; }
+  #{$ink} .q-stepper__tab .q-focus-helper { display: none; }
+  #{$ink} .q-stepper__tab--navigation:hover { background: #{$dots}; }
+  #{$ink} .q-stepper--dark, #{$ink} .q-stepper.bg-primary { border-color: #{$i}; }
+  #{$ink} .q-timeline { color: var(--qds-fg-default); }
+  #{$ink} .q-timeline__dot::after { width: 1.5px; background: #{$rule-dotted-down}; color: #{$i}; opacity: 1; }
+  #{$ink} .q-timeline__dot::before { border: #{$line} solid #{$i}; border-radius: #{$hand-round}; background: #{$p}; box-shadow: none; }
+  #{$ink} .q-timeline__dot .q-icon { color: #{$i}; }
+  #{$ink} .q-timeline__subtitle { color: var(--qds-fg-muted); opacity: 1; }
+  #{$ink} .q-timeline__title { font-weight: var(--qds-font-weight-semibold); }
+  #{$ink} .q-uploader__header { border-bottom: #{$line} solid #{$i}; color: var(--qds-fg-default); background: #{$p}; }
+  #{$ink} .q-uploader__file { border: 1px solid #{$i}; border-radius: #{$hand-sm}; background: #{$p}; box-shadow: none; }
+  #{$ink} .q-uploader__file--failed { border-style: double; border-width: 3px; color: #{$i}; }
+  #{$ink} .q-uploader__file--uploaded { border-style: dashed; }
+  #{$ink} .q-uploader__file::before { background: #{$hatch}; color: #{$i}; }
+  #{$ink} .q-uploader--disable { border-style: dashed; }
+  #{$ink} .q-carousel__navigation .q-btn { border-color: transparent; }
+  #{$ink} .q-carousel__control .q-btn, #{$ink} .q-carousel__arrow .q-btn { color: #{$i}; background: #{$p}; border-color: #{$i}; }
+  #{$ink} .q-carousel__navigation-icon--active { color: #{$i}; }
+  #{$ink} .q-message-text { border-radius: #{$hand-md}; }
+  #{$ink} .q-message-text--received { border: #{$line} solid #{$i}; color: #{$i}; background: #{$p}; }
+  #{$ink} .q-message-text--sent { border: #{$line} solid #{$i}; color: #{$p}; background: #{$i}; }
+  #{$ink} .q-message-text::before { display: none; }
+  #{$ink} .q-message-text-content--received { color: #{$i}; }
+  #{$ink} .q-message-text-content--sent { color: #{$p}; }
+  #{$ink} .q-message-name, #{$ink} .q-message-stamp { color: inherit; opacity: 0.85; }
+  #{$ink} .q-slide-item__left, #{$ink} .q-slide-item__right { color: #{$p}; background: #{$i}; }
+  #{$ink} .q-slide-item__content { background: #{$p}; }
+  #{$ink} .q-pull-to-refresh__puller { border: #{$line} solid #{$i}; color: #{$i}; background: #{$p}; box-shadow: none; }
 }
 
 @mixin fallbacks {
   @media (forced-colors: active) {
-    #{$ink} .q-tab .q-tab__indicator,
-    #{$ink} .q-field .q-field__control::after { mask: none; background: CanvasText; }
-    #{$ink} .q-btn::after { content: none; }
-    #{$ink} .q-menu { box-shadow: none; }
+    #{$ink} :is(.q-btn, .q-tab, .q-item, .q-chip, .q-tree__node-header, .q-table tbody td)::before { background: none; }
+    #{$ink} :is(.q-menu, .q-notification, .q-dialog__inner > .q-card, .q-popup-edit, .q-loading__box) { box-shadow: none; }
+    #{$ink} :is(.q-separator, .q-slider__track) { background: CanvasText; }
+    #{$ink} :is(.q-skeleton, .q-drawer__backdrop, .q-dialog__backdrop) { background: Canvas; }
+    #{$ink} :is(.q-item--active, .q-tab--active, .q-tree__node--selected, tr.selected > td) { color: HighlightText; background: Highlight; forced-color-adjust: none; }
   }
   @media (prefers-reduced-motion: reduce) {
-    #{$ink} :is(.q-btn, .q-tab),
-    #{$ink} .q-field .q-field__control::after { transition: none; }
     #{$ink} .q-btn:not(.disabled):active { transform: none; }
   }
 }
 
-@mixin moved {
-  #{$ink-legacy} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
-  #{$ink-legacy} .q-drawer { background: var(--qds-surface-0); }
-  #{$ink-legacy} .q-drawer.q-drawer--bordered { border-color: var(--qds-separator-color); }
-  #{$ink-legacy} .q-footer { border-top-color: var(--qds-separator-color); }
-  #{$ink-legacy} :is(.q-header, .q-footer, .q-toolbar),
-  #{$ink-legacy} .q-bar:not(.q-bar--dark) { background: var(--qds-bg-card); }
-  #{$ink-legacy} .q-header { border-bottom-color: var(--qds-separator-color); }
-  #{$ink-legacy} .q-notification {
-    --qds-notify-bg: var(--qds-notify-wash);
-    border-color: color-mix(in srgb, var(--qds-notify-accent) 40%, var(--qds-stroke-strong));
-  }
-  #{$ink-legacy} :is(.q-linear-progress__track, .q-skeleton) { background: var(--qds-surface-brand-soft); }
-  #{$ink-legacy} .q-inner-loading { @include materials.solid(var(--qds-surface-0)); }
-  #{$ink-legacy} .q-table tbody tr.selected > td:first-child { box-shadow: inset 3px 0 0 var(--qds-color-primary); }
-  #{$ink-legacy} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(.q-card--bordered, .qds-card--readable, .qds-card--contrast, .qds-card--opaque, .qds-card--solid)) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
-  #{$ink-legacy} :is(.q-stepper, .q-carousel, .q-uploader):where(:not(.q-stepper--bordered, .q-uploader--bordered, .qds-uploader--bordered)) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
-  #{$ink-legacy} .q-dialog__inner > .q-bottom-sheet { border: var(--qds-border-width-control) solid var(--qds-material-stroke); }
-}
-
 @mixin qwindow {
-  .qds-ui.qds-variant-ink .qds-window,
-  .qds-ui .qds-variant-ink .qds-window,
-  .qds-ui.qds-variant-ink .qds-window__titlebar,
-  .qds-ui .qds-variant-ink .qds-window__titlebar { background: var(--qds-surface-focus-block); }
-  .qds-ui.qds-variant-ink .qds-window:not(.qds-window--active),
-  .qds-ui .qds-variant-ink .qds-window:not(.qds-window--active) { border-color: var(--qds-card-border); }
+  // The wrapper writes border width and style inline; the width follows the control token.
+  // A short scope keeps the optional extension inside its byte cap; it is emitted after the shared window rules.
+  .qds-variant-ink .qds-window { --qds-border-width-control: 2px; --qds-font-family-display: #{$print}; border-color: #{$i}; }
+  .qds-variant-ink .qds-window--active .qds-window__titlebar { color: #{$p}; background: #{$i}; }
 }
 
 @mixin styles {
-  @include moved;
   @include type;
+  @include italic-hand;
   @include button;
+  @include chips;
   @include field;
+  @include selection;
   @include tabs;
-  @include menu;
+  @include lists;
+  @include surfaces;
+  @include overlays;
+  @include data;
+  @include pickers;
+  @include flows;
+  @include roles;
   @include fallbacks;
 }

@@ -22,7 +22,7 @@ const scenes: Scene[] = [
     label: 'Ink',
     tagline: 'Paper and ink',
     wallpaper: '/scenes/qds-wallpaper-ink.svg',
-    detail: 'Paper-neutral surface with charcoal type and coordinated pastel role washes.',
+    detail: 'One ink on flat paper: crisp strokes, inverted selection, patterns instead of tints.',
   },
   {
     variant: 'one',
