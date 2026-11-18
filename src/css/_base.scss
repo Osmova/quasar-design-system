@@ -27,18 +27,22 @@ $weight-utilities: '.text-weight-thin, .text-weight-light, .text-weight-regular,
     background: var(--qds-backdrop);
   }
 
-  body.qds-ui :where(h1, h2, h3, h4, h5, h6),
+  // Bare headings stay at ELEMENT specificity (0,0,1): they must beat
+  // Quasar's `h3 { font-size: 3rem }` (same specificity, QDS loads later) yet
+  // lose to any app class such as `.card__title`. `body.qds-ui :where(h3)`
+  // was (0,1,1) and silently overrode every class-styled heading.
+  :where(body.qds-ui) :is(h1, h2, h3, h4, h5, h6),
   body.qds-ui :where(.text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6),
   .qds-display {
     font-family: var(--qds-font-family-display);
   }
 
   @each $step in h1, h2, h3, h4, h5, h6 {
-    body.qds-ui :where(#{$step}) {
+    :where(body.qds-ui) #{$step} {
       @include qds-type-step($step);
     }
 
-    body.qds-ui :where(#{$step}:not(#{$weight-utilities})) {
+    :where(body.qds-ui) #{$step}:where(:not(#{$weight-utilities})) {
       font-weight: var(--qds-font-weight-#{$step});
     }
   }
