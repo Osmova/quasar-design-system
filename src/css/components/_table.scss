@@ -1,4 +1,3 @@
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 
@@ -48,7 +47,6 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
   .qds-ui .q-table__container.fullscreen { overflow: auto; background: var(--qds-bg-canvas); border-radius: 0; }
 
-  #{$ink} .q-table tbody tr.selected > td:first-child { box-shadow: inset 3px 0 0 var(--qds-color-primary); }
 
   #{$one} .q-table__container:where(:not(.q-table--bordered, .qds-table--bordered)) { border-color: transparent; }
   #{$one} :is(.q-table__top, .q-table__bottom) { min-height: 3.5rem; }

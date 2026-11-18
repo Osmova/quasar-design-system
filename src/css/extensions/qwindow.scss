@@ -1,5 +1,7 @@
 // Optional QWindow extension. Import this after @quasar/quasar-ui-qwindow/index.css
 // and after the default QDS CSS bundle.
 @use 'qwindow-styles';
+@use '../components/variants/ink';
 
 @include qwindow-styles.styles;
+@include ink.qwindow;

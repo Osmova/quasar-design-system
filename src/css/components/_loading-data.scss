@@ -1,7 +1,6 @@
 @use '../materials';
 @use '../importance';
 
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
@@ -88,10 +87,8 @@ $shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
   .qds-ui .q-tree--no-connectors .q-tree__children::before { display: none; }
   .qds-ui :is(.q-virtual-scroll__padding, .q-virtual-scroll__slice) { border-color: var(--qds-stroke-subtle); }
 
-  #{$ink} :is(.q-linear-progress__track, .q-skeleton) { background: var(--qds-surface-brand-soft); }
   #{$one} .q-tree__node-header { min-height: 2.75rem; }
   #{$term} .q-linear-progress { border-radius: 0; }
-  #{$ink} .q-inner-loading { @include materials.solid(var(--qds-surface-0)); }
   #{$term} .q-inner-loading { @include materials.solid(var(--qds-surface-0)); }
 
   #{$shadcn} {

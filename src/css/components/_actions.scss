@@ -1,6 +1,5 @@
 @use '../importance';
 $banner-roles: (positive: positive, negative: negative, warning: warning, info: info);
-$ink-term: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink, .qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
@@ -76,7 +75,7 @@ $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 
   .qds-ui .q-btn-toggle > .q-btn.q-btn-item:where(:not(.disabled)) { @include importance.declarations { color: var(--qds-fg-muted) !important; } }
 
-  #{$ink-term} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
+  #{$term} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
   #{$term} .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { border-color: var(--qds-control-stroke-default); }
 
   .qds-ui .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) {

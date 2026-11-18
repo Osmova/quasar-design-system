@@ -50,7 +50,16 @@ const selectorsOf = (rule) => {
   }
   return [...parts, list.slice(start)]
 }
-const retired = (rule) => selectorsOf(rule).every((selector) => ownerOfSelector(selector) === RETIRED_PROFILE)
+// Ink's rules left the shared partials: drop its own selectors and its alternatives inside shared :is() lists.
+const INK_ALTERNATIVES = [':is(.qds-ui.qds-variant-ink,.qds-ui .qds-variant-ink),', '.qds-ui.qds-variant-ink,.qds-ui .qds-variant-ink,']
+const retire = (rule) => {
+  const brace = rule.indexOf('{')
+  const head = rule.slice(0, brace)
+  const prefix = head.slice(0, head.lastIndexOf('|') + 1)
+  const kept = selectorsOf(rule).filter((selector) => ownerOfSelector(selector) !== RETIRED_PROFILE)
+    .map((selector) => INK_ALTERNATIVES.reduce((out, alt) => out.replace(alt, ''), selector).replace(/:is\((:is\([^()]*\))\)/g, '$1'))
+  return kept.length ? `${prefix}${kept.join(',')}${rule.slice(brace)}` : null
+}
 // The runtime's per-variant stylesheet sentinel, one declaration per variant scope.
 const VARIANT_SENTINEL = /\.qds-variant-([a-z]+)\{--_qds-variant: ?\1\}$/
 test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only added-profile rules', () => {
@@ -69,7 +78,7 @@ test('T184 substrate keeps every immutable 150d952 rule verbatim and admits only
     const current = ruleKeys(css)
     // The frozen hash above still covers the untouched baseline; only the
     // enumerated declared changes are normalised before the rule-by-rule compare.
-    const expected = ruleKeys(applyDeclaredShadcnChanges(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') }))).filter((rule) => !retired(rule))
+    const expected = ruleKeys(applyDeclaredShadcnChanges(applyDeclaredFluentChanges(baseline, { layered: entry.includes('layered') }))).map(retire).filter(Boolean)
     const added = []
     let cursor = 0
     for (const rule of expected) {

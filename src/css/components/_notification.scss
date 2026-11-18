@@ -1,7 +1,6 @@
 @use '../materials';
 @use '../importance';
 
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
@@ -45,10 +44,6 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
   .qds-ui .q-notification:has(.q-notification__badge) { overflow: visible; }
   .qds-ui :is(.q-notification__badge--top-left, .q-notification__badge--top-right) { top: var(--qds-space-xs); }
 
-  #{$ink} .q-notification {
-    --qds-notify-bg: var(--qds-notify-wash);
-    border-color: color-mix(in srgb, var(--qds-notify-accent) 40%, var(--qds-stroke-strong));
-  }
   #{$one} .q-notification { --qds-notify-bg: var(--qds-notify-wash); --qds-notification-radius: var(--qds-radius-lg); @include materials.solid; }
   #{$term} .q-notification {
     --qds-notify-bg: var(--qds-surface-0);

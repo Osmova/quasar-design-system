@@ -1,7 +1,10 @@
 // Ink: pen and ink on warm paper. Every affordance is a drawn stroke with a
 // deterministic hand-cut corner and a lighter overdraw; overlays sit on a second sheet, never blur.
 // Handwriting is reserved for short accents; reading and dense UI stay in the text face.
+@use '../../materials';
+
 $ink: '.qds-variant-ink:is(.qds-ui,.qds-ui *)';
+$ink-legacy: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 
 $line: 1.5px;
 $hand-sm: 0.55rem 0.3rem 0.5rem 0.25rem / 0.3rem 0.5rem 0.25rem 0.55rem;
@@ -204,7 +207,37 @@ $stroke-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   }
 }
 
+@mixin moved {
+  #{$ink-legacy} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
+  #{$ink-legacy} .q-drawer { background: var(--qds-surface-0); }
+  #{$ink-legacy} .q-drawer.q-drawer--bordered { border-color: var(--qds-separator-color); }
+  #{$ink-legacy} .q-footer { border-top-color: var(--qds-separator-color); }
+  #{$ink-legacy} :is(.q-header, .q-footer, .q-toolbar),
+  #{$ink-legacy} .q-bar:not(.q-bar--dark) { background: var(--qds-bg-card); }
+  #{$ink-legacy} .q-header { border-bottom-color: var(--qds-separator-color); }
+  #{$ink-legacy} .q-notification {
+    --qds-notify-bg: var(--qds-notify-wash);
+    border-color: color-mix(in srgb, var(--qds-notify-accent) 40%, var(--qds-stroke-strong));
+  }
+  #{$ink-legacy} :is(.q-linear-progress__track, .q-skeleton) { background: var(--qds-surface-brand-soft); }
+  #{$ink-legacy} .q-inner-loading { @include materials.solid(var(--qds-surface-0)); }
+  #{$ink-legacy} .q-table tbody tr.selected > td:first-child { box-shadow: inset 3px 0 0 var(--qds-color-primary); }
+  #{$ink-legacy} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(.q-card--bordered, .qds-card--readable, .qds-card--contrast, .qds-card--opaque, .qds-card--solid)) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
+  #{$ink-legacy} :is(.q-stepper, .q-carousel, .q-uploader):where(:not(.q-stepper--bordered, .q-uploader--bordered, .qds-uploader--bordered)) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
+  #{$ink-legacy} .q-dialog__inner > .q-bottom-sheet { border: var(--qds-border-width-control) solid var(--qds-material-stroke); }
+}
+
+@mixin qwindow {
+  .qds-ui.qds-variant-ink .qds-window,
+  .qds-ui .qds-variant-ink .qds-window,
+  .qds-ui.qds-variant-ink .qds-window__titlebar,
+  .qds-ui .qds-variant-ink .qds-window__titlebar { background: var(--qds-surface-focus-block); }
+  .qds-ui.qds-variant-ink .qds-window:not(.qds-window--active),
+  .qds-ui .qds-variant-ink .qds-window:not(.qds-window--active) { border-color: var(--qds-card-border); }
+}
+
 @mixin styles {
+  @include moved;
   @include type;
   @include button;
   @include field;

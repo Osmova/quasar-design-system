@@ -1,4 +1,3 @@
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 
 $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
@@ -13,8 +12,6 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   .qds-ui .q-drawer .q-layout__shadow::after { box-shadow: var(--qds-shadow-16); }
   .qds-ui .q-drawer--mini .q-list { padding-inline: var(--qds-space-xs); }
 
-  #{$ink} .q-drawer { background: var(--qds-surface-0); }
-  #{$ink} .q-drawer.q-drawer--bordered { border-color: var(--qds-separator-color); }
 
   #{$one} .q-drawer .q-list {
     margin: var(--qds-space-sm);

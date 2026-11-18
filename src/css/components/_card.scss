@@ -1,7 +1,6 @@
 @use '../materials';
 @use '../../themes/shadcn';
 
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 
@@ -112,7 +111,6 @@ $explicit-dark: '.qds-ui.qds-theme-light #{$local-dark}';
     .qds-ui .qds-material.qds-material--#{$level} { @include materials.material($level); }
   }
 
-  #{$ink} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(#{$framed})) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
   #{$one} .q-card > .q-card__section:is(.qds-card__header, .qds-card-header) { border-block-end-color: transparent; }
   #{$one} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile, .qds-settings-card, .q-carousel) { --qds-card-fill: var(--qds-surface-focus-block); --qds-control-fill-default: var(--qds-surface-0); }
   #{$one} :is(.q-card, .qds-card) :is(.q-card, .qds-card, .qds-tile):where(:not(.qds-material, .qds-card--transient)) { background: var(--qds-card-fill); }

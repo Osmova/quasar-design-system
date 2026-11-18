@@ -1,4 +1,3 @@
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 
 $glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
@@ -42,9 +41,7 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   .qds-ui .q-bar.q-bar--dark { color: var(--qds-bar-dark-fg); background: var(--qds-bar-dark-bg); }
   .qds-ui .q-separator { background: var(--qds-stroke-divider); }
 
-  #{$ink} :is(.q-header, .q-footer, .q-toolbar),
-  :is(#{$ink}, #{$term}) .q-bar:not(.q-bar--dark) { background: var(--qds-bg-card); }
-  #{$ink} .q-header { border-bottom-color: var(--qds-separator-color); }
+  #{$term} .q-bar:not(.q-bar--dark) { background: var(--qds-bg-card); }
   #{$term} .q-bar:not(.q-bar--dark) { border: var(--qds-border-width-control) solid var(--qds-border-subtle); }
 
   // Bars carry no fill or rule: a soft scroll-edge blur under the controls keeps them legible.

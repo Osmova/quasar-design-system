@@ -41,10 +41,6 @@ $shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
   .qds-ui .qds-window--minimized .qds-window__body,
   .qds-ui .qds-window--headless .qds-window__titlebar { display: none; }
 
-  .qds-ui.qds-variant-ink .qds-window,
-  .qds-ui .qds-variant-ink .qds-window,
-  .qds-ui.qds-variant-ink .qds-window__titlebar,
-  .qds-ui .qds-variant-ink .qds-window__titlebar,
   .qds-ui.qds-variant-one .qds-window,
   .qds-ui .qds-variant-one .qds-window { background: var(--qds-surface-focus-block); }
   .qds-ui.qds-variant-one .qds-window,
@@ -55,8 +51,6 @@ $shadcn: ':is(.qds-ui.qds-variant-shadcn, .qds-ui .qds-variant-shadcn)';
     --qds-control-fill-hover: color-mix(in srgb, var(--qds-surface-transient) 90%, var(--qds-text));
     background: var(--qds-surface-transient);
   }
-  .qds-ui.qds-variant-ink .qds-window:not(.qds-window--active),
-  .qds-ui .qds-variant-ink .qds-window:not(.qds-window--active),
   .qds-ui.qds-variant-one .qds-window:not(.qds-window--active),
   .qds-ui .qds-variant-one .qds-window:not(.qds-window--active) { border-color: var(--qds-card-border); }
   .qds-ui.qds-variant-one .qds-window__titlebar,

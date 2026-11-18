@@ -1,5 +1,4 @@
 @use '../importance';
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
@@ -174,7 +173,6 @@ $role-fills: '.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative
   .qds-ui .q-uploader__file--uploaded .q-uploader__file-header { background: var(--qds-surface-positive-soft); }
   .qds-ui .q-uploader__file--uploaded .q-uploader__file-header > .q-btn { color: var(--qds-fg-positive, var(--qds-color-positive)); }
 
-  #{$ink} :is(.q-stepper, .q-carousel, .q-uploader):where(:not(.q-stepper--bordered, .q-uploader--bordered, .qds-uploader--bordered)) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
   #{$one} :is(.q-stepper, .q-carousel):where(:not(.q-stepper--bordered, .qds-media--framed)) { border-color: transparent; }
   #{$one} .q-carousel { background: var(--qds-card-fill); }
   #{$one} .q-uploader:where(:not(.q-uploader--bordered, .qds-uploader--bordered)) { border: var(--qds-border-width-control) solid var(--qds-separator-color); }
