@@ -56,10 +56,10 @@ async function applyLightFluent(page: Page) {
   await page.evaluate(() => {
     const ds = (window as unknown as { __qdsGallery: any }).__qdsGallery
     ds.setMode('light')
-    ds.setVariant('fluent')
+    ds.setVariant('win')
   })
   await expect(page.locator('body')).toHaveClass(/qds-theme-light/)
-  await expect(page.locator('body')).toHaveClass(/qds-variant-fluent/)
+  await expect(page.locator('body')).toHaveClass(/qds-variant-win/)
 }
 
 async function openGalleryTab(page: Page, tab: GalleryTab) {

@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { useDesignSystem } from '@osmova/quasar-design-system'
 import ShadcnPalettePanels from '../components/ShadcnPalettePanels.vue'
 
-type VariantName = 'fluent' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen'
+type VariantName = 'win' | 'ink' | 'one' | 'term' | 'shadcn' | 'zen' | 'glass'
 const ds = useDesignSystem()
 
 type VariantSample = {
@@ -15,7 +15,7 @@ type VariantSample = {
 
 const variants: VariantSample[] = [
   {
-    name: 'fluent',
+    name: 'win',
     label: 'Fluent',
     intent: 'Solid mica surfaces, low-border content, and selective transient material over cool geometry.',
     sample: 'Settings surface 01',
@@ -23,7 +23,7 @@ const variants: VariantSample[] = [
   {
     name: 'ink',
     label: 'Ink',
-    intent: 'Paper-neutral editorial surfaces with charcoal type and coordinated pastel role washes.',
+    intent: 'One ink on paper, like an e-reader: navy, black or charcoal strokes, inverted selection and patterned roles.',
     sample: 'Editorial spread 07',
   },
   {
@@ -50,15 +50,22 @@ const variants: VariantSample[] = [
     intent: 'Opaque neutral New York surfaces, crisp outlines, and restrained role fills.',
     sample: 'Native surface 05',
   },
+  {
+    name: 'glass',
+    label: 'Glass',
+    intent: 'Floating glass controls over content, capsule and concentric shapes, and tint only where it acts.',
+    sample: 'Library pane 02',
+  },
 ]
 
 const pages = reactive<Record<VariantName, number>>({
-  fluent: 3,
+  win: 3,
   ink: 3,
   one: 3,
   term: 3,
   shadcn: 3,
   zen: 3,
+  glass: 3,
 })
 </script>
 
@@ -70,7 +77,7 @@ const pages = reactive<Record<VariantName, number>>({
       <h1 id="qds-variants-title" class="qds-display">Same anatomy, different visual systems</h1>
       <p class="qds-text-muted">
         This view keeps component anatomy identical so variant-specific typography, density, borders,
-        material, and state rules are visible side by side. Six canonical variants share one token system.
+        material, and state rules are visible side by side. Seven canonical variants share one token system.
       </p>
     </div>
 
@@ -274,6 +281,16 @@ const pages = reactive<Record<VariantName, number>>({
 
 .variant-card__nested {
   padding: var(--qds-space-xs);
+}
+
+/* Ink has no tonal fills: roles are outlined, and only the alert takes the danger red. */
+.qds-variant-ink .variant-role {
+  box-shadow: inset 0 0 0 1px var(--qds-stroke-strong);
+}
+
+.qds-variant-ink .variant-role--negative {
+  color: var(--qds-fg-negative);
+  box-shadow: inset 0 0 0 1px var(--qds-fg-negative);
 }
 
 .variant-card__progress {

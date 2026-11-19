@@ -9,7 +9,7 @@ export const { chromium } = createRequire(new URL('examples/gallery/package.json
 const assets = Object.fromEntries(Object.entries({ vue: 'vue/dist/vue.global.prod.js', quasar: 'quasar/dist/quasar.umd.prod.js', css: 'quasar/dist/quasar.prod.css' }).map(([key, path]) => [key, readFileSync(require.resolve(path), 'utf8')]))
 export const roles = ['primary', 'secondary', 'accent', 'positive', 'negative', 'warning', 'info']
 
-export async function mount(browser, css, { layered = false, mode = 'light', profile = 'fluent', custom = false, coarse = false, forced = false } = {}) {
+export async function mount(browser, css, { layered = false, mode = 'light', profile = 'win', custom = false, coarse = false, forced = false } = {}) {
   const page = await browser.newPage({ viewport: { width: coarse ? 393 : 1100, height: 1000 }, hasTouch: coarse, isMobile: coarse, forcedColors: forced ? 'active' : 'none' })
   const classes = `qds-ui qds-theme-${mode} ${profile === 'default' ? '' : `qds-variant-${profile.startsWith('shadcn') ? 'shadcn' : profile}`}`
   const palette = profile.startsWith('shadcn-') ? profile.slice(7) : 'neutral'

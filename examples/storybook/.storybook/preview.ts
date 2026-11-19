@@ -32,7 +32,7 @@ import 'quasar/src/css/index.sass'
 import '@osmova/quasar-design-system/fonts/inter.css'
 import '@osmova/quasar-design-system/fonts/open-sans.css'
 import '@osmova/quasar-design-system/fonts/selawik.css'
-import '@osmova/quasar-design-system/css'
+import '@osmova/quasar-design-system/css/all'
 
 interface PreviewController {
   state: { initialized: boolean }
@@ -67,7 +67,7 @@ setup((app) => {
   const controller = configureDesignSystem(app, {
     persist: false,
     mode: 'light',
-    variant: 'fluent',
+    variant: 'win',
   })
 
   // Explicit dispose: a destroyed app removes the body attributes/classes it
@@ -135,7 +135,7 @@ const preview: Preview = {
   },
   initialGlobals: {
     mode: 'light',
-    variant: 'fluent',
+    variant: 'win',
     shadcnBaseColor: 'neutral',
   },
   decorators: [

@@ -4,6 +4,120 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.10.0] — 2026-11-19
+
+### Changed
+
+- **Opt-in variant bundles (breaking)** — `@osmova/quasar-design-system/css` (and `css/layered`) now ships the
+  shared grammar plus the default `win` variant, built to `dist/css` (about 25 KB gzipped, against about 70 KB for every variant together).
+  Every other variant is its own complete stylesheet, `css/variants/<name>` and `css/layered/variants/<name>`
+  (`ink`, `one`, `term`, `shadcn`, `zen`, `glass`; 26–43 KB gzipped), imported **instead of** `./css`. Each file keeps
+  the original rule order minus the other variants' rules, so rendering is identical to the single bundle.
+  Apps that used a non-default variant must switch to that variant's file; `css/all` and `css/all/layered`
+  keep the previous everything-in-one SCSS entries. The CSS budget now applies to the core and to each variant.
+- **`fluent` is now `win`** — the default variant follows Windows 11 / WinUI 3 rather than Fluent 2. The
+  body class is `qds-variant-win`; `fluent` (like `air` and `studio`) stays accepted as a legacy input
+  and normalizes to `win`, so stored preferences and `?variant=fluent` links keep working. Selectors that
+  targeted `.qds-variant-fluent` must move to `.qds-variant-win`.
+- **`glass` no longer aliases `fluent` (breaking).** A configured or persisted `variant: 'glass'` now
+  selects the new glass variant instead of resolving to the default; import `css/variants/glass` for it. To keep
+  the previous look, use `variant: 'win'`; a stored `glass` record is not migrated. `air` and `studio` still
+  resolve to `win`.
+- **Win WinUI 3 fidelity** (win variant only; every other variant keeps its paint). Values follow WinUI's
+  `Common_themeresources_any.xaml` and are emitted on `.qds-variant-win`, so they apply wherever the runtime sets
+  the win variant:
+  - Role-filled buttons (`color` standard/unelevated) draw a softer bottom edge: light
+    `--qds-control-stroke-on-accent-bottom` `rgba(0,0,0,.4)` -> `rgba(0,0,0,.2)` (dark unchanged at `.14`).
+  - Button glyphs render at full opacity (`--qds-control-icon-opacity` / `-active` `.72`/`.88` -> `1`; chip icons
+    follow, while the dropdown chevron stays a `.72` secondary hint), and dense buttons keep a 16px glyph
+    (`--qds-button-dense-icon-size` 14px -> 16px).
+  - Button labels use Regular 400 instead of Semibold 600.
+  - Checkbox and radio are 20px (was 16px) with a 12px check glyph; the radio dot is 12px at rest, 14px on hover
+    and 10px pressed. Dense controls stay 16px.
+  - The slider thumb's accent dot is 12px at rest (was 10.8px), 14px on hover and 10px pressed.
+  - Light `--qds-fg-disabled` `#bdbdbd` -> `rgba(0,0,0,.361)` (TextFillColorDisabled). Disabled role-filled
+    standard/unelevated buttons (not QBtnToggle segments) use AccentFillColorDisabled with
+    TextOnAccentFillColorDisabled and no edge, instead of the neutral disabled fill.
+  - Subtle hover/pressed fills follow SubtleFillColorSecondary/Tertiary, so pressed is lighter than hover:
+    light `.04`/`.08` -> `.035`/`.024`, dark `.06`/`.10` -> `.059`/`.039`.
+  - Dialogs follow ContentDialog instead of thick acrylic: a LayerFillColorAlt top layer (light `#fff`, dark
+    `rgba(255,255,255,.051)`) over the `--qds-surface-1` base, a SurfaceStrokeColorDefault border
+    (`rgba(0,0,0,.06)` / `rgba(255,255,255,.12)` -> `rgba(117,117,117,.4)`), and a last `QCardActions` row drawn as a
+    base-coloured footer band with a `--qds-card-stroke` top divider and 24px padding (was 16/24/24px); the body
+    section above it pads 24px (was 8px). Menus, tooltips and QBottomSheet keep acrylic. Dialogs open from a 105%
+    scale (was 96%), like ContentDialog; reduced motion still collapses it.
+  - `--qds-bg-overlay` follows SmokeFillColorDefault: light `rgba(0,0,0,.4)` / dark `.5` -> `rgba(0,0,0,.302)`.
+  - Tabs follow SelectorBar/NavigationView: the active indicator is a centred 16 x 3px pill (was the label width)
+    and the vertical indicator 3 x 16px (was 8px inset); idle labels use `--qds-fg-default` (was `--qds-fg-muted`),
+    hover dims to `--qds-fg-muted`, and hover no longer previews a grey indicator.
+  - QBtnToggle follows the Toolkit Segmented: idle labels use `--qds-fg-default` (was `--qds-fg-muted`) and the
+    selected segment carries a centred 16 x 3px accent pill.
+  - The toggle knob is 12px at rest (was 14px), 14px on hover and 17 x 14px pressed. Dense toggles are unchanged.
+  - `--qds-stroke-divider` follows DividerStrokeColorDefault: light `#e0e0e0` -> `rgba(0,0,0,.058)`, dark `#525252`
+    -> `rgba(255,255,255,.082)`; table rules use it too (was `--qds-stroke-subtle`).
+  - Dark `--qds-text-muted` follows TextFillColorSecondary: `#adadad` -> `#cccccc`.
+  - Keyboard focus follows the WinUI focus visual: a 2px FocusStrokeColorOuter ring (light `rgba(0,0,0,.894)`, dark
+    `#fff`; was the `--qds-stroke-focus` accent) with a 1px gap (`--qds-focus-ring-offset` 2px -> 1px) that reads as
+    the inner ring. Inset rings on filled joined-group segments keep the on-fill ink; forced colours keep `Highlight`.
+  - Flyouts sit at WinUI elevation 32: `--qds-menu-shadow`, `--qds-notification-shadow` and `--qds-elevation-flyout`
+    `--qds-shadow-16` -> `--qds-shadow-28`. The flyout stroke follows SurfaceStrokeColorFlyout
+    (`--qds-material-stroke` light `rgba(0,0,0,.06)` -> `.058`, dark `rgba(255,255,255,.12)` -> `rgba(0,0,0,.2)`).
+  - The Mica backdrop tints with the brand only: the accent top-right wash becomes a bottom-right brand wash.
+    Opaque and reduced-transparency fallbacks stay flat `--qds-surface-1`.
+  - `--qds-font-family` / `--qds-font-family-display` lead with Segoe UI Variable Text / Display, then Segoe UI, then
+    the existing stack; nothing is bundled, so other platforms render as before.
+- **Win uses the Windows 11 accent and status palette** (win variant only). Primary follows the default accent ramp:
+  light `#005FB8` with `#003E92` link text, dark `#60CDFF` with black labels and `#99EBFF` link text. Positive,
+  negative and warning follow Success `#0F7B0F`/`#6CCB5F`, Critical `#C42B1C`/`#FF99A4` and Caution (light
+  `#925600`, one step darker than `#9D5D00` so the pressed fill keeps 4.5:1; dark `#FCE100`), with InfoBar tonal
+  washes. Info follows the Attention accent instead of grey. Secondary and accent are unchanged. The dark Mica wash
+  is fainter (0.18 → 0.07). Because these values live on `.qds-variant-win`, apps that rebrand win override
+  `--qds-color-*` on the body (or `.qds-variant-win`), as for zen and glass.
+- **Ink redesigned as a single-ink e-ink interface (breaking for ink).** One ink on flat paper: charcoal by default,
+  or black or navy through the new `inkColor` option (`setInkColor()`, `INK_COLORS`, `InkColor`) or `data-qds-ink`.
+  Dark is the same ink inverted. Colour roles render as solid ink, outline, double stroke or fill patterns (hatching,
+  dots, ruled lines), selection and active states invert, depth is a hard offset sheet, and motion is near-instant.
+  One red per scheme marks negative, error and destructive states (negative fills keep their cross-hatch). Media
+  renders greyscale; `qds-media-color`, `qds-media-color-hover` and `qds-media-color-reveal` opt back into colour.
+  Type is Atkinson Hyperlegible Next, with handwriting (Caveat) only on display titles, `<em>`/`<i>` and the opt-in
+  `.qds-hand` / `.text-hand` classes; load them with `@osmova/quasar-design-system/fonts/ink.css`. Same `ink` id;
+  `feather` still maps to `ink`. Apps that relied on ink's pastel role colours should move to `zen`.
+- **Zen rebuilt as a soft tactile grammar** (zen only): warm depth model, sage palette, Figtree UI and Fraunces
+  display faces (load them with `@osmova/quasar-design-system/fonts/zen.css`), and all zen rules in one partial.
+- **Zen follows component props** (zen only): `unelevated`, `push`, `square`, `outline`, `standout`, fab, group,
+  pagination and skeleton props render as zen variants of themselves; ghost and borderless fields drop the well and keep
+  a thin line; italic display type is limited to h1–h3 and display titles; QWindow gets a zen sheet.
+
+### Fixed
+
+- Toolbars and segmented controls inside a dark card now flip with the card.
+- The runtime now also removes a stale `qds-variant-fluent` class (server-rendered or hand-written) from its target.
+
+### Added
+
+- **Missing-stylesheet warning** — in development, the runtime warns once per variant when the active
+  variant's stylesheet is not loaded (for example `variant: 'zen'` with only `./css` imported). It reads a
+  `--_qds-variant` sentinel each variant scope defines, and stays silent in production, SSR and on errors.
+- **`glass` variant** — inspired by Apple's design language, and the seventh canonical variant.
+  Controls and navigation float on a translucent functional layer above opaque content: the header
+  and footer carry no fill or rule of their own, and a uniform glass bar with a hairline divider appears once
+  content scrolls under them, related bar buttons share one glass capsule (toolbars inside content stay plain, or opt in with
+  `.qds-glass-bar`), a docked sidebar runs edge to edge on glass while an overlay sidebar floats inset, dialogs and
+  bottom sheets float inset with a large radius, alerts and partial sheets are regular glass, content tabs are a
+  recessed segmented control while bar tabs float on glass, and menus open with a short spring.
+  Prominent controls (buttons, tab bars, segmented controls, switches) are capsules, as are switch and slider knobs; dense controls and
+  fields are rounded rectangles; nested shapes are concentric — a nested block, menu row, sidebar row or
+  dialog field takes its container's radius minus the padding between them. Tint is reserved for role
+  fills and selection, titles are bolder, and safe-area insets reach the header, footer, sidebar and
+  bottom sheets. It uses the native system font stack and ships no Apple font, symbol or artwork.
+  Translucency is decoration only: `@supports not (backdrop-filter)`, `prefers-reduced-transparency`,
+  forced colours and `prefers-contrast: more` all resolve to opaque surfaces, and increased contrast
+  also deepens the accent and restores a 3:1 edge on every control. Every role fill clears WCAG AA
+  against its label in both modes. Fields, checkboxes, radios, switch and slider tracks, outline buttons
+  and the selected tab or segment keep a 3:1 boundary; labelled buttons, chips and bars use a hairline,
+  and disabled buttons drop to the plain border. Under forced colours the selected tab and segment
+  take a system outline.
+
 ## [0.9.2] — 2026-11-18
 
 ### Fixed

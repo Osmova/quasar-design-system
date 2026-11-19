@@ -1,10 +1,9 @@
 @use '../importance';
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $role-fills: '.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui :is(.q-stepper, .q-uploader) {
@@ -154,6 +153,9 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
   .qds-ui .q-editor { overflow: hidden; color: var(--qds-fg-default); background: var(--qds-bg-canvas); border: var(--qds-border-width-control) solid var(--qds-stroke-default); border-radius: var(--qds-radius-md); }
   .qds-ui .q-editor--flat { border-color: transparent; }
+  #{$glass} .q-editor { border-radius: var(--qds-radius-control); }
+  // Captions sit on the black media scrim in both schemes, unlike text on a glass role fill.
+  #{$glass} .q-img__content > :is(.absolute-bottom, .absolute-top) { color: white; }
   .qds-ui .q-editor:focus-within { border-color: var(--qds-stroke-focus); box-shadow: inset 0 -2px 0 var(--qds-stroke-focus); }
   .qds-ui .q-editor__toolbar { gap: var(--qds-space-xs); padding: var(--qds-space-xs); border-color: var(--qds-stroke-divider); }
   .qds-ui .q-editor__toolbar-group { display: inline-flex; gap: 0.125rem; }
@@ -175,7 +177,6 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   .qds-ui .q-uploader__file--uploaded .q-uploader__file-header { background: var(--qds-surface-positive-soft); }
   .qds-ui .q-uploader__file--uploaded .q-uploader__file-header > .q-btn { color: var(--qds-fg-positive, var(--qds-color-positive)); }
 
-  #{$ink} :is(.q-stepper, .q-carousel, .q-uploader):where(:not(.q-stepper--bordered, .q-uploader--bordered, .qds-uploader--bordered)) { border: var(--qds-border-width-control) solid var(--qds-card-stroke); }
   #{$one} :is(.q-stepper, .q-carousel):where(:not(.q-stepper--bordered, .qds-media--framed)) { border-color: transparent; }
   #{$one} .q-carousel { background: var(--qds-card-fill); }
   #{$one} .q-uploader:where(:not(.q-uploader--bordered, .qds-uploader--bordered)) { border: var(--qds-border-width-control) solid var(--qds-separator-color); }
@@ -280,13 +281,4 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
     .q-uploader__header:is(#{$role-fills}) .q-btn:hover { background: var(--_qds-uploader-hover); }
     .q-uploader__header:is(#{$role-fills}) .q-btn:active { background: var(--_qds-uploader-pressed); }
   }
-
-  #{$zen} :is(.q-stepper, .q-uploader, .q-editor, .q-splitter) { border: 1px solid var(--qds-stroke-default); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: var(--qds-shadow-sm); }
-  #{$zen} .q-stepper__tab--active .q-stepper__dot { background: var(--qds-color-primary); color: var(--qds-text-on-solid); }
-  #{$zen} .q-carousel { border-radius: var(--qds-radius-lg); background: var(--qds-bg-surface-1); }
-  // A tonal bubble must also rebind the on-fill foreground, or the content utility keeps the on-solid ink.
-  #{$zen} .q-message-sent .q-message-text { --qds-chat-bubble-bg: var(--qds-surface-brand-soft); --qds-chat-bubble-fg: var(--qds-fg-default); border-color: var(--qds-stroke-default); }
-  #{$zen} .q-message-text--received { border: 1px solid var(--qds-stroke-default); background: var(--qds-bg-card); }
-  #{$zen} .q-timeline__subtitle { color: var(--qds-fg-muted); }
-  #{$zen} .q-img { border-radius: var(--qds-radius-control); }
 }

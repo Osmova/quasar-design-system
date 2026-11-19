@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { customProperty, gotoGalleryPage, resolvedColor } from './helpers'
 
 type Mode = 'light' | 'dark'
-type Variant = 'fluent' | 'ink' | 'one' | 'term'
+type Variant = 'win' | 'ink' | 'one' | 'term'
 type ComplexMediaTestHook = {
   getRtl: () => boolean
   setRtl: (rtl: boolean) => boolean
@@ -14,8 +14,8 @@ declare global {
   }
 }
 
-const EXPECTED_MEDIA_RADIUS: Record<Extract<Variant, 'fluent' | 'one' | 'term'>, string> = {
-  fluent: '8px',
+const EXPECTED_MEDIA_RADIUS: Record<Extract<Variant, 'win' | 'one' | 'term'>, string> = {
+  win: '8px',
   one: '24px',
   term: '10px',
 }
@@ -107,14 +107,18 @@ async function expectStepperErrorHalo(page: Page, label: string) {
   const tab = '[data-test="qds-stepper"] .q-stepper__tab--error'
   expect.soft(await computed(page, tab, 'background-color'), `${label} stepper error tab keeps no rectangle wash`).toBe('rgba(0, 0, 0, 0)')
   expect.soft(await computed(page, `${tab} .q-stepper__dot`, 'background-color'), `${label} stepper error dot is the negative fill`).toBe(await resolvedColor(page, '--qds-color-negative'))
-  expect.soft(await computed(page, `${tab} .q-stepper__dot`, 'box-shadow'), `${label} stepper error dot carries the 4px negative-soft halo`).toBe(`${await resolvedColor(page, '--qds-surface-negative-soft')} 0px 0px 0px 4px`)
+  // Ink draws the error as a paper gap and a ring in the danger red instead of a soft halo.
+  const halo = label.endsWith('/ink')
+    ? `${await resolvedColor(page, '--qds-surface-0')} 0px 0px 0px 2px, ${await resolvedColor(page, '--qds-color-negative')} 0px 0px 0px 3.5px`
+    : `${await resolvedColor(page, '--qds-surface-negative-soft')} 0px 0px 0px 4px`
+  expect.soft(await computed(page, `${tab} .q-stepper__dot`, 'box-shadow'), `${label} stepper error dot carries its halo`).toBe(halo)
 }
 
 test.describe('QDS catalog complex media gate', () => {
   test('skins chat, local media, video, scroll area, and splitter without raw seams', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const sentBubble = '[data-test="qds-chat-sent"] .q-message-text'
     const sentContent = '[data-test="qds-chat-sent"] .q-message-text-content'
@@ -232,7 +236,7 @@ test.describe('QDS catalog complex media gate', () => {
       carousel.locator('.q-carousel__slide:not(.q-carousel__slide--hidden) .catalog-carousel-image img').first(),
       'carousel image uses owned SVG data',
     ).toHaveAttribute('src', /^data:image\/svg\+xml/)
-    await expect(carousel.locator('.q-carousel__slide:not(.q-carousel__slide--hidden) .catalog-carousel-image img').first()).toHaveAttribute('alt', 'Editorial surface: Paper-neutral surface with pastel role washes and charcoal type.')
+    await expect(carousel.locator('.q-carousel__slide:not(.q-carousel__slide--hidden) .catalog-carousel-image img').first()).toHaveAttribute('alt', 'Editorial surface: One ink on flat paper, rendered like an e-reader screen.')
     expect.soft(await computed(page, '[data-test="qds-carousel"]', 'border-radius'), 'carousel QDS radius').toBe(await customProperty(page, '--qds-card-radius'))
     await expect(page.locator('[data-test="qds-carousel-controls"]')).toBeVisible()
     await expect(page.getByLabel('Previous carousel slide')).toBeVisible()
@@ -274,7 +278,7 @@ test.describe('QDS catalog complex media gate', () => {
     await expect(page.locator('.catalog-fab-stage .material-icons')).toHaveCount(0)
     await expect(page.locator('.qds-editor-proof .material-icons')).toHaveCount(0)
 
-    for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+    for (const variant of ['win', 'ink', 'one', 'term'] as const) {
       await applyTheme(page, 'dark', variant)
       const sentContentFg = await computed(page, '[data-test="qds-chat-sent"] .q-message-text-content', 'color')
       const receivedContentFg = await computed(page, '[data-test="qds-chat-received"] .q-message-text-content', 'color')
@@ -331,7 +335,7 @@ test.describe('QDS catalog complex media gate', () => {
     await page.route('**/qds-media-error.svg', route => route.abort())
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     await expect(page.locator('[data-test="qds-img-loading"]')).toHaveAttribute('aria-label', 'Loading media preview')
     await expect(page.locator('[data-test="qds-img-error"]')).toHaveAttribute('aria-label', 'Unavailable media preview')
     await expect(page.locator('[data-test="qds-img-loading-state"]')).toBeVisible()
@@ -371,7 +375,7 @@ test.describe('QDS catalog complex media gate', () => {
   test('QUploader exposes deterministic queued, progress, error, and uploaded states', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const uploader = page.locator('[data-test="qds-uploader"]')
     await expect(uploader.locator('.q-uploader__file')).toHaveCount(4)
@@ -399,7 +403,7 @@ test.describe('QDS catalog complex media gate', () => {
   test('QEditor exposes focused and dropdown toolbar states', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const editor = page.locator('.qds-editor-proof')
     await page.focus('.qds-editor-proof .q-editor__content')
@@ -426,7 +430,7 @@ test.describe('QDS catalog complex media gate', () => {
     test.setTimeout(60_000)
     await page.goto('/#catalog')
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         await expect(page.locator('[data-test="qds-stepper"]')).toBeVisible()
         await expect(page.locator('[data-test="qds-timeline"]')).toBeVisible()
@@ -434,9 +438,11 @@ test.describe('QDS catalog complex media gate', () => {
         await expect(page.locator('[data-test="qds-carousel"]')).toBeVisible()
         await expect(page.locator('[data-test="qds-editor"]')).toBeVisible()
         await expect(page.locator('[data-test="qds-uploader"]')).toBeVisible()
-        expect.soft(await computed(page, '[data-test="qds-carousel"]', 'border-radius'), `${mode}/${variant} carousel geometry`).toBe(variant === 'one' ? '24px' : variant === 'ink' ? '16px' : variant === 'term' ? '10px' : await customProperty(page, '--qds-card-radius'))
+        expect.soft(await computed(page, '[data-test="qds-carousel"]', 'border-radius'), `${mode}/${variant} carousel geometry`).toBe(variant === 'one' ? '24px' : variant === 'ink' ? '12px 5.6px 10.4px 4.8px / 5.6px 11.2px 4.8px 12px' : variant === 'term' ? '10px' : await customProperty(page, '--qds-card-radius'))
         expect.soft(await computed(page, '[data-test="qds-timeline"] .q-timeline__subtitle', 'color'), `${mode}/${variant} timeline subtitle foreground`).toBe(await tokenColor(page, '[data-test="qds-timeline"]', '--qds-text-muted'))
-        expect.soft(await computed(page, '[data-test="qds-timeline-dense"] .q-timeline__dot', 'background-color', '::after'), `${mode}/${variant} dense timeline rail`).toBe(await tokenColor(page, '[data-test="qds-timeline-dense"]', '--qds-timeline-rail'))
+        // Ink rules the rail as a dotted line in the rail colour; the others fill it.
+        expect.soft(await computed(page, '[data-test="qds-timeline-dense"] .q-timeline__dot', variant === 'ink' ? 'color' : 'background-color', '::after'), `${mode}/${variant} dense timeline rail`).toBe(await tokenColor(page, '[data-test="qds-timeline-dense"]', '--qds-timeline-rail'))
+        if (variant === 'ink') expect.soft(await computed(page, '[data-test="qds-timeline-dense"] .q-timeline__dot', 'background-image', '::after'), `${mode}/ink dense timeline rail is dotted`).toMatch(/repeating-linear-gradient/)
         const primaryMarker = '[data-test="qds-timeline"] .q-timeline__entry--left .q-timeline__dot'
         const positiveMarker = '[data-test="qds-timeline"] .q-timeline__entry--right .q-timeline__dot'
         const surface = await tokenColor(page, '[data-test="qds-timeline"]', '--qds-surface-0')

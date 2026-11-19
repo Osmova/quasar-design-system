@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:map';
 @use '../tokens/default' as tokens;
 @use 'fallbacks' as fallbacks;
@@ -159,6 +160,8 @@
   --qds-table-header-height-value: #{qds-variant-token(term, table-header-height)};
 }
 
+// Ink draws every affordance with a pen stroke and owns no blur depth: control
+// edges resolve to the 3:1 ink stroke, elevation is drawn by the grammar.
 @mixin qds-ink-paper($scheme) {
   @each $step, $geometry in tokens.$shadow-steps {
     --qds-shadow-#{$step}: none;
@@ -166,33 +169,82 @@
   @each $token in button-elevated-shadow-hover, elevation-card, elevation-flyout, elevation-dialog {
     --qds-#{$token}: none;
   }
-  --qds-stroke-strong: #{qds-variant-token(ink, '#{$scheme}-stroke-strong')};
-  --qds-control-stroke-strong: var(--qds-stroke-strong);
-  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom {
-    --qds-#{$token}: var(--qds-border);
+  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border, stroke-subtle, stroke-divider, stroke-focus, card-stroke, card-border {
+    --qds-#{$token}: var(--qds-stroke-strong);
   }
-  --qds-material-stroke: var(--qds-stroke-strong);
-  --qds-menu-border: var(--qds-stroke-strong);
-  --qds-bg-overlay: #{qds-variant-token(ink, '#{$scheme}-scrim')};
-  --qds-color-primary-pressed: color-mix(in srgb, var(--qds-color-primary) 70%, var(--qds-surface-0));
+  --qds-bg-overlay: transparent;
+  // E-ink has no tinted states: hover, press and selection are drawn by the component rules.
+  @each $token in state-hover, state-pressed, state-selected, tab-hover-bg, tab-active-bg {
+    --qds-#{$token}: transparent;
+  }
+  @each $token in separator-color, scrollbar-thumb, stepper-rail, timeline-rail, pagination-active-bg, pagination-active-border {
+    --qds-#{$token}: var(--qds-stroke-strong);
+  }
+  --qds-pagination-active-text: var(--qds-surface-0);
+  --qds-mica-alt: var(--qds-surface-1);
+  --qds-backdrop: var(--qds-surface-1);
+  --qds-toolbar-bg: var(--qds-surface-1);
+  --qds-focus-ring-width: 2px;
+  --qds-focus-ring-offset: 2px;
+  @if $scheme == light {
+    // An explicit dark bar on a light page is the inverted ink bar.
+    --qds-bar-dark-bg: var(--qds-text-strong);
+    --qds-bar-dark-fg: var(--qds-surface-0);
+  }
   --qds-fg-on-brand: var(--qds-text-on-primary);
-  --qds-text-on-solid: #{map.get(qds-variant-token(ink, light-on-fill), primary)};
-  @each $role in secondary, accent, positive, negative, warning, info {
-    --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 80%, var(--qds-text-strong));
+  @each $role in brand, primary, secondary, accent, positive, negative, warning, info {
+    --qds-fg-#{$role}: var(--qds-text-strong);
   }
+  @include qds-ink-colour('charcoal', $scheme);
 }
 
-// Zen keeps gentle raised/recessed depth, so shadows stay. Every affordance
-// must still read with shadows off, which is why control strokes resolve to the
-// 3:1 stroke-strong value rather than the quiet divider border.
+// One ink and one paper per scheme; every derived alias on the same element follows them.
+@mixin qds-ink-colour($name, $scheme) {
+  $c: map.get(tokens.$ink-colors, $name);
+  $ink: map.get($c, '#{$scheme}-ink');
+  $paper: map.get($c, '#{$scheme}-paper');
+  $ink-rgb: '#{color.channel($ink, "red", $space: rgb)}, #{color.channel($ink, "green", $space: rgb)}, #{color.channel($ink, "blue", $space: rgb)}';
+  --_qds-ink: #{$ink};
+  --_qds-paper: #{$paper};
+  @each $color in primary, primary-light, primary-dark, secondary, accent, positive, warning, info {
+    --qds-color-#{$color}: #{$ink};
+    --qds-color-#{$color}-rgb: #{$ink-rgb};
+  }
+  @each $role in primary, secondary, accent, positive, negative, warning, info {
+    --qds-text-on-#{$role}: #{$paper};
+  }
+  @each $step in 0, 1, 2, 3 {
+    --qds-surface-#{$step}: #{$paper};
+  }
+  @each $token in surface-brand-soft, surface-accent-soft, surface-positive-soft, surface-warning-soft, surface-negative-soft, surface-info-soft, surface-focus-block, surface-transient {
+    --qds-#{$token}: #{$paper};
+  }
+  @each $token in text, text-strong, border, border-subtle, stroke-strong {
+    --qds-#{$token}: #{$ink};
+  }
+  --qds-text-muted: #{map.get($c, '#{$scheme}-muted')};
+  --qds-fg-disabled: #{map.get($c, '#{$scheme}-disabled')};
+  --qds-text-on-solid: #{$paper};
+  --qds-card-acrylic-tint-rgb: #{$ink-rgb};
+  // The one red: negative roles, destructive actions and errors.
+  $danger: map.get($c, '#{$scheme}-danger');
+  --qds-color-negative: #{$danger};
+  --qds-color-negative-rgb: #{color.channel($danger, "red", $space: rgb)}, #{color.channel($danger, "green", $space: rgb)}, #{color.channel($danger, "blue", $space: rgb)};
+  --qds-fg-negative: #{$danger};
+  --qds-stroke-error: #{$danger};
+  $inverse: 'light-danger';
+  @if $scheme == light { $inverse: 'dark-danger'; }
+  --_qds-danger-inverse: #{map.get($c, $inverse)};
+}
+
+// Zen's boundary is essential and its depth decorative: control strokes resolve
+// to the 3:1 stroke-strong value so every affordance reads with shadows off.
 @mixin qds-zen-paper($scheme) {
   --qds-stroke-strong: #{qds-variant-token(zen, '#{$scheme}-stroke-strong')};
   @each $token in control-stroke-default, control-stroke-secondary, control-stroke-strong, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
     --qds-#{$token}: var(--qds-stroke-strong);
   }
   --qds-bg-overlay: #{qds-variant-token(zen, '#{$scheme}-scrim')};
-  // Zen owns its disabled value instead of inheriting the Fluent grey, and
-  // holds it at the 3:1 non-text floor even though WCAG 1.4.3 exempts it.
   --qds-fg-disabled: #{qds-variant-token(zen, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
   --qds-text-on-solid: #{map.get(qds-variant-token(zen, '#{$scheme}-on-fill'), primary)};
@@ -200,12 +252,83 @@
   @each $role in secondary, accent, positive, negative, warning, info {
     --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 80%, var(--qds-text-strong));
   }
-  // Quasar's native #c10015 validation paint must never reach a Zen field.
   --qds-stroke-error: var(--qds-fg-negative);
   --qds-stroke-focus: var(--qds-fg-brand);
-  --qds-segmented-track-bg: var(--qds-surface-2);
-  --qds-segmented-thumb-bg: var(--qds-surface-0);
+  --qds-segmented-track-bg: var(--qds-surface-0);
+  --qds-segmented-thumb-bg: var(--qds-surface-2);
   --qds-row-radius: var(--qds-radius-control);
+  --qds-button-radius: var(--qds-radius-full);
+  --qds-tab-radius: var(--qds-radius-full);
+  --qds-menu-radius: var(--qds-radius-lg);
+  --qds-notification-radius: var(--qds-radius-lg);
+  --qds-toggle-track-width: 3rem;
+  --qds-toggle-track-height: 1.75rem;
+  --qds-toggle-thumb-inset: 0.1875rem;
+  --qds-slider-label-bg: var(--qds-text-strong);
+  --qds-slider-label-text: var(--qds-surface-0);
+  --qds-slider-label-border: var(--qds-text-strong);
+  @each $step, $level in (2: --qds-shadow-sm, 4: --qds-shadow-sm, 8: --_qds-zen-lift-3, 16: --_qds-zen-lift-3, 28: --qds-shadow-md, 64: --qds-shadow-lg) {
+    --qds-shadow-#{$step}: var(#{$level});
+  }
+  @each $level in lift-2, lift-3, edge, inset, press {
+    --_qds-zen-#{$level}: #{qds-variant-token(zen, '#{$scheme}-#{$level}')};
+  }
+}
+
+// Ink's emission is isolated like zen's: it was rebuilt for 0.10.0, and the
+// frozen default-theme hash re-inserts the retired emission it replaced.
+@mixin qds-ink-scopes {
+  @layer qds.tokens {
+  .qds-variant-ink {
+    --qds-font-family: #{qds-variant-token(ink, font-family)};
+    --qds-font-family-display: #{qds-variant-token(ink, font-family-display)};
+    @each $step in xs, sm, md, xl {
+      --qds-radius-#{$step}: #{qds-variant-token(ink, radius-#{$step})};
+    }
+    --qds-motion-fast: #{qds-variant-token(ink, motion-fast)};
+    --qds-motion-duration-fast: 60ms;
+    --qds-motion-duration-base: 80ms;
+    --qds-motion-duration-medium: 80ms;
+    --qds-motion-duration-slow: 100ms;
+    --qds-motion-ease-out: linear;
+    --qds-motion-ease-in-out: linear;
+    @each $step in h1, h2, h3, h4 {
+      --qds-font-weight-#{$step}: 600;
+    }
+    @include qds-variant-scheme(ink);
+    @include fallbacks.qds-material-tokens(solid);
+    @include qds-ink-paper(light);
+  }
+
+  @media not (pointer: coarse) {
+    .qds-variant-ink {
+      --qds-list-item-min-height-value: #{qds-variant-token(ink, list-item-min-height)};
+      --qds-menu-item-min-height-value: #{qds-variant-token(ink, menu-item-min-height)};
+    }
+  }
+
+  // Selected inks are listed before the dark scopes, which outrank them only by order.
+  @each $name in 'black', 'navy' {
+    .qds-variant-ink[data-qds-ink="#{$name}"] { @include qds-ink-colour($name, light); }
+  }
+
+  .qds-theme-dark.qds-variant-ink,
+  .qds-theme-dark .qds-variant-ink,
+  body.qds-ui.body--dark.qds-variant-ink,
+  body.qds-ui.body--dark .qds-variant-ink {
+    @include qds-variant-scheme(ink, true);
+    @include fallbacks.qds-material-tokens(solid);
+    @include qds-ink-paper(dark);
+  }
+
+  @each $name in 'black', 'navy' {
+    $ink: '.qds-variant-ink[data-qds-ink="#{$name}"]';
+    .qds-theme-dark#{$ink},
+    .qds-theme-dark #{$ink},
+    body.qds-ui.body--dark#{$ink},
+    body.qds-ui.body--dark #{$ink} { @include qds-ink-colour($name, dark); }
+  }
+  }
 }
 
 // Zen's emission is isolated in one mixin so the frozen pre-Zen default
@@ -216,6 +339,20 @@
   .qds-variant-zen {
     --qds-font-family: #{qds-variant-token(zen, font-family)};
     --qds-font-family-display: #{qds-variant-token(zen, font-family-display)};
+    @each $step in xs, sm, md, xl {
+      --qds-radius-#{$step}: #{qds-variant-token(zen, radius-#{$step})};
+    }
+    @each $size in sm, md, lg {
+      --qds-control-size-#{$size}: #{qds-variant-token(zen, control-size-#{$size})};
+    }
+    --qds-motion-fast: #{qds-variant-token(zen, motion-fast)};
+    --_qds-zen-spring: #{qds-variant-token(zen, motion-spring)};
+    @each $step in h1, h2, h3, h4 {
+      --qds-font-weight-#{$step}: 380;
+    }
+    --qds-font-weight-h5: 450;
+    --qds-font-weight-h6: 500;
+    --qds-letter-spacing-overline: 0.1em;
     @include qds-variant-scheme(zen);
     @include fallbacks.qds-material-tokens(solid);
     @include qds-zen-paper(light);
@@ -239,21 +376,24 @@
   }
 }
 
-// Atrium is a quiet floating-panel system: translucent chrome over a grouped
-// background, soft rings instead of hard strokes, and capability-aware density.
-// Translucency is decoration only; every affordance must survive the opaque
-// fallback below.
-@mixin qds-atrium-material($scheme) {
-  --qds-stroke-strong: #{qds-variant-token(atrium, '#{$scheme}-stroke-strong')};
-  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, material-stroke, menu-border {
-    --qds-#{$token}: #{qds-variant-token(atrium, '#{$scheme}-border')};
+// Glass: controls and bars float on a translucent functional layer above content.
+// Translucency is decoration only; every affordance must survive the opaque fallback.
+@mixin qds-glass-material($scheme) {
+  --qds-stroke-strong: #{qds-variant-token(glass, '#{$scheme}-stroke-strong')};
+  @each $token in control-stroke-default, control-stroke-secondary, control-stroke-top, control-stroke-bottom, control-stroke-strong {
+    --qds-#{$token}: var(--qds-stroke-strong);
   }
-  --qds-control-stroke-strong: var(--qds-stroke-strong);
-  --qds-bg-overlay: #{qds-variant-token(atrium, '#{$scheme}-scrim')};
-  --qds-fg-disabled: #{qds-variant-token(atrium, '#{$scheme}-fg-disabled')};
+  @each $token in material-stroke, menu-border {
+    --qds-#{$token}: #{qds-variant-token(glass, '#{$scheme}-border')};
+  }
+  --qds-bg-overlay: #{qds-variant-token(glass, '#{$scheme}-scrim')};
+  --qds-fg-disabled: #{qds-variant-token(glass, '#{$scheme}-fg-disabled')};
   --qds-fg-on-brand: var(--qds-text-on-primary);
-  --qds-text-on-solid: #{map.get(qds-variant-token(atrium, '#{$scheme}-on-fill'), primary)};
+  --qds-text-on-solid: #{map.get(qds-variant-token(glass, '#{$scheme}-on-fill'), primary)};
   --qds-fg-brand: var(--qds-color-primary);
+  // Content stays opaque under the glass layer; the shared material tokens carry an acrylic card fill.
+  --qds-card-fill: var(--qds-surface-0);
+  --qds-notification-radius: var(--qds-radius-lg);
   @each $role in secondary, accent, positive, negative, warning, info {
     --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 86%, var(--qds-text-strong));
   }
@@ -262,61 +402,200 @@
   --qds-segmented-track-bg: var(--qds-surface-2);
   --qds-segmented-thumb-bg: var(--qds-surface-0);
   --qds-row-radius: var(--qds-radius-control);
-  // Capsule geometry, after qds-variant-scheme, which re-emits these three.
-  --qds-toggle-track-width: 3.1875rem;
-  --qds-toggle-track-height: 1.9375rem;
+  --qds-button-radius: var(--qds-radius-full);
+  --qds-menu-radius: #{qds-variant-token(glass, menu-radius)};
+  --qds-menu-shadow: var(--qds-shadow-lg);
+  // Capsule geometry, after qds-variant-scheme, which re-emits these three; the knob is itself a capsule.
+  --qds-toggle-track-width: 3.9375rem;
+  --qds-toggle-track-height: 1.75rem;
   --qds-toggle-thumb-inset: 0.125rem;
+  // Glass diffuses busy content and is edged by a bright top highlight rather than a deep drop shadow.
+  --qds-material-regular-blur: 40px;
+  --qds-material-saturate: 1.8;
   // The switch and slider knob stays light in both schemes, unlike an on-fill foreground.
   @if $scheme == light {
-    --_qds-atrium-knob: #{qds-variant-token(atrium, light-surface-0)};
+    --qds-material-regular-bg: color-mix(in srgb, var(--qds-surface-0) 92%, transparent);
+    --qds-material-edge: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --_qds-glass-knob: #{qds-variant-token(glass, light-surface-0)};
+    --_qds-glass-nested: var(--qds-surface-1);
+    --_qds-glass-on-track: currentColor;
   } @else {
-    --_qds-atrium-knob: #{qds-variant-token(atrium, dark-text-strong)};
+    --qds-material-edge: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    --_qds-glass-knob: #{qds-variant-token(glass, dark-text-strong)};
+    --_qds-glass-nested: var(--qds-surface-2);
+    // The page stays black, but a well inside a card is the elevated grey, never a black hole.
+    --qds-bg-surface-1: var(--qds-surface-2);
+    --qds-chrome-surface: color-mix(in srgb, var(--qds-surface-0) var(--qds-chrome-surface-mix, 86%), transparent);
+    // A light role on a dark track would wash out the light knob.
+    --_qds-glass-on-track: color-mix(in srgb, currentColor 70%, var(--qds-surface-0));
+  }
+  --_qds-glass-bar-line: transparent;
+  --qds-toolbar-bg: transparent;
+  @each $state, $mix in (default: 10%, hover: 16%, pressed: 24%) {
+    --qds-control-fill-#{$state}: color-mix(in srgb, var(--qds-text-muted) #{$mix}, var(--qds-material-regular-bg));
   }
 }
 
-@mixin qds-atrium-scopes {
+@mixin qds-glass-geometry {
+  --qds-font-family: #{qds-variant-token(glass, font-family)};
+  --qds-font-family-display: #{qds-variant-token(glass, font-family-display)};
+  --qds-motion-fast: #{qds-variant-token(glass, motion-fast)};
+  --qds-motion-ease-out: #{qds-variant-token(glass, motion-ease-out)};
+  @each $step in h1, h2, h3, h4, h5, h6 {
+    --qds-font-weight-#{$step}: var(--qds-font-weight-bold);
+  }
+  // Concentric: a nested shape's radius is its container's radius minus the padding between them.
+  --_qds-glass-pad: #{qds-variant-token(glass, pad)};
+  --_qds-glass-inset: #{qds-variant-token(glass, inset)};
+  --_qds-glass-sheet-pad: #{qds-variant-token(glass, sheet-pad)};
+  --_qds-glass-sheet-radius: calc(var(--qds-radius-control) + var(--_qds-glass-sheet-pad));
+  --_qds-glass-spring: #{qds-variant-token(glass, spring)};
+}
+
+@mixin qds-glass-solid {
+  @include fallbacks.qds-material-tokens(solid);
+  --_qds-glass-bar-line: var(--qds-border);
+}
+
+@mixin qds-glass-contrast($scheme) {
+  --qds-stroke-strong: var(--qds-text-muted);
+  --qds-border-subtle: var(--qds-stroke-strong);
+  --qds-material-stroke: var(--qds-stroke-strong);
+  --qds-color-primary: #{qds-variant-token(glass, '#{$scheme}-hc-primary')};
+  --qds-color-primary-rgb: #{qds-variant-token(glass, '#{$scheme}-hc-primary-rgb')};
+}
+
+$glass-dark: '.qds-theme-dark.qds-variant-glass, .qds-theme-dark .qds-variant-glass, body.qds-ui.body--dark.qds-variant-glass, body.qds-ui.body--dark .qds-variant-glass';
+
+@mixin qds-glass-scopes {
   @layer qds.tokens {
-  .qds-variant-atrium {
-    --qds-font-family: #{qds-variant-token(atrium, font-family)};
-    --qds-font-family-display: #{qds-variant-token(atrium, font-family-display)};
-    --qds-motion-fast: #{qds-variant-token(atrium, motion-fast)};
-    --qds-motion-ease-out: #{qds-variant-token(atrium, motion-ease-out)};
-    @include qds-variant-scheme(atrium);
+  .qds-variant-glass {
+    @include qds-glass-geometry;
+    @include qds-variant-scheme(glass);
     @include fallbacks.qds-material-tokens(light);
-    @include qds-atrium-material(light);
+    @include qds-glass-material(light);
   }
 
   @media not (pointer: coarse) {
-    .qds-variant-atrium {
-      --qds-list-item-min-height-value: #{qds-variant-token(atrium, list-item-min-height)};
-      --qds-menu-item-min-height-value: #{qds-variant-token(atrium, menu-item-min-height)};
+    .qds-variant-glass {
+      --qds-list-item-min-height-value: #{qds-variant-token(glass, list-item-min-height)};
+      --qds-menu-item-min-height-value: #{qds-variant-token(glass, menu-item-min-height)};
     }
   }
 
-  .qds-theme-dark.qds-variant-atrium,
-  .qds-theme-dark .qds-variant-atrium,
-  body.qds-ui.body--dark.qds-variant-atrium,
-  body.qds-ui.body--dark .qds-variant-atrium {
-    @include qds-variant-scheme(atrium, true);
+  #{$glass-dark} {
+    @include qds-variant-scheme(glass, true);
     @include fallbacks.qds-material-tokens(dark);
-    @include qds-atrium-material(dark);
+    @include qds-glass-material(dark);
+  }
 
-    // Nested so the fallback shares this scope's specificity; (0,1,0) loses.
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      @include fallbacks.qds-material-tokens(solid);
+  // One body per condition; each dark selector ties the dark scope and follows it.
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .qds-variant-glass, #{$glass-dark} { @include qds-glass-solid; }
+  }
+
+  @media (prefers-reduced-transparency: reduce), (forced-colors: active), (prefers-contrast: more) {
+    .qds-variant-glass, #{$glass-dark} { @include qds-glass-solid; }
+  }
+
+  @media (prefers-contrast: more) {
+    .qds-variant-glass { @include qds-glass-contrast(light); }
+    #{$glass-dark} { @include qds-glass-contrast(dark); }
+  }
+  }
+}
+
+@mixin qds-win-values($values) {
+  @each $token in fg-disabled, state-hover, state-pressed, control-stroke-on-accent-bottom, bg-overlay, stroke-divider, material-stroke {
+    --qds-#{$token}: #{map.get($values, $token)};
+  }
+  @each $token in accent-fill-disabled, text-on-accent-disabled, layer-alt, surface-stroke, focus-outer {
+    --_qds-win-#{$token}: #{map.get($values, $token)};
+  }
+  // Derived, so every dark scope re-emits it; WinUI keeps 16px glyphs when dense.
+  --qds-button-dense-icon-size: var(--qds-control-icon-size-md);
+  // WinUI elevation: flyouts sit at 32, dialogs at 128.
+  @each $token in menu-shadow, notification-shadow, elevation-flyout {
+    --qds-#{$token}: var(--qds-shadow-28);
+  }
+  --qds-backdrop: radial-gradient(ellipse 64rem 36rem at 0% 0%, rgba(var(--qds-color-primary-rgb), #{map.get($values, backdrop-brand)}), transparent 72%), radial-gradient(ellipse 56rem 36rem at 100% 100%, rgba(var(--qds-color-primary-rgb), #{map.get($values, backdrop-accent)}), transparent 72%), var(--qds-surface-1);
+}
+
+// Aliases are re-declared because :root resolved them against the shared palette.
+@mixin qds-win-palette($scheme) {
+  $values: map.get(tokens.$win-palette, $scheme);
+  @each $role in primary, primary-light, primary-dark, positive, negative, warning, info {
+    $value: map.get($values, $role);
+    --qds-color-#{$role}: #{$value};
+    --qds-color-#{$role}-rgb: #{color.channel($value, 'red', $space: rgb)}, #{color.channel($value, 'green', $space: rgb)}, #{color.channel($value, 'blue', $space: rgb)};
+  }
+  @each $role in primary, positive, negative, warning, info {
+    --qds-text-on-#{$role}: #{map.get($values, on-fill)};
+  }
+  --qds-fg-brand: #{map.get($values, fg-brand)};
+  --qds-fg-info: #{map.get($values, fg-info)};
+  @each $role in positive, negative, warning {
+    --qds-surface-#{$role}-soft: #{map.get($values, '#{$role}-soft')};
+  }
+  // Status text leans toward the strong ink so it holds 4.5:1 on its pressed tonal wash; dark accent shares the fix.
+  @each $role in if($scheme == dark, (accent, positive, negative, warning), (positive, negative, warning)) {
+    --qds-fg-#{$role}: color-mix(in srgb, var(--qds-color-#{$role}) 70%, var(--qds-text-strong));
+  }
+  // The dark root re-declares these same aliases on its own element, so only the light scope needs them.
+  @if $scheme == light {
+    --qds-fg-primary: var(--qds-fg-brand);
+    --qds-color-primary-hover: color-mix(in srgb, var(--qds-color-primary) var(--qds-fill-hover-mix), var(--qds-fill-state-base));
+    --qds-color-primary-pressed: color-mix(in srgb, var(--qds-color-primary) var(--qds-fill-pressed-mix), var(--qds-fill-state-base));
+    @each $token in stroke-focus, state-focus-indicator, tab-active-rail, banner-accent, notify-accent, stepper-rail-active, table-sort-icon {
+      --qds-#{$token}: var(--qds-color-primary);
     }
+    --qds-banner-accent-rgb: var(--qds-color-primary-rgb);
+    --qds-notify-accent-rgb: var(--qds-color-primary-rgb);
+    --qds-stroke-error: var(--qds-color-negative);
+    --qds-state-selected: color-mix(in srgb, var(--qds-color-primary) calc(var(--qds-tonal-bg-opacity) * 100%), transparent);
+    --qds-handle-color: color-mix(in srgb, var(--qds-border) var(--qds-handle-border-mix, 58%), var(--qds-color-primary) var(--qds-handle-primary-mix, 10%));
+    --qds-scrollbar-thumb: var(--qds-handle-color);
+    --qds-scrollbar-thumb-hover: color-mix(in srgb, var(--qds-handle-color) 72%, var(--qds-text-muted));
+    --qds-tab-hover-bg: color-mix(in srgb, var(--qds-surface-2) 88%, var(--qds-color-primary) 12%);
+    --qds-tab-active-bg: rgba(var(--qds-color-primary-rgb), var(--qds-tonal-bg-opacity));
+    --qds-tab-active-text: color-mix(in srgb, var(--qds-color-primary) var(--qds-tonal-text-mix), var(--qds-text-strong));
+    --qds-pagination-active-border: rgba(var(--qds-color-primary-rgb), var(--qds-tonal-border-opacity));
+  }
+}
 
-    @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-      @include fallbacks.qds-material-tokens(solid);
+// Win's WinUI deltas live on its own variant class, isolated in one mixin
+// like zen/atrium, so the frozen theme hash stays verifiable and every other
+// profile keeps the shared semantic values.
+@mixin qds-win-scopes {
+  $dark: '.qds-theme-dark.qds-variant-win, .qds-theme-dark .qds-variant-win, .qds-variant-win .qds-theme-dark, body.qds-ui.body--dark.qds-variant-win, body.qds-ui.body--dark .qds-variant-win';
+  @layer qds.tokens {
+  .qds-variant-win {
+    @include qds-win-palette(light);
+    @include qds-win-values(tokens.$win-light);
+    --qds-font-family: #{map.get(tokens.$win-font, body)};
+    --qds-font-family-display: #{map.get(tokens.$win-font, display)};
+    --qds-focus-ring-offset: 1px;
+    --qds-control-icon-opacity: 1;
+    --qds-control-icon-opacity-active: 1;
+  }
+
+  #{$dark} {
+    @include qds-win-palette(dark);
+    @include qds-win-values(tokens.$win-dark);
+    --qds-text-muted: #{map.get(tokens.$win-dark, text-muted)};
+    // Rebound here so a win subtree inside a dark root does not keep the inherited value.
+    @each $alias in fg-muted, interactive-text-muted, control-icon-color {
+      --qds-#{$alias}: var(--qds-text-muted);
     }
   }
 
+  // Opaque material fallbacks drop the accent edge and the Mica tint, as on :root.
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .qds-variant-atrium { @include fallbacks.qds-material-tokens(solid); }
+    .qds-variant-win, #{$dark} { --qds-control-stroke-on-accent-bottom: transparent; --qds-backdrop: var(--qds-surface-1); }
   }
 
   @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-    .qds-variant-atrium { @include fallbacks.qds-material-tokens(solid); }
+    .qds-variant-win, #{$dark} { --qds-control-stroke-on-accent-bottom: transparent; --qds-backdrop: var(--qds-surface-1); }
   }
   }
 }
@@ -416,30 +695,6 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
     @include fallbacks.qds-material-tokens(dark);
   }
 
-  .qds-variant-ink {
-    --qds-font-family: #{qds-variant-token(ink, font-family)};
-    --qds-font-family-display: #{qds-variant-token(ink, font-family-display)};
-    @include qds-variant-scheme(ink);
-    @include fallbacks.qds-material-tokens(solid);
-    @include qds-ink-paper(light);
-  }
-
-  @media not (pointer: coarse) {
-    .qds-variant-ink {
-      --qds-list-item-min-height-value: #{qds-variant-token(ink, list-item-min-height)};
-      --qds-menu-item-min-height-value: #{qds-variant-token(ink, menu-item-min-height)};
-    }
-  }
-
-  .qds-theme-dark.qds-variant-ink,
-  .qds-theme-dark .qds-variant-ink,
-  body.qds-ui.body--dark.qds-variant-ink,
-  body.qds-ui.body--dark .qds-variant-ink {
-    @include qds-variant-scheme(ink, true);
-    @include fallbacks.qds-material-tokens(solid);
-    @include qds-ink-paper(dark);
-  }
-
   .qds-variant-one {
     --qds-font-family: #{qds-variant-token(one, font-family)};
     --qds-font-family-display: #{qds-variant-token(one, font-family-display)};
@@ -509,5 +764,18 @@ $qds-material-scopes: '.qds-theme-dark, body.qds-ui.body--dark, .qds-variant-one
 }
 
 @include qds-zen-scopes;
-@include qds-atrium-scopes;
+@include qds-glass-scopes;
+@include qds-win-scopes;
+@include qds-ink-scopes;
 @include shadcn.scopes;
+
+// Runtime sentinel: the controller warns in development when the active variant's stylesheet is missing.
+@mixin qds-variant-sentinels {
+  @layer qds.tokens {
+    @each $variant in win, ink, one, term, shadcn, zen, glass {
+      .qds-variant-#{$variant} { --_qds-variant: #{$variant}; }
+    }
+  }
+}
+
+@include qds-variant-sentinels;

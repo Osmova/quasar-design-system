@@ -3,9 +3,10 @@ import { afterEach, test } from 'node:test'
 import {
   createDesignSystemController, configureDesignSystem, DEFAULT_DESIGN_SYSTEM_OPTIONS,
   DESIGN_SYSTEM_VARIANTS, SHADCN_ACCENT_COLORS, SHADCN_BASE_COLORS, isShadcnBaseColor, isBuiltInDesignSystemVariantName,
+  INK_COLORS, isInkColor,
 } from '@osmova/quasar-design-system'
 import { createDesignSystemController as runtimeExport } from '@osmova/quasar-design-system/runtime'
-import { SHADCN_BASE_COLORS as themesExport } from '@osmova/quasar-design-system/themes'
+import { SHADCN_BASE_COLORS as themesExport, INK_COLORS as inkThemesExport } from '@osmova/quasar-design-system/themes'
 
 const storageKey = DEFAULT_DESIGN_SYSTEM_OPTIONS.storageKey
 const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
@@ -61,15 +62,14 @@ test('compiled package entrypoints expose every canonical variant and five exact
   assert.equal(runtimeExport, createDesignSystemController)
   assert.equal(themesExport, SHADCN_BASE_COLORS)
   assert.deepEqual(SHADCN_BASE_COLORS.map(({ name }) => name), ['neutral', 'gray', 'zinc', 'stone', 'slate'])
-  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['fluent', 'ink', 'one', 'term', 'shadcn', 'zen'])
+  assert.deepEqual(Object.keys(DESIGN_SYSTEM_VARIANTS), ['win', 'ink', 'one', 'term', 'shadcn', 'zen', 'glass'])
   assert.equal(DESIGN_SYSTEM_VARIANTS.shadcn.cssClass, 'qds-variant-shadcn')
   assert.equal(isBuiltInDesignSystemVariantName('shadcn'), true)
   assert.equal(DESIGN_SYSTEM_VARIANTS.zen.cssClass, 'qds-variant-zen')
   assert.equal(isBuiltInDesignSystemVariantName('zen'), true)
-  // atrium grammar ships but is deliberately unregistered until T194 closes.
-  assert.equal(DESIGN_SYSTEM_VARIANTS.atrium, undefined)
-  assert.equal(isBuiltInDesignSystemVariantName('atrium'), false)
-  assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.variant, 'fluent')
+  assert.equal(DESIGN_SYSTEM_VARIANTS.glass.cssClass, 'qds-variant-glass')
+  assert.equal(isBuiltInDesignSystemVariantName('glass'), true)
+  assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.variant, 'win')
   assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.mode, 'system')
   for (const bad of [undefined, null, '', 'Gray', 'gray ', '__proto__', 'toString', {}, ['slate'], 1]) {
     assert.equal(isShadcnBaseColor(bad), false)
@@ -88,13 +88,13 @@ test('mandatory SSR: target:null + persist:true initializes, switches and destro
   for (const { name } of SHADCN_BASE_COLORS) assert.equal(controller.setShadcnBaseColor(name), name)
   controller.setDark()
   assert.equal(controller.isDark.value, true)
-  controller.setVariant('fluent')
+  controller.setVariant('win')
   assert.equal(controller.shadcnBaseColor.value, 'slate')
   controller.destroy()
   controller.destroy()
   assert.equal(controller.state.initialized, false)
   controller.initialize()
-  assert.equal(controller.variant.value, 'fluent')
+  assert.equal(controller.variant.value, 'win')
   assert.equal(controller.shadcnBaseColor.value, 'slate')
   controller.destroy()
 })
@@ -120,7 +120,7 @@ test('all palettes switch on the same custom target and persist with mode and va
     assert.equal(subtree.dataset.qdsShadcnBaseColor, name)
     assert.equal(subtree.dataset.qdsVariant, 'shadcn')
     assert.equal(subtree.dataset.qdsMode, 'light')
-    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'shadcn', shadcnBaseColor: name, shadcnAccent: 'none' })
+    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'shadcn', shadcnBaseColor: name, shadcnAccent: 'none', inkColor: 'charcoal' })
   }
   controller.setDark()
   assert.equal(subtree.dataset.qdsResolved, 'dark')
@@ -147,7 +147,7 @@ test('shadcn accent applies only on shadcn, persists, and falls back to none', (
   assert.equal(subtree.dataset.qdsShadcnAccent, 'blue')
   assert.equal(controller.setShadcnAccent('blue'), 'blue')
   assert.equal(JSON.parse(env.storage.get(storageKey)).shadcnAccent, 'blue')
-  controller.setVariant('fluent')
+  controller.setVariant('win')
   assert.equal(subtree.dataset.qdsShadcnAccent, undefined)
   assert.equal(controller.shadcnAccent.value, 'blue')
   controller.setVariant('shadcn')
@@ -157,6 +157,87 @@ test('shadcn accent applies only on shadcn, persists, and falls back to none', (
   assert.ok(SHADCN_ACCENT_COLORS.some((accent) => accent.name === 'blue'))
   controller.destroy()
   assert.deepEqual(subtree.dataset, { author: 'retained' })
+})
+
+test('ink colours: exports, attribute only on ink (legacy feather too), persistence, cleanup', () => {
+  assert.equal(inkThemesExport, INK_COLORS)
+  assert.deepEqual(INK_COLORS.map(({ name, label }) => [name, label]), [['charcoal', 'Charcoal'], ['black', 'Black'], ['navy', 'Navy']])
+  assert.equal(DEFAULT_DESIGN_SYSTEM_OPTIONS.inkColor, 'charcoal')
+  for (const bad of [undefined, null, '', 'Navy', 'navy ', '__proto__', 'toString', {}, ['black'], 1]) {
+    assert.equal(isInkColor(bad), false)
+  }
+  const env = browser()
+  const subtree = target()
+  const controller = createDesignSystemController({ target: subtree, variant: 'ink', mode: 'light' })
+  controller.initialize()
+  assert.equal(controller.inkColor.value, 'charcoal')
+  assert.equal(subtree.dataset.qdsInk, 'charcoal')
+  for (const { name } of INK_COLORS) {
+    assert.equal(controller.setInkColor(name), name)
+    assert.equal(subtree.dataset.qdsInk, name)
+    assert.equal(controller.state.inkColor, name)
+    assert.deepEqual(JSON.parse(env.storage.get(storageKey)), { mode: 'light', variant: 'ink', shadcnBaseColor: 'neutral', shadcnAccent: 'none', inkColor: name })
+  }
+  controller.setVariant('shadcn')
+  assert.equal(subtree.dataset.qdsInk, undefined)
+  assert.equal(subtree.dataset.qdsShadcnBaseColor, 'neutral')
+  assert.equal(controller.inkColor.value, 'navy')
+  controller.setInkColor('black')
+  assert.equal(subtree.dataset.qdsInk, undefined)
+  assert.equal(controller.setVariant('feather'), 'ink')
+  assert.equal(subtree.dataset.qdsInk, 'black')
+  assert.equal(subtree.dataset.qdsShadcnBaseColor, undefined)
+  controller.destroy()
+  assert.deepEqual(subtree.dataset, { author: 'retained' })
+  assert.deepEqual(env.body.dataset, { author: 'retained' })
+
+  browser()
+  const legacy = createDesignSystemController({ persist: false, variant: 'feather', inkColor: 'navy' })
+  legacy.initialize()
+  assert.equal(document.body.dataset.qdsInk, 'navy')
+  legacy.destroy()
+  assert.equal(document.body.dataset.qdsInk, undefined)
+})
+
+test('stored ink colour wins; absent old field preserves configured colour; invalid values normalise Charcoal', () => {
+  for (const [stored, config, expected] of [
+    [{ mode: 'dark', variant: 'ink', inkColor: 'black' }, 'charcoal', 'black'],
+    [{ mode: 'dark', variant: 'ink', shadcnBaseColor: 'slate' }, 'navy', 'navy'],
+    [{ mode: 'light', variant: 'term' }, undefined, 'charcoal'],
+    [{ inkColor: null }, 'black', 'charcoal'],
+    [{ inkColor: 'unknown' }, 'black', 'charcoal'],
+  ]) {
+    const env = browser(stored)
+    const controller = createDesignSystemController({ mode: 'light', variant: 'ink', inkColor: config })
+    controller.initialize()
+    assert.equal(controller.inkColor.value, expected)
+    assert.equal(env.body.dataset.qdsInk, controller.variant.value === 'ink' ? expected : undefined)
+    controller.destroy()
+  }
+  browser()
+  for (const bad of [null, 'Black', 'bad', '', '__proto__', 'toString', {}, ['black'], 42, false]) {
+    const controller = createDesignSystemController({ inkColor: bad, persist: false, variant: 'ink' })
+    controller.initialize()
+    assert.equal(controller.inkColor.value, 'charcoal')
+    controller.setInkColor('black')
+    assert.equal(controller.setInkColor(bad), 'charcoal')
+    assert.equal(document.body.dataset.qdsInk, 'charcoal')
+    controller.destroy()
+  }
+})
+
+test('mandatory SSR: ink colour switches and persists state without any DOM', () => {
+  delete globalThis.window
+  delete globalThis.document
+  const controller = createDesignSystemController({ target: null, persist: true, variant: 'ink', inkColor: 'black' })
+  controller.initialize()
+  assert.equal(controller.inkColor.value, 'black')
+  for (const { name } of INK_COLORS) assert.equal(controller.setInkColor(name), name)
+  controller.setVariant('win')
+  controller.destroy()
+  controller.initialize()
+  assert.equal(controller.inkColor.value, 'navy')
+  controller.destroy()
 })
 
 test('stored palette wins; absent old field preserves configured palette or defaults Neutral', () => {
@@ -251,7 +332,7 @@ test('existing aliases and externally registered variants remain unchanged', () 
   c.setVariant('alternate')
   assert.equal(env.body.classes.has('custom-theme'), false)
   assert.equal(env.body.classes.has('alternate-theme'), true)
-  for (const [alias, canonical] of Object.entries({ air: 'fluent', glass: 'fluent', studio: 'fluent', feather: 'ink', mobile: 'one', terminal: 'term' })) {
+  for (const [alias, canonical] of Object.entries({ fluent: 'win', air: 'win', studio: 'win', feather: 'ink', mobile: 'one', terminal: 'term' })) {
     assert.equal(c.setVariant(alias), canonical)
     assert.equal(env.body.classes.has(`qds-variant-${canonical}`), true)
     assert.equal(Object.keys(DESIGN_SYSTEM_VARIANTS).includes(alias), false)
@@ -259,6 +340,32 @@ test('existing aliases and externally registered variants remain unchanged', () 
   assert.equal(c.shadcnBaseColor.value, 'gray')
   c.destroy()
   assert.deepEqual([...env.body.classes], ['author-class'])
+})
+
+test('glass is its own variant, no longer a win alias, while fluent, air and studio still are', () => {
+  const configured = browser()
+  const c = createDesignSystemController({ persist: false, variant: 'glass' })
+  c.initialize()
+  assert.equal(c.variant.value, 'glass')
+  assert.equal(configured.body.classes.has('qds-variant-glass'), true)
+  assert.equal(configured.body.classes.has('qds-variant-win'), false)
+  assert.equal(configured.body.dataset.qdsVariant, 'glass')
+  assert.equal(c.setVariant('glass'), 'glass')
+  for (const alias of ['fluent', 'air', 'studio']) {
+    assert.equal(c.setVariant(alias), 'win')
+    assert.equal(configured.body.classes.has('qds-variant-win'), true)
+    assert.equal(configured.body.classes.has('qds-variant-glass'), false)
+  }
+  c.destroy()
+
+  for (const [stored, expected] of [['glass', 'glass'], ['fluent', 'win'], ['air', 'win'], ['studio', 'win']]) {
+    const env = browser({ mode: 'light', variant: stored })
+    const restored = createDesignSystemController()
+    restored.initialize()
+    assert.equal(restored.variant.value, expected, `stored ${stored} resolves to ${expected}`)
+    assert.equal(env.body.classes.has(`qds-variant-${expected}`), true)
+    restored.destroy()
+  }
 })
 
 test('configureDesignSystem initializes and provides the complete compiled public controller', () => {
@@ -271,4 +378,44 @@ test('configureDesignSystem initializes and provides the complete compiled publi
   assert.equal(c.state.initialized, true)
   assert.equal(env.body.dataset.qdsShadcnBaseColor, 'slate')
   c.destroy()
+})
+
+test('stale qds-variant-fluent is removed and a missing variant stylesheet warns once in development only', (t) => {
+  const env = browser()
+  env.body.classes.add('qds-variant-fluent')
+  const loaded = new Set(['win'])
+  globalThis.getComputedStyle = (element) => ({
+    getPropertyValue: (name) => {
+      const variant = [...element.classes].find((c) => c.startsWith('qds-variant-'))?.slice(12)
+      return name === '--_qds-variant' && loaded.has(variant) ? ` ${variant}` : ''
+    },
+  })
+  t.after(() => { delete globalThis.getComputedStyle })
+  const warn = t.mock.method(console, 'warn', () => {})
+  const c = createDesignSystemController({ persist: false, variant: 'win' })
+  c.initialize()
+  assert.equal(env.body.classes.has('qds-variant-fluent'), false)
+  assert.equal(warn.mock.callCount(), 0)
+  c.setVariant('zen')
+  c.setDark()
+  c.setVariant('zen')
+  assert.equal(warn.mock.callCount(), 1)
+  assert.match(warn.mock.calls[0].arguments[0], /"zen".*css\/variants\/zen/)
+  loaded.add('glass')
+  c.setVariant('glass')
+  c.setVariant('custom-unknown')
+  assert.equal(warn.mock.callCount(), 1)
+  c.destroy()
+
+  globalThis.getComputedStyle = () => { throw new Error('boom') }
+  assert.doesNotThrow(() => { const d = createDesignSystemController({ persist: false, variant: 'ink' }); d.initialize(); d.destroy() })
+
+  const nodeEnv = process.env.NODE_ENV
+  process.env.NODE_ENV = 'production'
+  t.after(() => { if (nodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = nodeEnv })
+  globalThis.getComputedStyle = () => ({ getPropertyValue: () => '' })
+  const p = createDesignSystemController({ persist: false, variant: 'ink' })
+  p.initialize()
+  p.destroy()
+  assert.equal(warn.mock.callCount(), 1)
 })

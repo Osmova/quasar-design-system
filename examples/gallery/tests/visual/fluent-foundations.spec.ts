@@ -31,7 +31,7 @@ async function tokenColor(page: Parameters<typeof customProperty>[0], token: str
 test.describe('Fluent foundation contract', () => {
   test('uses the 24/32/40 control scale with a label band above the field and an opt-in 48px float field', async ({ page }) => {
     await page.goto('/#components')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const panel = '.q-tab-panel'
     const defaultField = '[data-test="qds-control-input"] .q-field'
@@ -102,7 +102,7 @@ test.describe('Fluent foundation contract', () => {
     }
 
     for (const mode of ['light', 'dark'] as const) {
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
       for (const role of roles) {
         const { rest, hover, pressed } = await states(role)
         const lighter = mode === 'light' ? 1 : -1
@@ -143,7 +143,7 @@ test.describe('Fluent foundation contract', () => {
 
   test('uses independently tuned Fluent dark semantic fills, soft surfaces, and focus boundaries', async ({ page }) => {
     await page.goto('/#components')
-    await applyTheme(page, 'dark', 'fluent')
+    await applyTheme(page, 'dark', 'win')
 
     const roles = ['primary', 'secondary', 'accent', 'positive', 'negative', 'warning', 'info'] as const
     for (const role of roles) {

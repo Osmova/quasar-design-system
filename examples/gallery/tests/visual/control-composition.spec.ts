@@ -6,7 +6,7 @@ const MODES: Mode[] = ['light', 'dark']
 test.describe('control composition', () => {
   test('floating badge inside a button group keeps its counter width and top-end anchor', async ({ page }) => {
     await page.goto('./#components')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     const geometry = await page.locator('[data-test="qds-badge-floating-group"] .q-badge--floating').evaluate((badge) => {
       const host = badge.closest('.q-btn')!.getBoundingClientRect()
       const box = badge.getBoundingClientRect()
@@ -30,7 +30,8 @@ test.describe('control composition', () => {
         await page.goto('./#components')
         await applyTheme(page, mode, variant)
         const inactive = page.locator('[data-test="qds-toggle-color"] > .q-btn:not([aria-pressed="true"])').first()
-        const muted = await resolvedColor(page, '--qds-fg-muted')
+        // The win Segmented keeps idle labels primary; the selected one carries the pill.
+        const muted = await resolvedColor(page, variant === 'win' ? '--qds-fg-default' : '--qds-fg-muted')
         await expect.poll(() => inactive.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgba(0, 0, 0, 0)')
         await expect.poll(() => inactive.evaluate((element) => getComputedStyle(element).color)).toBe(muted)
         const disabled = page.locator('[data-test="qds-toggle-color"] > .q-btn.disabled')

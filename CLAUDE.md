@@ -5,22 +5,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `@osmova/quasar-design-system` — an opinionated **visual layer** for Quasar 2. Microsoft Fluent 2 is the
-primary direction, now with tonal/acrylic defaults; the `ink` variant is the paper-neutral editorial
-surface with charcoal type and pastel role washes, and the `one` variant references Samsung One UI
+primary direction, now with tonal/acrylic defaults; the `ink` variant is a single-ink e-ink
+interface (charcoal, black or navy ink on flat paper, roles as fill patterns, one red for errors), and the `one` variant references Samsung One UI
 (neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent). It provides design tokens, surfaces, shape, motion, typography,
 Quasar component overrides, and a runtime light/dark/system + variant controller.
 The fifth variant, `shadcn`, provides opaque New York-inspired native Quasar styling with
 Neutral/Gray/Zinc/Stone/Slate palettes. It requires Quasar >=2.35; the existing ^2.0.0 peer range
 remains for existing variants. No mandatory Tailwind/Reka dependency is introduced. The sixth,
 `zen`, is the soft reading surface: linen paper with sage controls, generous radii, gentle diffuse depth,
-and an essential edge on every control, with an opt-in `.qds-reading` presentation.
-
-An `atrium` profile (responsive iPad/macOS-inspired) has tokens and component grammar in the bundle
-but is **deliberately unregistered**: it does not appear in `DESIGN_SYSTEM_VARIANTS`, so it is not a
-public contract. Selecting it is accepted — any non-empty string is a valid variant name, so apps can
-register their own — but with no registry entry no variant class is applied and the grammar stays
-dead, while `data-qds-variant` still echoes the name asked for. Do not document, export or select it
-until T194 closes.
+and an essential edge on every control, with an opt-in `.qds-reading` presentation. The seventh,
+`glass`, is inspired by Apple's design language: controls and bars float on a translucent functional
+layer above opaque content, prominent controls are capsules, nested shapes are concentric (private
+`--_qds-glass-*` geometry tokens), and tint is reserved for role fills and selection. Translucency is
+decoration only: no-filter, reduced transparency, forced colours and increased contrast all resolve
+to opaque surfaces; increased contrast restores 3:1 edges on every control. `glass` was a legacy win alias before 0.10.0; it is now
+its own variant.
 
 It is a pure visual product: **no business logic, no entity/model layer, no API/transport code, no
 permissions, no app routes, no private endpoints.** Prefer semantic token names over app-specific
@@ -40,9 +39,10 @@ selectors. Anything that is not generic, reusable visual language does not belon
 - `pnpm gallery:shadcn-reference:test` — dedicated two-origin comparison config; add `QDS_SCREENS=1` only in the matching pinned Playwright image for screenshot pairs.
 
 The package publishes built TypeScript runtime entrypoints in `dist/` (`main` and `types` in
-`package.json` point at compiled ESM and `.d.ts` files), while SCSS and font exports remain source-first
-from `src/`. Run `pnpm build` after changing exported `.ts` files so the gallery and package exports use
-fresh compiled runtime code. Validate visual work via `typecheck` + visual review in the gallery.
+`package.json` point at compiled ESM and `.d.ts` files) and compiled CSS bundles in `dist/css`, while the
+other SCSS and font exports remain source-first from `src/`. Run `pnpm build` after changing exported `.ts` files so the gallery and package exports use
+fresh compiled runtime code. The gallery imports `css/all` (SCSS source), so SCSS edits need no `pnpm build`.
+Validate visual work via `typecheck` + visual review in the gallery.
 
 ## Architecture
 
@@ -78,9 +78,20 @@ on-fill foreground over text utilities/normal inline color, while author inline 
 Arbitrary consumer titlebar/background paint remains author-owned, including its text/focus contrast;
 do not silently recolor it or extend library-palette guarantees to arbitrary authored combinations.
 
+### CSS delivery
+
+`pnpm build` compiles `src/css/index(.layered).scss` and `scripts/css-partition.mjs` writes `dist/css/index.css`
+(shared + `win`) and `dist/css/variants/<name>.css`, each the full stylesheet in source order minus every other
+variant's rules (plus `layered/` twins). Separate additive files would reorder equal-specificity ties, so variant
+files are complete and replace `./css`. `./css`, `./css/layered` and `./css/variants/*` export those files;
+`./css/all` keeps the SCSS source. A new variant needs no extra wiring as long as every rule is scoped by
+`.qds-variant-<name>`; add the name to `VARIANT_SCOPES` in the partition script and to the `--_qds-variant`
+sentinel loop in `src/themes/default.scss` (the runtime's missing-stylesheet warning reads it). Mixed selector
+lists are split per selector.
+
 ### CSS entry point
 
-`src/css/index.scss` (the `./css` export) `@use`s `themes/fallbacks` (a guaranteed base layer defining
+`src/css/index.scss` (the `./css/all` export, built into `dist/css/index.css` for `./css`) `@use`s `themes/fallbacks` (a guaranteed base layer defining
 every public `--qds-*` once) then `themes/default`, then `@include`s each override partial's
 top-level (unlayered) `@mixin styles`. Adding a component override = create
 `src/css/components/_name.scss` exposing `@mixin styles` (scoped to `.qds-ui`, consuming `var(--qds-*)`)
@@ -95,7 +106,9 @@ and `@include` it in `index.scss` (and the layered entry).
   `$q.dark`, and writes `data-qds-mode` / `data-qds-resolved` / `data-qds-variant` plus the
   `qds-theme-light|dark` and `.qds-ui` classes onto the target (default `document.body`).
 - `.qds-ui` is the scoping class the stronger overrides depend on — it is added here, not by hand.
-- Applies the `variant` as a body class (`qds-variant-fluent|ink|one|term|shadcn|zen`; legacy `air`/`glass`/`studio` normalize to `fluent`; legacy `feather` normalizes to `ink`; legacy `mobile`/`terminal` normalize to `one`/`term`).
+- Applies the `variant` as a body class (`qds-variant-win|ink|one|term|shadcn|zen|glass`; legacy `fluent`/`air`/`studio` normalize to `win`; legacy `feather` normalizes to `ink`; legacy `mobile`/`terminal` normalize to `one`/`term`).
+- Exposes `inkColor` (`charcoal` default, `black`, `navy`) the same way: `setInkColor()`, `INK_COLORS`, `InkColor`,
+  `data-qds-ink` written only while ink is active.
 - Exposes `shadcnBaseColor` in options/state/computed refs and `setShadcnBaseColor()`; exports
   `SHADCN_BASE_COLORS` and `ShadcnBaseColor`. Invalid palettes normalize to Neutral. Selection survives
   other variants, while the active palette attribute exists only on shadcn.
@@ -114,9 +127,9 @@ and `@include` it in `index.scss` (and the layered entry).
 
 ### Themes vs variants — `src/themes/index.ts`
 
-There is **one theme** (`default`). "Variants" (`fluent`, `ink`, `one`, `term`, `shadcn`, `zen`) are mood shifts
+There is **one theme** (`default`). "Variants" (`win`, `ink`, `one`, `term`, `shadcn`, `zen`, `glass`) are mood shifts
 expressed purely as CSS classes (`DESIGN_SYSTEM_VARIANTS[*].cssClass`) over the same token system —
-not separate brands. Legacy inputs `air`/`glass`/`studio` normalize to `fluent`; `feather` normalizes
+not separate brands. Legacy inputs `fluent`/`air`/`studio` normalize to `win`; `feather` normalizes
 to `ink`. New themes start as variables-only files: `src/themes/{name}.scss` for CSS
 vars/classes + registration metadata in `src/themes/index.ts`. Keep `src/themes/` free of component
 selectors — themes define values, the implementation reads them through `var(--qds-*)`.
@@ -129,9 +142,10 @@ notice for the adaptation; the development-only reference application is exclude
 ### Public API surface
 
 `src/index.ts` re-exports the runtime controller, theme metadata/types, `QDS_TOKENS` (+ token types),
-and `qdsIconSet`. `package.json#exports` exposes `.`, `./css`, `./css/layered`, `./quasar-variables`,
-`./runtime`, `./tokens`, `./tokens/default`, `./themes`, `./themes/default`, `./themes/fallbacks`,
-`./fonts/*`, and `./icons/quasar-icon-set`. Update both when changing the public surface.
+and `qdsIconSet`. `package.json#exports` exposes `.`, `./runtime`, `./tokens`, `./themes`,
+`./icons/quasar-icon-set`, `./qwindow`, `./css`, `./css/layered`, `./css/variants/*`, `./css/layered/variants/*`,
+`./css/all`, `./css/all/layered`, `./css/extensions/*` (`qwindow`, `qwindow/layered`), `./quasar-variables`,
+`./tokens/default`, `./themes/default`, `./themes/fallbacks`, and `./fonts/*`. Update both when changing the public surface.
 
 ## Conventions
 

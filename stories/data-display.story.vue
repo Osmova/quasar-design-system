@@ -40,7 +40,7 @@ interface DataStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): DataStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): DataStoryState => ({ mode: 'light', variant: 'win' })
 
 const tableColumns: QTableColumn<CoverageRow>[] = [
   { name: 'component', label: 'Component', field: 'component', align: 'left', sortable: true },

@@ -9,8 +9,6 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
     box-shadow: var(--qds-shadow-8);
   }
 
-  :is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink) .q-footer { border-top-color: var(--qds-separator-color); }
-
   #{$shadcn} .q-footer { border-top-color: var(--qds-stroke-divider); border-radius: 0; box-shadow: none; }
   #{$shadcn} .q-footer .q-toolbar { font-size: var(--qds-font-size-body); }
 }

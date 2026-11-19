@@ -64,7 +64,7 @@ interface FormsStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): FormsStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): FormsStoryState => ({ mode: 'light', variant: 'win' })
 
 const densityOptions = [
   { label: 'Compact', value: 'compact' },

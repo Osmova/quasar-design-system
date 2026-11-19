@@ -41,7 +41,7 @@ interface NavigationStoryState {
   variant: DesignSystemVariantName
 }
 
-const initState = (): NavigationStoryState => ({ mode: 'light', variant: 'fluent' })
+const initState = (): NavigationStoryState => ({ mode: 'light', variant: 'win' })
 </script>
 
 <template>

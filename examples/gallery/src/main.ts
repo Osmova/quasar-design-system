@@ -12,6 +12,8 @@ import './gallery.css'
 import '@osmova/quasar-design-system/fonts/inter.css'
 import '@osmova/quasar-design-system/fonts/open-sans.css'
 import '@osmova/quasar-design-system/fonts/selawik.css'
+import '@osmova/quasar-design-system/fonts/zen.css'
+import '@osmova/quasar-design-system/fonts/ink.css'
 
 import {
   configureDesignSystem,
@@ -21,7 +23,7 @@ import {
 import App from './App.vue'
 import { parseGalleryHash } from './gallery-url'
 
-const initialVariant = parseGalleryHash(window.location.hash).variant ?? 'fluent'
+const initialVariant = parseGalleryHash(window.location.hash).variant ?? 'win'
 
 const app = createApp(App)
 

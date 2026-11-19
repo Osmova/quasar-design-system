@@ -1,13 +1,16 @@
 @use 'variants/mechanics';
-@use 'variants/zen';
-@use 'variants/atrium';
+
+@use 'variants/glass';
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
+$win: '.qds-variant-win:is(.qds-ui, .qds-ui *)';
+$win-tab: '.q-tab:where(:not(.q-color-picker .q-tab, .disabled))';
 
 // Rails, segmented paint and density remain compatibility grammar, not mechanics.
 @mixin styles($grammar: compatibility) {
-  @if $grammar == compatibility { @include compatibility-styles; @include zen.tabs; @include zen.reading; @include atrium.tabs; }
+
+  @if $grammar == compatibility { @include compatibility-styles; @include glass.tabs; }
   @else if $grammar == independent { @include mechanics.tabs; @content; }
   @else { @error 'Unknown tabs grammar: #{$grammar}'; }
 }
@@ -52,6 +55,14 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   .qds-ui .q-tab-panels { color: var(--qds-fg-default); background: transparent; }
   .qds-ui .q-tab-panel { padding: var(--qds-space-md); }
   .qds-ui .q-tab-panels .q-panel--inactive { pointer-events: none; }
+
+  // WinUI SelectorBar / NavigationView: primary labels, a 16 x 3px accent pill, no hover pill.
+  #{$win} #{$win-tab} { color: var(--qds-fg-default); }
+  #{$win} #{$win-tab}.q-tab--active { color: var(--qds-fg-strong); }
+  #{$win} #{$win-tab}:hover:not(.q-tab--active) { color: var(--qds-fg-muted); }
+  #{$win} .q-tabs--horizontal .q-tab > .q-tab__indicator { inset-inline: calc(50% - 0.5rem); }
+  #{$win} .q-tabs--vertical .q-tab .q-tab__indicator { inset-block: calc(50% - 0.5rem); }
+  #{$win} .q-tab:not(.q-tab--active):hover .q-tab__indicator { opacity: 0; }
 
   #{$one} .q-tabs .q-tabs__content {
     gap: var(--qds-space-xs);

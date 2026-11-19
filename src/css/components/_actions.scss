@@ -1,9 +1,10 @@
 @use '../importance';
 $banner-roles: (positive: positive, negative: negative, warning: warning, info: info);
-$ink-term: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink, .qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
+
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
+$win: '.qds-variant-win:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-breadcrumbs { color: var(--qds-fg-muted); font-size: var(--qds-font-size-body1); }
@@ -75,12 +76,23 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
   .qds-ui .q-btn-toggle > .q-btn.q-btn-item:where(:not(.disabled)) { @include importance.declarations { color: var(--qds-fg-muted) !important; } }
 
-  #{$ink-term} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
+  #{$term} .q-btn-toggle > .q-btn.q-btn-item { border-color: transparent; }
   #{$term} .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) { border-color: var(--qds-control-stroke-default); }
 
   .qds-ui .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active) {
     @include importance.declarations { color: var(--qds-fg-strong) !important; background-color: var(--qds-segmented-thumb-bg) !important; }
     box-shadow: var(--qds-shadow-2);
+  }
+
+  // Toolkit Segmented: idle labels stay primary and the selected segment carries a 16 x 3px accent pill.
+  #{$win} .q-btn-toggle > .q-btn.q-btn-item:where(:not(.disabled)) { --qds-fg-muted: var(--qds-fg-default); }
+  #{$win} .q-btn-toggle > .q-btn.q-btn-item:is([aria-pressed='true'], .q-btn--active, .qds-active)::after {
+    position: absolute;
+    inset: auto calc(50% - 0.5rem) 0;
+    height: 3px;
+    content: '';
+    background: var(--qds-tab-active-rail);
+    border-radius: var(--qds-radius-full);
   }
 
   .qds-ui .q-fab .q-fab__actions { gap: var(--qds-space-xs); }
@@ -173,9 +185,9 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
     }
   }
 
-  #{$zen} .q-btn-group { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-control); overflow: hidden; box-shadow: none; }
-  #{$zen} .q-btn-group > .q-btn { border-radius: 0; box-shadow: none; }
-  #{$zen} .q-btn-toggle { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-full); background: var(--qds-bg-surface-1); padding: 0.125rem; }
-  #{$zen} .q-btn-toggle > .q-btn { border: 0; border-radius: var(--qds-radius-full); background: transparent; box-shadow: none; }
-  #{$zen} .q-btn-toggle > .q-btn.q-btn--active { background: var(--qds-control-fill-default); box-shadow: var(--qds-shadow-sm); }
+  // Related actions share one capsule.
+  // The ends take the group's capsule without clipping, so floating badges stay visible.
+  #{$glass} .q-btn-group:not(.q-btn-toggle) > .q-btn { border-radius: inherit; }
+  #{$glass} .q-btn-group:not(.q-btn-toggle) > .q-btn:not(:last-child) { border-start-end-radius: 0; border-end-end-radius: 0; }
+  #{$glass} .q-btn-group:not(.q-btn-toggle) > .q-btn:not(:first-child) { border-start-start-radius: 0; border-end-start-radius: 0; }
 }

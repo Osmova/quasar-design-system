@@ -4,6 +4,7 @@ import { posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gzipSync } from 'node:zlib'
 import { compileString } from 'sass'
+import { compileEntry, partitionCss } from './css-partition.mjs'
 
 const ROOT = new URL('../', import.meta.url)
 const BASELINE = '71bb9d52bf483a93de0b50202df122b73f70ed9e'
@@ -22,12 +23,14 @@ const BASELINE = '71bb9d52bf483a93de0b50202df122b73f70ed9e'
  * already emitted, and Atrium (T194) as a new variant paying both tokens and grammar. Projected
  * full catalog ~570000 min / ~56800 gzip / ~4450 component lines; caps set just above that.
  */
-const LIMITS = { important: 46, doubled: 0, lines: 4600 }
-const BUNDLES = [
-  ['src/css/index.scss', { min: 600000, gzip: 58000 }],
-  ['src/css/index.layered.scss', { min: 600000, gzip: 58000 }],
-]
-const EXTENSION_ALLOWANCE = { lines: 80, min: 4096, gzip: 1024 }
+const LIMITS = { important: 46, doubled: 0, lines: 5030 }
+// Opt-in delivery: ./css is the shared grammar plus the unscoped win default; each variant file is that grammar plus the one variant.
+const ENTRIES = ['src/css/index.scss', 'src/css/index.layered.scss']
+const CORE_CAP = { min: 210000, gzip: 26000 }
+const VARIANT_CAP = { min: 380000, gzip: 46000 }
+// css/all and css/all/layered (every variant, for runtime switching); 701858 / 70022 with every 0.10.0 rework.
+const ALL_CAP = { min: 705000, gzip: 71000 }
+const EXTENSION_ALLOWANCE = { lines: 80, min: 5632, gzip: 1024 }
 const failures = []
 const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
 const baselineFiles = git('ls-tree', '-r', '--name-only', BASELINE, '--', 'src').trim().split('\n')
@@ -105,7 +108,14 @@ function compiledMetrics(file, baseline = false) {
 const components = currentRows('src/css/components')
 for (const row of components) console.log(JSON.stringify(row))
 enforce('components', total(components), LIMITS)
-for (const [file, limits] of BUNDLES) enforce(file, compiledMetrics(file), limits)
+for (const file of ENTRIES) {
+  const full = compileEntry(fileURLToPath(new URL(file, ROOT)))
+  enforce(`${file} all`, { min: Buffer.byteLength(full), gzip: gzipSync(full, { level: 9 }).length }, ALL_CAP)
+  const parts = partitionCss(full)
+  for (const [name, css] of Object.entries(parts)) {
+    enforce(`${file} ${name}`, { min: Buffer.byteLength(css), gzip: gzipSync(css, { level: 9 }).length }, name === 'core' ? CORE_CAP : VARIANT_CAP)
+  }
+}
 
 // Optional extensions have their own immutable pre-variant baseline; they cannot borrow core headroom.
 const extensionRows = currentRows('src/css/extensions')

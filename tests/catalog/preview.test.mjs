@@ -37,7 +37,7 @@ test('actual shared scaffold defaults theme controls on and explicitly disables 
   const { default: Scaffold } = await import(dataModule(resolveImports(code, url, { './index.js': helperModule })))
   for (const [extra, count] of [[{}, 2], [{ themeControls: true }, 2], [{ themeControls: false }, 0]]) {
     const app = createSSRApp({ render: () => h(Scaffold, { caseId: 'actions/button', title: 'Actual scaffold', ...extra }) })
-    const controller = configureDesignSystem(app, { target: null, persist: false, mode: 'light', variant: 'fluent' })
+    const controller = configureDesignSystem(app, { target: null, persist: false, mode: 'light', variant: 'win' })
     try {
       const html = await renderToString(app)
       assert.equal((html.match(/<select\b/g) ?? []).length, count)
@@ -130,7 +130,7 @@ for (const legacy of [false, true]) {
       return { app, controller }
     }
     try {
-      const old = make({ mode: 'system', variant: 'fluent' })
+      const old = make({ mode: 'system', variant: 'win' })
       assert.equal(listeners.size, 1)
       const oldListener = [...listeners][0]
       let oldDestroyCalls = 0

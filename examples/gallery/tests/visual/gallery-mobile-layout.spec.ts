@@ -71,7 +71,7 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
     await boundedContents(section)
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1)
     await info.attach('nested-bounds', { body: JSON.stringify(initial, null, 2), contentType: 'application/json' })
-    if (variant === 'fluent' && mode === 'light') {
+    if (variant === 'win' && mode === 'light') {
       await info.attach('variants-after', { body: await section.screenshot(), contentType: 'image/png' })
     }
   })
@@ -93,7 +93,7 @@ for (const variant of CANONICAL_VARIANTS) for (const mode of ['light', 'dark'] a
       if (info.project.name === 'desktop') expect(sample.height).toBeCloseTo(sample.line, 1)
       else expect(sample.height).toBeGreaterThan(sample.line * 1.9)
     }
-    if (variant === 'fluent' && mode === 'light') {
+    if (variant === 'win' && mode === 'light') {
       await info.attach('fonts-after', { body: await page.locator('.q-tab-panel').screenshot(), contentType: 'image/png' })
     }
     // Exercise multiline faces even on desktop, without changing shipped markup.

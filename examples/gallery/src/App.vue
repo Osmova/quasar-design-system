@@ -15,11 +15,14 @@ import {
   PhTerminal,
   PhSquaresFour,
   PhLeaf,
+  PhDrop,
 } from '@phosphor-icons/vue'
 import {
   useDesignSystem,
   DESIGN_SYSTEM_VARIANTS,
+  INK_COLORS,
   SHADCN_BASE_COLORS,
+  type InkColor,
   type ShadcnBaseColor,
   type DesignSystemMode,
   type DesignSystemVariantName,
@@ -55,12 +58,13 @@ const modeIcons = {
   system: PhMonitor,
 } as const
 const variantIcons: Record<string, Component> = {
-  fluent: PhPalette,
+  win: PhPalette,
   ink: PhPenNib,
   one: PhDeviceMobile,
   term: PhTerminal,
   shadcn: PhSquaresFour,
   zen: PhLeaf,
+  glass: PhDrop,
 }
 const linkIcons: Record<string, Component> = {
   histoire: PhBooks,
@@ -129,6 +133,10 @@ function onVariant(variant: DesignSystemVariantName) {
 
 function onBaseColor(color: ShadcnBaseColor) {
   ds.setShadcnBaseColor(color)
+}
+
+function onInkColor(color: InkColor) {
+  ds.setInkColor(color)
 }
 
 function syncUrl() {
@@ -328,6 +336,26 @@ watch(tab, revealActiveGalleryTab)
                 />
               </div>
             </template>
+            <template v-if="ds.variant.value === 'ink'">
+              <q-separator />
+              <div class="gallery-palette-slot">
+                <q-select
+                  :model-value="ds.inkColor.value"
+                  :options="INK_COLORS"
+                  option-value="name"
+                  option-label="label"
+                  emit-value
+                  map-options
+                  dense
+                  outlined
+                  label="Ink colour"
+                  aria-label="Ink colour"
+                  class="gallery-palette"
+                  data-test="qds-ink-color"
+                  @update:model-value="onInkColor"
+                />
+              </div>
+            </template>
           </q-menu>
         </q-btn>
       </q-toolbar>
@@ -402,6 +430,12 @@ watch(tab, revealActiveGalleryTab)
   --qds-row-min-height: 34px;
 }
 
+/* Radius never changes size, so glass may show its capsules here. */
+.qds-variant-glass .gallery-header,
+.qds-variant-glass .gallery-nav {
+  --qds-button-radius: 9999px;
+}
+
 .gallery-page {
   min-height: 0;
   padding: var(--qds-space-md);
@@ -471,7 +505,7 @@ watch(tab, revealActiveGalleryTab)
   min-height: 32px;
   padding-inline: 0.625rem 0.5rem;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--qds-button-radius);
   font-family: var(--gallery-chrome-font);
   font-size: 12px;
   font-weight: 500;
@@ -575,7 +609,7 @@ watch(tab, revealActiveGalleryTab)
   font-family: var(--gallery-chrome-font);
   margin-inline: 0.5rem;
   padding: 0 0.625rem;
-  border-radius: 6px;
+  border-radius: var(--qds-button-radius);
   font-size: 13px;
   font-weight: 450;
   letter-spacing: 0;
@@ -591,6 +625,12 @@ watch(tab, revealActiveGalleryTab)
   /* A light-on-light primary (term amber) is unreadable as a label; the tint carries the accent. */
   color: var(--qds-fg-strong);
   font-weight: 560;
+}
+
+/* Ink has no tints: the current page inverts. */
+.qds-variant-ink .gallery-nav.gallery-nav.gallery-nav :deep(.q-tab--active) {
+  background: var(--qds-fg-strong);
+  color: var(--qds-bg-card);
 }
 
 .gallery-panels :deep(.q-tab-panel) {

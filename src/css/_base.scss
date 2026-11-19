@@ -90,6 +90,13 @@ $weight-utilities: '.text-weight-thin, .text-weight-light, .text-weight-regular,
     :where(a[href], [role='button'][tabindex], [role='link'][tabindex]):not([class*='q-']):focus-visible { outline: var(--qds-focus-ring-width) solid var(--qds-stroke-focus); outline-offset: var(--qds-focus-ring-offset); box-shadow: var(--qds-field-focus-halo); }
   }
 
+  // WinUI focus visual: a 2px high-contrast outer ring; the 1px offset gap reads as the inner ring.
+  @media not (forced-colors: active) {
+    .qds-variant-win:is(.qds-ui,.qds-ui *) :is(:focus-visible:where(:not(.q-btn-group > .q-btn-item[class*='bg-'])), :is(.q-checkbox, .q-radio, .q-toggle):focus-visible :is(.q-checkbox__inner, .q-radio__inner, .q-toggle__inner)) {
+      @include importance.declarations { outline-color: var(--_qds-win-focus-outer) !important; }
+    }
+  }
+
   // Ripple is a Material 2 tell; CSS states replace it.
   .qds-ui .q-ripple {
     display: none;

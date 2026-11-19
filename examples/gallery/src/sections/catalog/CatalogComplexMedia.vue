@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { useDesignSystem } from '@osmova/quasar-design-system'
 import {
   ppPlus,
   ppTrash,
@@ -29,6 +30,7 @@ const step = ref(2)
 const horizontalStep = ref(2)
 const compactStep = ref(1)
 const verticalStep = ref(2)
+const ds = useDesignSystem()
 const carouselSlide = ref('ink')
 const verticalCarouselSlide = ref('first')
 const carouselFullscreen = ref(false)
@@ -122,6 +124,13 @@ function avatarSvg(initials: string, fill: string): string {
   `)
 }
 
+const revealKey = ref(0)
+const inkMediaOptions = [
+  { cls: '', label: 'greyscale' },
+  { cls: 'qds-media-color', label: 'always in colour' },
+  { cls: 'qds-media-color-hover', label: 'colour on hover or focus' },
+  { cls: 'qds-media-color-reveal', label: 'colour once when it appears' },
+]
 const visualImage = mediaSvg('QDS Gallery', 'Static media surface', '#6366f1', '#06b6d4', '#f59e0b')
 const loadingImageSrc = '/qds-media-loading.svg'
 const errorImageSrc = '/qds-media-error.svg'
@@ -129,8 +138,8 @@ const carouselSlides = [
   {
     name: 'ink',
     title: 'Editorial surface',
-    caption: 'Paper-neutral surface with pastel role washes and charcoal type.',
-    src: mediaSvg('Ink', 'Editorial pastel roles', '#5f6f52', '#a98255', '#6366f1'),
+    caption: 'One ink on flat paper, rendered like an e-reader screen.',
+    src: mediaSvg('Ink', 'One ink on paper', '#5f6f52', '#a98255', '#6366f1'),
   },
   {
     name: 'one',
@@ -139,7 +148,7 @@ const carouselSlides = [
     src: mediaSvg('One', 'One UI inspired spacing', '#0f6cbd', '#14b8a6', '#ffb020'),
   },
   {
-    name: 'fluent',
+    name: 'win',
     title: 'Fluent contrast',
     caption: 'Readable captions over owned gradient surfaces.',
     src: mediaSvg('Fluent', 'Primary QDS tone', '#0f6cbd', '#2563eb', '#8b5cf6'),
@@ -436,6 +445,17 @@ onBeforeUnmount(() => {
         </q-parallax>
       </div>
 
+      <div v-if="ds.variant.value === 'ink'" class="catalog-demo catalog-demo--wide" data-test="qds-ink-media-color">
+        <div class="catalog-label">Ink media colour: greyscale by default, opt back into colour</div>
+        <div class="catalog-grid catalog-grid--two">
+          <figure v-for="option in inkMediaOptions" :key="option.cls" class="q-ma-none">
+            <q-img :key="option.cls === 'qds-media-color-reveal' ? `reveal-${revealKey}` : option.cls" :src="visualImage" :alt="option.label" :ratio="16 / 9" :class="['catalog-image', option.cls]" :tabindex="option.cls === 'qds-media-color-hover' ? 0 : undefined" />
+            <figcaption class="q-mt-xs"><code>{{ option.cls || 'default' }}</code> {{ option.label }}</figcaption>
+          </figure>
+        </div>
+        <q-btn flat dense no-caps label="Replay the reveal" class="q-mt-sm" data-test="qds-ink-media-replay" @click="revealKey++" />
+      </div>
+
       <div class="catalog-demo catalog-demo--wide">
         <div class="catalog-label">QVideo</div>
         <div class="catalog-video"><q-video :src="videoSrc" :ratio="16 / 9" data-test="qds-video" /></div>
@@ -596,6 +616,11 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: var(--qds-space-sm);
+}
+
+/* Ink has no tints: the demo header stays on paper. */
+.qds-variant-ink .catalog-uploader-header.catalog-uploader-header {
+  background: var(--qds-bg-card);
 }
 
 .catalog-carousel-controls {

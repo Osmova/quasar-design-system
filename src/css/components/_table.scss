@@ -1,9 +1,9 @@
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
+
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
+$win: '.qds-variant-win:is(.qds-ui, .qds-ui *)';
 
 @mixin styles {
   // QMarkupTable carries the same container/card classes, so one anatomy covers both.
@@ -26,6 +26,7 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   .qds-ui :is(.q-table--bordered, .qds-table--bordered) { border: var(--qds-border-width-control) solid var(--qds-stroke-default); }
 
   .qds-ui .q-table__container :is(.q-table__top, .q-table__bottom, thead, tr, th, td) { border-color: var(--qds-table-divider); }
+  #{$win} .q-table__container { --qds-table-divider: var(--qds-stroke-divider); }
   .qds-ui :is(.q-table__top, .q-table__bottom) { color: var(--qds-fg-muted); }
   .qds-ui .q-table { color: inherit; background: transparent; }
   .qds-ui .q-table thead tr { height: var(--qds-table-header-height); background: var(--qds-table-header-bg); }
@@ -48,7 +49,6 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
 
   .qds-ui .q-table__container.fullscreen { overflow: auto; background: var(--qds-bg-canvas); border-radius: 0; }
 
-  #{$ink} .q-table tbody tr.selected > td:first-child { box-shadow: inset 3px 0 0 var(--qds-color-primary); }
 
   #{$one} .q-table__container:where(:not(.q-table--bordered, .qds-table--bordered)) { border-color: transparent; }
   #{$one} :is(.q-table__top, .q-table__bottom) { min-height: 3.5rem; }
@@ -98,22 +98,14 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui, .qds-ui *)';
   #{$shadcn} .q-card > .q-table__container { background: transparent; box-shadow: none; }
 
   // A grouped block: hairline rules and no rule under the last row.
-  #{$atrium} .q-table__container { --qds-table-divider: var(--qds-border-subtle); overflow: hidden; }
-  #{$atrium} .q-table__card { box-shadow: var(--qds-shadow-md); }
-  #{$atrium} .q-table__container:is(.q-table--flat, .q-table--grid) { box-shadow: none; }
-  #{$atrium} .q-table th { color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
-  #{$atrium} .q-table tbody tr:last-child td { border-bottom-color: transparent; }
-  #{$atrium} .q-table__grid-item-card { border-radius: var(--qds-radius-control); border-color: var(--qds-border-subtle); }
-  #{$atrium} .q-table__container.q-table--square { border-radius: 0; }
-  #{$atrium} .q-card > .q-table__container { background: transparent; box-shadow: none; }
-
-  // Data reads as a quiet grouped block: caption-weight header, no rule under the last row.
-  #{$zen} .q-table__container { border: 1px solid var(--qds-stroke-default); border-radius: var(--qds-radius-lg); background: var(--qds-bg-card); box-shadow: none; overflow: hidden; }
-  #{$zen} .q-table thead th { color: var(--qds-fg-muted); font-weight: var(--qds-font-weight-semibold); background: var(--qds-bg-surface-1); }
-  #{$zen} .q-table :is(th, td) { border-color: var(--qds-stroke-default); }
-  #{$zen} .q-table tbody tr:last-child > td { border-bottom: 0; }
-  #{$zen} .q-table tbody tr:not(.disabled):hover > td { background: var(--qds-bg-surface-1); }
-  #{$zen} .q-table tbody tr.selected > td { background: var(--qds-surface-brand-soft); }
-  #{$zen} .q-card > .q-table__container { border: 0; border-radius: 0; background: transparent; }
+  #{$glass} .q-table__container { --qds-table-divider: var(--qds-border-subtle); overflow: hidden; }
+  #{$glass} .q-table__card { box-shadow: var(--qds-shadow-sm); }
+  #{$glass} .q-table__container:is(.q-table--flat, .q-table--grid) { box-shadow: none; }
+  // Pinned column headers keep the one hard edge; everything else fades.
+  #{$glass} .q-table th { border-bottom-color: var(--qds-border); color: var(--qds-fg-muted); font-size: var(--qds-font-size-caption); font-weight: var(--qds-font-weight-semibold); }
+  #{$glass} .q-table tbody tr:last-child td { border-bottom-color: transparent; }
+  #{$glass} .q-table__grid-item-card { border-radius: var(--qds-radius-control); border-color: var(--qds-border-subtle); }
+  #{$glass} .q-table__container.q-table--square { border-radius: 0; }
+  #{$glass} .q-card > .q-table__container { background: transparent; box-shadow: none; }
 
 }

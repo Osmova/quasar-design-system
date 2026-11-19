@@ -2,8 +2,11 @@ import { test, expect, type Page } from '@playwright/test'
 import { readFile, readdir } from 'node:fs/promises'
 import { MATRIX_VARIANTS, customProperty, expectGalleryPage, resolvedColor, resolvedShadow } from './helpers'
 
+// Ink depth is a second sheet: an offset copy of the edge with no blur or spread.
+const INK_HARD_SHEET = /^rgb\([^)]*\) \d+(\.\d+)?px \d+(\.\d+)?px 0px 0px$/
+
 type Mode = 'light' | 'dark'
-type Variant = 'fluent' | 'ink' | 'one' | 'term' | 'zen'
+type Variant = 'win' | 'ink' | 'one' | 'term' | 'zen'
 
 const componentStylesDirectory = new URL('../../../../src/css/components/', import.meta.url)
 
@@ -144,7 +147,7 @@ async function expectNoResidualGlobalSurfaces(page: Page) {
 test.describe('QDS plugin/global UI surfaces', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#plugins')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     await expectGalleryPage(page, 'Plugins')
     await expectNoResidualGlobalSurfaces(page)
   })
@@ -274,7 +277,7 @@ test.describe('QDS plugin/global UI surfaces', () => {
     }
 
     for (const proof of [
-      { mode: 'dark' as const, variant: 'fluent' as const, type: 'negative' as const },
+      { mode: 'dark' as const, variant: 'win' as const, type: 'negative' as const },
       { mode: 'dark' as const, variant: 'term' as const, type: 'info' as const },
     ]) {
       await applyTheme(page, proof.mode, proof.variant)
@@ -344,7 +347,7 @@ test.describe('QDS plugin/global UI surfaces', () => {
     await expectNoResidualGlobalSurfaces(page)
 
     for (const proof of [
-      { mode: 'light' as const, variant: 'ink' as const, shadow: 'none' },
+      { mode: 'light' as const, variant: 'ink' as const, shadow: 'hard' },
       { mode: 'dark' as const, variant: 'term' as const, shadow: 'none' },
     ]) {
       await applyTheme(page, proof.mode, proof.variant)
@@ -356,6 +359,8 @@ test.describe('QDS plugin/global UI surfaces', () => {
       const shadow = await computed(page, '.q-notification', 'box-shadow')
       if (proof.shadow === 'none') {
         expect.soft(shadow, `${proof.variant} Notify shadow`).toBe('none')
+      } else if (proof.shadow === 'hard') {
+        expect.soft(shadow, `${proof.variant} Notify sits on a hard, unblurred offset sheet`).toMatch(INK_HARD_SHEET)
       } else {
         expect.soft(shadow, `${proof.variant} Notify shadow`).not.toBe('none')
       }
@@ -472,12 +477,12 @@ test.describe('QDS plugin/global UI surfaces', () => {
         }
         expect.soft(boundary.stroke !== 'rgba(0, 0, 0, 0)' || boundary.shadow !== 'none', `${mode}/${variant} overlay has a visible boundary (stroke or shadow)`).toBe(true)
         expect.soft(await computed(page, '.q-notification', 'background-color'), `${mode}/${variant} overlay has a surfaced background`).not.toBe('rgba(0, 0, 0, 0)')
-        if (variant === 'fluent') {
-          expect.soft(boundary.shadow, `${mode}/Fluent transient overlay is lifted by the flyout shadow`).toBe(await resolvedShadow(page, '--qds-shadow-md'))
+        if (variant === 'win') {
+          expect.soft(boundary.shadow, `${mode}/Fluent transient overlay is lifted by the WinUI flyout shadow`).toBe(await resolvedShadow(page, '--qds-shadow-28'))
           expect.soft(boundary.stroke, `${mode}/Fluent toast relies on shadow, not a stroke`).toBe('rgba(0, 0, 0, 0)')
         }
         if (variant === 'ink') {
-          expect.soft(boundary.shadow, `${mode}/Ink overlay remains flat`).toBe('none')
+          expect.soft(boundary.shadow, `${mode}/Ink overlay sits on a hard, unblurred offset sheet`).toMatch(INK_HARD_SHEET)
           expect.soft(boundary.stroke, `${mode}/flat Ink overlay keeps a stroke boundary`).not.toBe('rgba(0, 0, 0, 0)')
         }
         if (variant === 'one') {

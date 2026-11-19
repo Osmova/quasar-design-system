@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { MATRIX_VARIANTS, expectGalleryPage, gotoGalleryPage } from './helpers'
 
 type Mode = 'light' | 'dark'
-type Variant = 'fluent' | 'ink' | 'one' | 'term'
+type Variant = 'win' | 'ink' | 'one' | 'term'
 
 async function applyTheme(page: Page, mode: Mode, variant: Variant) {
   await page.evaluate(
@@ -54,7 +54,7 @@ test.describe('QDS catalog form picker gate', () => {
   test('skins form controls, fields, file, slider, and range sub-elements with QDS tokens', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const primary = await resolvedColor(page, '--qds-color-primary')
     const negative = await resolvedColor(page, '--qds-color-negative')
@@ -202,7 +202,7 @@ test.describe('QDS catalog form picker gate', () => {
     }
     await page.waitForTimeout(100)
     page.off('filechooser', countNativeFileChooser)
-    await expect(page.locator('body'), 'protected QFile clicks do not reach the header switchers').toHaveClass(/qds-variant-fluent/)
+    await expect(page.locator('body'), 'protected QFile clicks do not reach the header switchers').toHaveClass(/qds-variant-win/)
     expect.soft(nativeFileChooserCount, 'Readonly and disabled QFile fields do not activate the native chooser by pointer or keyboard').toBe(0)
     await expect(page.locator('[data-test="qds-catalog-file-affordances"] .q-field__prepend svg')).toBeVisible()
     await expect(page.locator('[data-test="qds-catalog-file-affordances"] .q-field__append svg')).toBeVisible()
@@ -229,7 +229,7 @@ test.describe('QDS catalog form picker gate', () => {
   test('skins QColor, QDate, and QTime picker internals with QDS tokens', async ({ page }) => {
     await page.goto('/')
     await gotoGalleryPage(page, 'Catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const primary = await resolvedColor(page, '--qds-color-primary')
     const onSolid = await resolvedColor(page, '--qds-text-on-solid')
@@ -307,7 +307,7 @@ test.describe('QDS catalog form picker gate', () => {
   test('QSelect supports dialog, cover-menu, empty, and max-value modes without visual regressions', async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/#catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const dialogSelect = page.locator('[data-test="qds-catalog-select-dialog"] .q-select')
     await dialogSelect.locator('.q-field__native').click()
@@ -368,7 +368,7 @@ test.describe('QDS catalog form picker gate', () => {
         expect.soft(await page.locator('[data-test="qds-catalog-date"]').getByRole('button', { name: '17 August 2029', exact: true }).evaluate((el) => getComputedStyle(el).backgroundColor), `${mode}/${variant} selected date uses the active primary`).toBe(primary)
         expect.soft(await computed(page, '[data-test="qds-catalog-time"] .q-time__clock-position--active', 'background-color'), `${mode}/${variant} active time uses the active primary`).toBe(primary)
         if (variant === 'ink') {
-          expect.soft(await page.locator('body').evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-surface-positive-soft').trim()), `${mode}/ink has a pastel semantic role surface`).toBe(mode === 'light' ? '#e2ecdf' : '#2f3f35')
+          expect.soft(await page.locator('body').evaluate((el) => getComputedStyle(el).getPropertyValue('--qds-surface-positive-soft').trim()), `${mode}/ink role surfaces are the paper itself`).toBe(mode === 'light' ? '#ebeae6' : '#1e2023')
         }
         if (variant === 'one') {
           expect.soft(await computed(page, '[data-test="qds-catalog-input-error"] .q-field__control', 'min-height'), `${mode}/One label-above fields use the 44px One UI control height`).toBe('44px')
@@ -380,7 +380,7 @@ test.describe('QDS catalog form picker gate', () => {
   test('QTime renders portrait on narrow viewports to prevent clipping', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
     await page.goto('/#catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     await expectGalleryPage(page, 'Catalog')
     expect.soft(
@@ -404,7 +404,7 @@ test.describe('QDS catalog form picker gate', () => {
 
   test('forms retain logical RTL affordances and reduce motion when requested', async ({ page }) => {
     await page.goto('/#catalog')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
     await page.evaluate(() => { document.documentElement.dir = 'rtl' })
 
     const affordances = page.locator('[data-test="qds-catalog-file-affordances"] .q-file')

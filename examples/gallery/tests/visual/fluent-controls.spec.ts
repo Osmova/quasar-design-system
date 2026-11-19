@@ -70,7 +70,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
   for (const mode of ['light', 'dark'] as const satisfies readonly Mode[]) {
     test(`${mode} keeps field values, labels, chips, and error affordances contained`, async ({ page }) => {
       await page.goto('/#components')
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
 
       const input = await expectFieldGeometry(page, 'qds-control-input')
       const filled = await expectFieldGeometry(page, 'qds-control-input-filled')
@@ -112,7 +112,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
   test('leads with label-above fields and keeps float, animated stacked, and aligned start-label opt-ins', async ({ page }) => {
     await page.goto('/#components')
     await page.setViewportSize({ width: 1280, height: 900 })
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const defaultField = page.locator('[data-test="qds-control-input"] > .q-field')
     await expect(defaultField).not.toHaveClass(/qds-field--(float|stacked-animated|start)/)
@@ -178,7 +178,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
     for (const width of [320, 375, 390, 768, 1280, 1920]) {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 900 })
       await page.goto('/#components')
-      await applyTheme(page, 'light', 'fluent')
+      await applyTheme(page, 'light', 'win')
 
       const layout = await page.evaluate(() => {
         const field = document.querySelector('[data-test="qds-field-start-form"] .qds-field--start')!
@@ -204,7 +204,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
   for (const mode of ['light', 'dark'] as const satisfies readonly Mode[]) {
     test(`${mode} standalone outlined label sits above the stroke; floated opt-in labels mask with the public label-bg token`, async ({ page }) => {
       await page.goto('/#components')
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
 
       const fixture = page.locator('[data-test="qds-control-input-standalone"]')
       const label = fixture.locator('.q-field__label')
@@ -232,7 +232,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
 
   test('uses the shared chip scale, keeps filled buttons strokeless, and keeps outline explicit', async ({ page }) => {
     await page.goto('/#components')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const chip = page.locator('.q-tab-panel .q-chip').first()
     const badge = page.locator('.q-tab-panel .q-badge').first()
@@ -259,9 +259,10 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
   for (const mode of ['light', 'dark'] as const satisfies readonly Mode[]) {
     test(`${mode} QBtn :focus-visible draws the 2px focus stroke despite Quasar no-outline`, async ({ page }) => {
       await page.goto('/#components')
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
 
-      const focusColor = await resolvedColor(page, '--qds-stroke-focus')
+      // WinUI draws keyboard focus in the high-contrast outer ring colour, not the accent.
+      const focusColor = await resolvedColor(page, '--_qds-win-focus-outer')
       const ringWidth = await page.locator('body').evaluate((element) => {
         const probe = document.createElement('span')
         probe.style.outline = 'var(--qds-focus-ring-width) solid'
@@ -298,7 +299,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
         expect(ring.focusVisible, `${mode} ${name} button matches :focus-visible after keyboard-style focus`).toBe(true)
         const outlineRing = ring.outlineStyle !== 'none' && ring.outlineWidth === ringWidth && ring.outlineColor === focusColor
         const shadowRing = ring.layers.some((layer) => layer.color === focusColor && layer.x === 0 && layer.y === 0 && layer.blur === 0 && layer.spread >= ringWidth)
-        expect.soft(outlineRing || shadowRing, `${mode} ${name} button shows a ${ringWidth}px --qds-stroke-focus ring (outline ${ring.outlineStyle} ${ring.outlineWidth}px ${ring.outlineColor})`).toBe(true)
+        expect.soft(outlineRing || shadowRing, `${mode} ${name} button shows a ${ringWidth}px WinUI focus ring (outline ${ring.outlineStyle} ${ring.outlineWidth}px ${ring.outlineColor})`).toBe(true)
         await button.blur()
       }
     })
@@ -306,7 +307,7 @@ test.describe('Fluent control geometry and Phosphor icon contract', () => {
 
   test('renders control arrows, remove affordances, ratings, and expansion chevrons as SVG icons on aligned baselines', async ({ page }) => {
     await page.goto('/#icons')
-    await applyTheme(page, 'light', 'fluent')
+    await applyTheme(page, 'light', 'win')
 
     const iconControls = [
       page.locator('[data-test="qds-icon-dropdown"] .q-btn-dropdown__arrow'),

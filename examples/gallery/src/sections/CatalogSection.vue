@@ -60,6 +60,14 @@ import CatalogLoadingData from './catalog/CatalogLoadingData.vue'
   grid-column: span 2;
 }
 
+/* Glass frames a demo with a hairline and a radius concentric with its card, never a second fill. */
+.qds-variant-glass .catalog-demo {
+  border-color: var(--qds-border-subtle);
+  border-radius: var(--qds-radius-control);
+  background: transparent;
+  box-shadow: none;
+}
+
 .catalog-label {
   margin-bottom: var(--qds-space-sm);
   color: var(--qds-text-muted);

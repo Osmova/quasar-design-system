@@ -1,6 +1,6 @@
 {
   "name": "@osmova/quasar-design-system",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "Opinionated Quasar 2 design system inspired by Fluent 2, Apple, and One UI.",
   "type": "module",
   "main": "dist/index.js",
@@ -43,8 +43,12 @@
       "types": "./dist/qwindow.d.ts",
       "import": "./dist/qwindow.js"
     },
-    "./css": "./src/css/index.scss",
-    "./css/layered": "./src/css/index.layered.scss",
+    "./css": "./dist/css/index.css",
+    "./css/layered": "./dist/css/layered/index.css",
+    "./css/variants/*": "./dist/css/variants/*.css",
+    "./css/layered/variants/*": "./dist/css/layered/variants/*.css",
+    "./css/all": "./src/css/index.scss",
+    "./css/all/layered": "./src/css/index.layered.scss",
     "./css/extensions/qwindow": "./src/css/extensions/qwindow.scss",
     "./css/extensions/qwindow/layered": "./src/css/extensions/qwindow.layered.scss",
     "./quasar-variables": "./src/quasar.variables.scss",
@@ -57,7 +61,7 @@
     "./fonts/*": "./src/fonts/*"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node scripts/build-css.mjs",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "stories": "pnpm build && histoire dev",
     "stories:build": "pnpm build && histoire build",
@@ -81,11 +85,12 @@
     "test:runtime:colorjs": "node scripts/test-runtime-colorjs.mjs",
     "test:runtime:fill-contrast": "node scripts/test-runtime-fill-contrast.mjs",
     "test:runtime:grammar:browser": "node tests/runtime/grammar-fixture-browser.mjs",
-    "test:runtime": "pnpm test:runtime:ssr && pnpm test:runtime:colorjs && pnpm test:runtime:fill-contrast && pnpm test:runtime:grammar:browser",
+    "test:runtime:variants:browser": "node tests/runtime/variant-bundles-browser.mjs",
+    "test:runtime": "pnpm test:runtime:ssr && pnpm test:runtime:colorjs && pnpm test:runtime:fill-contrast && pnpm test:runtime:grammar:browser && pnpm test:runtime:variants:browser",
     "pack:dry": "npm pack --dry-run --json",
     "css:budget": "node scripts/css-budget.mjs",
     "verify:publish": "pnpm css:budget && pnpm build && pnpm typecheck && pnpm test:runtime && pnpm pack:dry",
-    "prepare": "tsc -p tsconfig.build.json",
+    "prepare": "tsc -p tsconfig.build.json && node scripts/build-css.mjs",
     "prepublishOnly": "pnpm verify:publish"
   },
   "publishConfig": {
@@ -134,6 +139,7 @@
     "@vitejs/plugin-vue": "^6.0.9",
     "colorjs.io": "0.7.1",
     "histoire": "1.0.0-beta.1",
+    "postcss": "^8.5.32",
     "quasar": "^2.35.0",
     "sass": "^1.105.1",
     "typescript": "^5.9.3",

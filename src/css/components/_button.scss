@@ -2,9 +2,10 @@
 @use 'sass:map';
 @use '../materials';
 @use '../importance';
+@use '../../tokens/default' as tokens;
 @use 'variants/mechanics';
-@use 'variants/zen';
-@use 'variants/atrium';
+
+@use 'variants/glass';
 
 $roles: (
   primary: (hover: var(--qds-color-primary-hover), pressed: var(--qds-color-primary-pressed)),
@@ -37,6 +38,7 @@ $padding: clamp(var(--qds-button-dense-padding-inline), calc(var(--qds-button-pa
 $not-fab: ':where(:not(.q-btn--fab, .q-btn--fab-mini))';
 $filled: ':is(.q-btn--standard, .q-btn--unelevated, .q-btn--push):where(:not(.q-btn-toggle > .q-btn))';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
+$win: '.qds-variant-win:is(.qds-ui,.qds-ui *)';
 $shadcn-default: '.q-btn#{$filled}:where(:not([class*="bg-"], .qds-tonal, .qds-button--link, .q-date .q-btn, .q-time .q-btn, .q-pagination .q-btn, .q-btn-toggle .q-btn, .q-editor .q-btn, .q-color-picker .q-btn))';
 $accent-fills: ();
 $role-texts: ();
@@ -48,7 +50,8 @@ $role-texts: ();
 
 // Legacy profiles still share Fluent grammar. Only the independent hook omits it.
 @mixin styles($grammar: compatibility) {
-  @if $grammar == compatibility { @include compatibility-styles; @include zen.button; @include atrium.button; @include atrium.capability; }
+
+  @if $grammar == compatibility { @include compatibility-styles; @include glass.button; @include glass.capability; }
   @else if $grammar == independent { @include mechanics.button; @content; }
   @else { @error 'Unknown button grammar: #{$grammar}'; }
 }
@@ -300,6 +303,18 @@ $role-texts: ();
       border-color: ButtonText;
     }
   }
+
+  // WinUI Button/AccentButton labels are Regular; disabled accent fills keep the
+  // AccentFillColorDisabled + TextOnAccentFillColorDisabled pair, without an edge.
+  // Same (0,2,0) weight as the base rule so later partials' weights still win.
+  .qds-ui:where(.qds-variant-win, .qds-variant-win *) .q-btn { font-weight: var(--qds-font-weight-regular); }
+  #{$win} .q-btn#{$filled}:is(#{$accent-fills}):not(.qds-tonal) {
+    --qds-button-disabled-fill: var(--_qds-win-accent-fill-disabled);
+    --qds-button-disabled-fg: var(--_qds-win-text-on-accent-disabled);
+    --qds-button-disabled-stroke: transparent;
+  }
+  // The dropdown chevron stays a secondary hint glyph (WinUI TextFillColorSecondary-like).
+  #{$win} .q-btn-dropdown .q-btn-dropdown__arrow { opacity: #{map.get(tokens.$control, icon-opacity)}; }
 
   #{$shadcn} .q-btn {
     --qds-button-disabled-opacity: 0.5;

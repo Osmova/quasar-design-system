@@ -2,9 +2,11 @@
 @use '../importance';
 
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
-$atrium: ':is(.qds-ui.qds-variant-atrium, .qds-ui .qds-variant-atrium)';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
+
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
+$win: '.qds-variant-win:is(.qds-ui,.qds-ui *)';
+$win-dialog-fill: linear-gradient(var(--_qds-win-layer-alt), var(--_qds-win-layer-alt)), var(--qds-surface-1);
 
 @mixin styles {
   .qds-ui .q-dialog__backdrop { background: var(--qds-bg-overlay); }
@@ -49,6 +51,24 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
   // The Dialog plugin defaults its actions to Quasar's amber in dark mode.
   .qds-ui .q-dialog-plugin .q-btn.text-amber { @include importance.declarations { color: var(--qds-fg-brand) !important; } }
 
+  // WinUI ContentDialog: a solid layer over the base, with the command row on a base-coloured footer band.
+  #{$win} :where(.q-dialog__inner--minimized) > .q-card:not(.q-bottom-sheet) {
+    border-color: var(--_qds-win-surface-stroke);
+    @include materials.solid($win-dialog-fill);
+  }
+
+  #{$win} .q-dialog__inner > .q-card > .q-card__section:has(+ .q-card__actions:last-child) { padding-block-end: var(--qds-space-lg); }
+  // ContentDialog settles in from 105%.
+  #{$win} .q-dialog__inner:is(.q-transition--scale-enter-from, .q-transition--scale-leave-to) > * { transform: scale3d(1.05, 1.05, 1); }
+
+  #{$win} :where(.q-dialog__inner--minimized) > .q-card > .q-card__actions:last-child {
+    padding: var(--qds-space-lg);
+    background: var(--qds-surface-1);
+    border-block-start: var(--qds-border-width-control) solid var(--qds-card-stroke);
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+  }
+
   #{$one} .q-dialog__inner > :is(.q-card, .q-bottom-sheet) {
     --qds-surface-focus-block: color-mix(in srgb, var(--qds-surface-transient) 92%, var(--qds-text));
     --qds-card-fill: var(--qds-surface-focus-block);
@@ -69,17 +89,16 @@ $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
   @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-dialog__inner:is(.q-transition--scale-enter-active, .q-transition--scale-leave-active), #{$shadcn} .q-dialog__inner:is(.q-transition--scale-enter-active, .q-transition--scale-leave-active) > * { transition: none; } }
   @media (forced-colors: active) { #{$shadcn} .q-dialog__inner > .q-card { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; } }
 
-  // A dialog is the same floating panel as a card, lifted further off the page.
-  #{$atrium} .q-dialog__inner--standard > .q-card { border-color: var(--qds-border-subtle); border-radius: calc(var(--qds-card-radius) + 0.25rem); box-shadow: var(--qds-shadow-lg); }
-  #{$atrium} .q-dialog__inner--maximized > .q-card { border: 0; box-shadow: none; }
-  #{$atrium} .q-dialog__title { font-weight: var(--qds-font-weight-semibold); letter-spacing: -0.01em; }
-  #{$atrium} .q-dialog__message { color: var(--qds-fg-muted); }
-  #{$atrium} .q-dialog__inner > .q-card > .q-card__actions { justify-content: flex-end; gap: var(--qds-space-sm); }
-  #{$atrium} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); }
-
-  // The block language lifted off the page; zen overlays stay opaque.
-  #{$zen} .q-dialog__inner > .q-card { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-flyout); box-shadow: var(--qds-shadow-lg); }
-  #{$zen} .q-dialog__inner--maximized > .q-card { border: 0; border-radius: 0; box-shadow: none; }
-  #{$zen} .q-bottom-sheet { border-start-start-radius: var(--qds-radius-lg); border-start-end-radius: var(--qds-radius-lg); background: var(--qds-bg-flyout); }
+  // Sheets float inset with a large radius, concentric with fields one sheet padding in.
+  #{$glass} .q-dialog__inner--minimized:not(.q-dialog__inner--animating) > div { border-radius: var(--_qds-glass-sheet-radius); }
+  #{$glass} .q-dialog__inner > .q-card > .q-form > :is(.q-card__section, .q-card__actions) { padding-inline: var(--_qds-glass-sheet-pad); }
+  #{$glass} .q-dialog__inner--bottom > div { margin: 0 var(--_qds-glass-inset) calc(var(--_qds-glass-inset) + env(safe-area-inset-bottom)); }
+  // Alerts and partial sheets are regular glass; a maximized dialog stays opaque.
+  #{$glass} .q-dialog__inner--minimized > :is(.q-card, .q-bottom-sheet) { box-shadow: var(--qds-material-edge), var(--qds-shadow-lg); @include materials.material(regular); }
+  #{$glass} .q-dialog__inner--maximized > .q-card { border: 0; box-shadow: none; }
+  #{$glass} .q-dialog__inner.q-transition--scale-enter-active > * { transition-timing-function: var(--qds-motion-ease-out), var(--_qds-glass-spring); }
+  @media (prefers-reduced-motion: reduce) { #{$glass} .q-dialog__inner.q-transition--scale-enter-from > * { transform: none; } }
+  #{$glass} .q-dialog__title { font-weight: var(--qds-font-weight-bold); text-align: start; }
+  #{$glass} .q-dialog__inner > .q-card > .q-card__actions { justify-content: flex-end; }
 
 }

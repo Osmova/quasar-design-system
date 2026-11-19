@@ -10,11 +10,14 @@ import {
 
 import {
   DESIGN_SYSTEM_VARIANTS,
+  isBuiltInDesignSystemVariantName,
   isDesignSystemVariantName,
+  isInkColor,
   isShadcnAccentColor,
   isShadcnBaseColor,
   type DesignSystemVariant,
   type DesignSystemVariantName,
+  type InkColor,
   type QuasarDesignTheme,
   type ShadcnAccentColor,
   type ShadcnBaseColor,
@@ -29,6 +32,7 @@ export interface DesignSystemOptions {
   variant?: DesignSystemVariantName
   shadcnBaseColor?: ShadcnBaseColor
   shadcnAccent?: ShadcnAccentColor
+  inkColor?: InkColor
   syncWithSystem?: boolean
   persist?: boolean
   storageKey?: string
@@ -68,6 +72,7 @@ export interface DesignSystemState {
   variant: DesignSystemVariantName
   shadcnBaseColor: ShadcnBaseColor
   shadcnAccent: ShadcnAccentColor
+  inkColor: InkColor
   syncWithSystem: boolean
   persist: boolean
   storageKey: string
@@ -82,6 +87,7 @@ export interface DesignSystemController {
   variant: ComputedRef<DesignSystemVariantName>
   shadcnBaseColor: ComputedRef<ShadcnBaseColor>
   shadcnAccent: ComputedRef<ShadcnAccentColor>
+  inkColor: ComputedRef<InkColor>
   initialize: () => void
   destroy: () => void
   setMode: (mode: DesignSystemMode) => DesignSystemMode
@@ -92,6 +98,7 @@ export interface DesignSystemController {
   setVariant: (variant: DesignSystemVariantName) => DesignSystemVariantName
   setShadcnBaseColor: (color: ShadcnBaseColor) => ShadcnBaseColor
   setShadcnAccent: (accent: ShadcnAccentColor) => ShadcnAccentColor
+  setInkColor: (color: InkColor) => InkColor
 }
 
 interface QuasarDarkLike {
@@ -114,9 +121,10 @@ export const DEFAULT_DESIGN_SYSTEM_OPTIONS: Required<
 > = {
   enabled: true,
   mode: 'system',
-  variant: 'fluent',
+  variant: 'win',
   shadcnBaseColor: 'neutral',
   shadcnAccent: 'none',
+  inkColor: 'charcoal',
   syncWithSystem: true,
   persist: true,
   storageKey: 'bastvi.quasar-design-system.theme',
@@ -126,8 +134,8 @@ export const DEFAULT_DESIGN_SYSTEM_OPTIONS: Required<
 const THEME_MODES: DesignSystemMode[] = ['light', 'dark', 'system']
 const DESIGN_SYSTEM_SCOPE_CLASS = 'qds-ui'
 const LEGACY_VARIANT_CLASSES = [
+  'qds-variant-fluent',
   'qds-variant-air',
-  'qds-variant-glass',
   'qds-variant-feather',
   'qds-variant-mobile',
   'qds-variant-terminal',
@@ -196,6 +204,7 @@ export function createDesignSystemController(
     variant: normalizeVariant(options.variant),
     shadcnBaseColor: normalizeShadcnBaseColor(options.shadcnBaseColor),
     shadcnAccent: normalizeShadcnAccent(options.shadcnAccent),
+    inkColor: normalizeInkColor(options.inkColor),
     syncWithSystem: options.syncWithSystem ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.syncWithSystem,
     persist: options.persist ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.persist,
     storageKey: options.storageKey ?? DEFAULT_DESIGN_SYSTEM_OPTIONS.storageKey,
@@ -204,6 +213,7 @@ export function createDesignSystemController(
 
   let mediaQuery: MediaQueryList | null = null
   let onMediaChange: ((event: MediaQueryListEvent) => void) | null = null
+  const checkedVariants = new Set<string>()
 
   const resolveMode = (): DesignSystemResolvedMode => {
     return state.mode === 'system' ? (state.prefersDark ? 'dark' : 'light') : state.mode
@@ -231,6 +241,11 @@ export function createDesignSystemController(
     } else {
       delete target.dataset.qdsShadcnAccent
     }
+    if (state.variant === 'ink') {
+      target.dataset.qdsInk = state.inkColor
+    } else {
+      delete target.dataset.qdsInk
+    }
     target.classList.toggle('qds-theme-light', !state.isDark)
     target.classList.toggle('qds-theme-dark', state.isDark)
     target.classList.toggle(DESIGN_SYSTEM_SCOPE_CLASS, state.enabled)
@@ -242,6 +257,11 @@ export function createDesignSystemController(
     Object.values(variantRegistry).forEach((variant) => {
       target.classList.toggle(variant.cssClass, variant.name === state.variant)
     })
+
+    if (state.enabled && !checkedVariants.has(state.variant)) {
+      checkedVariants.add(state.variant)
+      warnIfVariantCssMissing(target, state.variant)
+    }
   }
 
   const loadStoredState = () => {
@@ -258,6 +278,9 @@ export function createDesignSystemController(
       }
       if (Object.prototype.hasOwnProperty.call(stored, 'shadcnAccent')) {
         state.shadcnAccent = normalizeShadcnAccent(stored.shadcnAccent)
+      }
+      if (Object.prototype.hasOwnProperty.call(stored, 'inkColor')) {
+        state.inkColor = normalizeInkColor(stored.inkColor)
       }
     } catch {
       try {
@@ -276,7 +299,7 @@ export function createDesignSystemController(
     try {
       window.localStorage.setItem(state.storageKey, JSON.stringify({
         mode: state.mode, variant: state.variant, shadcnBaseColor: state.shadcnBaseColor,
-        shadcnAccent: state.shadcnAccent,
+        shadcnAccent: state.shadcnAccent, inkColor: state.inkColor,
       }))
     } catch {
       // Persistence is best effort; theme switching must still work.
@@ -354,6 +377,7 @@ export function createDesignSystemController(
       delete target.dataset.qdsVariant
       delete target.dataset.qdsShadcnBaseColor
       delete target.dataset.qdsShadcnAccent
+      delete target.dataset.qdsInk
     }
     state.initialized = false
   }
@@ -366,6 +390,7 @@ export function createDesignSystemController(
     variant: computed(() => state.variant),
     shadcnBaseColor: computed(() => state.shadcnBaseColor),
     shadcnAccent: computed(() => state.shadcnAccent),
+    inkColor: computed(() => state.inkColor),
     initialize,
     destroy,
     setMode,
@@ -386,6 +411,12 @@ export function createDesignSystemController(
       applyState()
       return state.shadcnAccent
     },
+    setInkColor: (color) => {
+      state.inkColor = normalizeInkColor(color)
+      saveState()
+      applyState()
+      return state.inkColor
+    },
   }
 }
 
@@ -401,9 +432,13 @@ function normalizeShadcnAccent(value: unknown): ShadcnAccentColor {
   return isShadcnAccentColor(value) ? value : 'none'
 }
 
+function normalizeInkColor(value: unknown): InkColor {
+  return isInkColor(value) ? value : 'charcoal'
+}
+
 function normalizeVariant(value: unknown): DesignSystemVariantName {
-  if (value === 'studio' || value === 'air' || value === 'glass') {
-    return 'fluent'
+  if (value === 'fluent' || value === 'studio' || value === 'air') {
+    return 'win'
   }
 
   if (value === 'feather') {
@@ -419,6 +454,30 @@ function normalizeVariant(value: unknown): DesignSystemVariantName {
   }
 
   return isDesignSystemVariantName(value) ? value : DEFAULT_DESIGN_SYSTEM_OPTIONS.variant
+}
+
+function isProduction(): boolean {
+  try {
+    // Bundlers replace this exact expression; a browser without one throws and counts as development.
+    return process.env.NODE_ENV === 'production'
+  } catch {
+    return false
+  }
+}
+
+function warnIfVariantCssMissing(target: HTMLElement, variant: string): void {
+  if (isProduction() || !isBuiltInDesignSystemVariantName(variant) || typeof getComputedStyle !== 'function' || target.isConnected === false) {
+    return
+  }
+
+  try {
+    if (getComputedStyle(target).getPropertyValue('--_qds-variant').trim() !== variant) {
+      const file = variant === 'win' ? 'css' : `css/variants/${variant}`
+      console.warn(`[quasar-design-system] The "${variant}" variant is active but its stylesheet is not loaded. Import '@osmova/quasar-design-system/${file}' (or css/all) before applying it.`)
+    }
+  } catch {
+    // Diagnostics must never break theming.
+  }
 }
 
 function getSystemPrefersDark(): boolean {

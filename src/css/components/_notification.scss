@@ -1,11 +1,10 @@
 @use '../materials';
 @use '../importance';
 
-$ink: ':is(.qds-ui.qds-variant-ink, .qds-ui .qds-variant-ink)';
 $one: ':is(.qds-ui.qds-variant-one, .qds-ui .qds-variant-one)';
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
 $shadcn: '.qds-variant-shadcn:is(.qds-ui,.qds-ui *)';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
+$glass: '.qds-variant-glass:is(.qds-ui,.qds-ui *)';
 
 @mixin styles {
   .qds-ui .q-notification {
@@ -46,10 +45,6 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   .qds-ui .q-notification:has(.q-notification__badge) { overflow: visible; }
   .qds-ui :is(.q-notification__badge--top-left, .q-notification__badge--top-right) { top: var(--qds-space-xs); }
 
-  #{$ink} .q-notification {
-    --qds-notify-bg: var(--qds-notify-wash);
-    border-color: color-mix(in srgb, var(--qds-notify-accent) 40%, var(--qds-stroke-strong));
-  }
   #{$one} .q-notification { --qds-notify-bg: var(--qds-notify-wash); --qds-notification-radius: var(--qds-radius-lg); @include materials.solid; }
   #{$term} .q-notification {
     --qds-notify-bg: var(--qds-surface-0);
@@ -58,6 +53,10 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
     border-color: color-mix(in srgb, var(--qds-notify-accent) 32%, var(--qds-border));
     @include materials.solid;
   }
+
+  // Glass banners float as rounded glass; the role reads from the icon, not an edge stripe.
+  #{$glass} .q-notification { padding-inline-start: var(--qds-space-md); border-color: var(--qds-material-stroke); box-shadow: var(--qds-material-edge), var(--qds-shadow-md); }
+  #{$glass} .q-notification::before { content: none; }
 
   #{$shadcn} .q-notification { --qds-notify-bg: var(--qds-bg-flyout); --qds-notify-icon: var(--qds-fg-primary); padding-inline: var(--qds-space-md); border-color: var(--qds-border); font-size: var(--qds-font-size-body); line-height: var(--qds-line-height-body); transition-duration: var(--qds-motion-duration-base); @include materials.solid; }
   #{$shadcn} .q-notification:is(.bg-primary, .bg-secondary, .bg-accent, .bg-positive, .bg-negative, .bg-warning, .bg-info) { --qds-notify-accent: var(--_qds-fill); --qds-notify-on-accent: var(--_qds-on); --qds-notify-icon: var(--_qds-fg); }
@@ -72,7 +71,4 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   #{$shadcn} .q-notification:has(.q-btn--dense) { min-height: var(--qds-control-size-lg); }
   @media (prefers-reduced-motion: reduce) { #{$shadcn} .q-notification { transition: none; } #{$shadcn} .q-notification__badge { animation: none; } #{$shadcn} .q-notification__progress { display: none; } }
   @media (forced-colors: active) { #{$shadcn} .q-notification { --qds-notify-bg: Canvas; --qds-fg-default: CanvasText; border-color: CanvasText; box-shadow: none; } #{$shadcn} :is(.q-notification__icon, .q-notification__spinner) { color: CanvasText; } #{$shadcn} .q-notification__badge { background: Highlight; color: HighlightText; } #{$shadcn} .q-notification__progress { background: Highlight; } }
-
-  #{$zen} .q-notification { border: 1px solid var(--qds-stroke-strong); border-radius: var(--qds-radius-lg); background: var(--qds-bg-flyout); color: var(--qds-fg-default); box-shadow: var(--qds-shadow-md); backdrop-filter: none; }
-  #{$zen} .q-notification__message { color: var(--qds-fg-default); }
 }

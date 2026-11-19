@@ -1,5 +1,4 @@
 $term: ':is(.qds-ui.qds-variant-term, .qds-ui .qds-variant-term)';
-$zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
 
 @mixin styles {
   .qds-ui .q-rating { gap: 0.125rem; color: var(--qds-color-accent); line-height: 1; vertical-align: middle; }
@@ -40,7 +39,4 @@ $zen: ':is(.qds-ui.qds-variant-zen, .qds-ui .qds-variant-zen)';
   @each $role in primary, positive, negative {
     .qds-ui .q-rating .q-rating__icon.text-#{$role} { color: var(--qds-color-#{$role}); }
   }
-
-  #{$zen} .q-rating__icon { color: var(--qds-fg-muted); text-shadow: none; }
-  #{$zen} .q-rating__icon--active { color: var(--qds-color-warning); }
 }

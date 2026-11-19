@@ -65,16 +65,18 @@ async function renderedBoundaryContrast(page: Parameters<typeof computed>[0], se
   return contrast(composite(parseColor(border), parsedBackdrop), parsedBackdrop)
 }
 
+// Ink draws hand-cut frames: one deterministic eight-value radius instead of a token.
+const INK_HAND_MD = '12px 5.6px 10.4px 4.8px / 5.6px 11.2px 4.8px 12px'
 const EXPECTED: Record<Mode, Record<Variant, { surface: string; primary: string; controlRadius: string; cardRadius: string }>> = {
   light: {
-    fluent: { surface: '#ffffff', primary: 'rgb(15, 108, 189)', controlRadius: '4px', cardRadius: '8px' },
-    ink: { surface: '#fbf9f5', primary: 'rgb(46, 44, 40)', controlRadius: '10px', cardRadius: '16px' },
+    win: { surface: '#ffffff', primary: 'rgb(0, 95, 184)', controlRadius: '4px', cardRadius: '8px' },
+    ink: { surface: '#ebeae6', primary: 'rgb(51, 54, 60)', controlRadius: '6px', cardRadius: INK_HAND_MD },
     one: { surface: '#ffffff', primary: 'rgb(27, 95, 207)', controlRadius: '14px', cardRadius: '24px' },
     term: { surface: '#f8f6f0', primary: 'rgb(252, 196, 13)', controlRadius: '6px', cardRadius: '10px' },
   },
   dark: {
-    fluent: { surface: '#292929', primary: 'rgb(25, 118, 202)', controlRadius: '4px', cardRadius: '8px' },
-    ink: { surface: '#282622', primary: 'rgb(236, 229, 216)', controlRadius: '10px', cardRadius: '16px' },
+    win: { surface: '#292929', primary: 'rgb(96, 205, 255)', controlRadius: '4px', cardRadius: '8px' },
+    ink: { surface: '#1e2023', primary: 'rgb(228, 226, 221)', controlRadius: '6px', cardRadius: INK_HAND_MD },
     one: { surface: '#1a1a1a', primary: 'rgb(47, 111, 220)', controlRadius: '14px', cardRadius: '24px' },
     term: { surface: '#141412', primary: 'rgb(252, 196, 13)', controlRadius: '6px', cardRadius: '10px' },
   },
@@ -93,7 +95,7 @@ test.describe('QDS override gate', () => {
         expect.soft(await resolvedColor(page, '--qds-color-primary'), 'primary color resolves from source tokens').toBe(expected.primary)
         expect.soft(await customProperty(page, '--qds-radius-control'), 'control radius token tracks the variant').toBe(expected.controlRadius)
         expect.soft(await computed(page, `${panel} .q-card`, 'border-radius'), 'QCard consumes the resolved card radius').toBe(expected.cardRadius)
-        expect.soft(await computed(page, `${panel} .q-field--outlined .q-field__control`, 'border-radius'), 'QField consumes the resolved control geometry').toBe(variant === 'one' ? '18px' : expected.controlRadius)
+        expect.soft(await computed(page, `${panel} .q-field--outlined .q-field__control`, 'border-radius'), 'QField consumes the resolved control geometry').toBe(variant === 'one' ? '18px' : variant === 'ink' ? INK_HAND_MD : expected.controlRadius)
         expect.soft(await computed(page, `${panel} .q-card`, 'background-color'), 'QCard has a rendered surface').not.toBe('rgba(0, 0, 0, 0)')
         const cardBorderStyle = await computed(page, `${panel} .q-card`, 'border-top-style')
         expect.soft(cardBorderStyle, `${variant} card renders a solid boundary`).toBe('solid')
@@ -102,18 +104,18 @@ test.describe('QDS override gate', () => {
         if (variant === 'one') expect.soft(cardBorderColor, 'One blocks separate by tone and roundness, not a stroke').toBe('rgba(0, 0, 0, 0)')
         else expect.soft(cardBorderColor, `${variant} card boundary has a non-transparent color`).not.toBe('rgba(0, 0, 0, 0)')
 
-        if (variant === 'fluent') {
+        if (variant === 'win') {
           expect.soft(await computed(page, `${panel} .q-card`, 'backdrop-filter'), 'Fluent content has no blur').toBe('none')
           expect.soft(await computed(page, `${panel} .q-card`, 'box-shadow'), 'Fluent card is a flat Win11 layer').toBe('none')
           expect.soft(await computed(page, `${panel} .q-card`, 'border-top-color'), 'Fluent card stroke is the card stroke token').toBe(await resolvedColor(page, '--qds-card-stroke'))
         }
         if (variant === 'ink') {
-          expect.soft(await customProperty(page, '--qds-surface-negative-soft'), 'Ink negative pastel wash token').toBe(mode === 'light' ? '#f4dfe1' : '#4a3239')
+          expect.soft(await customProperty(page, '--qds-surface-negative-soft'), 'Ink has no tinted wash: the soft surface is the paper').toBe(expected.surface)
           expect.soft(await computed(page, `${panel} .q-card`, 'backdrop-filter'), 'Ink content has no blur').toBe('none')
           expect.soft(await computed(page, `${panel} .q-card`, 'box-shadow'), 'Ink content stays flat').toBe('none')
           expect.soft(await computed(page, `${panel} .q-card`, 'background-color'), 'Ink card is a paper sheet').toBe(await resolvedColor(page, '--qds-surface-0'))
           expect.soft(await computed(page, `${panel} .q-card`, 'border-top-color'), 'Ink card hairline is the card stroke token').toBe(await resolvedColor(page, '--qds-card-stroke'))
-          expect.soft(await computed(page, `${panel} .qds-display`, 'font-family'), 'Ink display type is editorial serif').toMatch(/Iowan Old Style|Palatino|Georgia/)
+          expect.soft(await computed(page, `${panel} .qds-display`, 'font-family'), 'Ink display titles are handwritten').toMatch(/Caveat/)
         }
         if (variant === 'one') {
           expect.soft(await customProperty(page, '--qds-surface-focus-block'), 'One focus-block token differs by mode').toBe(mode === 'light' ? '#efefef' : '#242424')
@@ -144,7 +146,7 @@ test.describe('QDS override gate', () => {
     const roles = ['primary', 'secondary', 'accent', 'positive', 'negative', 'warning', 'info'] as const
 
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         const roleStyles = await page.evaluate((roles) => {
           const resolve = (property: string, declaration: 'backgroundColor' | 'color') => {
@@ -188,6 +190,11 @@ test.describe('QDS override gate', () => {
         for (const role of roleStyles) {
           expect.soft(role.fillToken, `${mode} ${variant} ${role.role} fill token resolves`).not.toBe('rgba(0, 0, 0, 0)')
           expect.soft(role.foregroundToken, `${mode} ${variant} ${role.role} foreground token resolves`).not.toBe('rgba(0, 0, 0, 0)')
+          // Ink has no colour fills: only primary is solid; the other roles are paper patterns labelled in their own ink.
+          if (variant === 'ink' && role.role !== 'primary') {
+            expect.soft(role.actionForeground, `${mode} ink ${role.role} label is drawn in the role ink`).toBe(role.fillToken)
+            continue
+          }
           expect.soft(role.actionFill, `${mode} ${variant} ${role.role} solid action uses its fill`).toBe(role.fillToken)
           expect.soft(role.actionForeground, `${mode} ${variant} ${role.role} solid action uses its foreground`).toBe(role.foregroundToken)
           expect.soft(role.contrast, `${mode} ${variant} ${role.role} fill and foreground meet text contrast`).toBeGreaterThanOrEqual(4.5)
@@ -219,13 +226,14 @@ test.describe('QDS override gate', () => {
   })
 
   test('semantic text, muted text, tonal badges, active items, and primary button variants retain AA contrast across the mode and variant matrix', async ({ page }) => {
+    test.setTimeout(90_000)
     await page.goto('/#tokens')
     const roles = ['primary', 'secondary', 'accent', 'positive', 'negative', 'warning', 'info'] as const
     const buttonVariants = ['outline', 'flat', 'standard', 'tonal', 'solid'] as const
     const neutralBadgeVariants = ['tonal', 'outline'] as const
 
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         await page.waitForTimeout(250)
         await expect(page.locator('[data-test="qds-semantic-contrast-fixtures"]')).toBeVisible()
@@ -328,7 +336,7 @@ test.describe('QDS override gate', () => {
     const action = header.locator('.q-btn--round')
 
     for (const mode of ['light', 'dark'] as const) {
-      for (const variant of ['fluent', 'ink', 'one', 'term'] as const) {
+      for (const variant of ['win', 'ink', 'one', 'term'] as const) {
         await applyTheme(page, mode, variant)
         const [headerBox, actionBox, paddingEnd] = await Promise.all([
           header.boundingBox(),
@@ -346,7 +354,7 @@ test.describe('QDS override gate', () => {
   test('legacy aliases normalize to canonical state, classes, and four switcher entries', async ({ page }) => {
     await page.goto('/')
     const aliases = [
-      ['studio', 'fluent'], ['air', 'fluent'], ['glass', 'fluent'], ['feather', 'ink'], ['mobile', 'one'], ['terminal', 'term'],
+      ['studio', 'win'], ['air', 'win'], ['feather', 'ink'], ['mobile', 'one'], ['terminal', 'term'],
     ] as const
     for (const [input, canonical] of aliases) {
       const state = await page.evaluate(({ input, canonical }) => {
@@ -371,7 +379,7 @@ test.describe('QDS override gate', () => {
       expect.soft(state.canonicalClass, `${input} writes canonical class`).toBe(true)
       expect.soft(state.oldClass, `${input} old class is absent`).toBe(false)
       expect.soft(state.dataVariant, `${input} writes the canonical data-qds-variant`).toBe(canonical)
-      expect.soft(labels.map((label) => label.trim()), `${input} exposes only canonical switcher entries`).toEqual(['Fluent', 'Ink', 'One', 'Term', 'Shadcn', 'Zen'])
+      expect.soft(labels.map((label) => label.trim()), `${input} exposes only canonical switcher entries`).toEqual(['Win', 'Ink', 'One', 'Term', 'Shadcn', 'Zen', 'Glass'])
     }
   })
 
@@ -591,7 +599,7 @@ test.describe('QDS override gate', () => {
         })
         return (await navCard.boundingBox())!
       }
-      await applyTheme(page, mode, 'fluent')
+      await applyTheme(page, mode, 'win')
       const fluentCard = await settledBox()
       await applyTheme(page, mode, 'one')
       const oneCard = await settledBox()
@@ -655,9 +663,10 @@ test.describe('QDS override gate', () => {
         expect.soft(contrast(parseColor(await computed(page, link, 'color')), parseColor(await resolvedColor(page, '--qds-surface-0'))), `${cell} prose link contrast`).toBeGreaterThanOrEqual(4.5)
         for (const anchor of await page.locator('[data-test="qds-type-anchors"] a').all()) {
           expect.soft(await anchor.evaluate((el) => getComputedStyle(el).textDecorationLine), `${cell} Quasar anchor components keep no underline`).toBe('none')
-          expect.soft(await anchor.evaluate((el) => getComputedStyle(el).color), `${cell} Quasar anchor components keep their own ink`).not.toBe(await resolvedColor(page, '--qds-fg-brand'))
+          // Ink has a single ink, so the brand foreground and an anchor's own colour coincide there.
+          if (variant !== 'ink') expect.soft(await anchor.evaluate((el) => getComputedStyle(el).color), `${cell} Quasar anchor components keep their own ink`).not.toBe(await resolvedColor(page, '--qds-fg-brand'))
         }
-        const focusStroke = await resolvedColor(page, '--qds-stroke-focus')
+        const focusStroke = await resolvedColor(page, variant === 'win' ? '--_qds-win-focus-outer' : '--qds-stroke-focus')
         for (const target of [link, '[data-test="qds-type-role-button"]']) {
           const focus = await ring(target)
           expect.soft(focus.visible, `${cell} ${target} shows focus-visible`).toBe(true)

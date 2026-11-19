@@ -48,6 +48,41 @@ import 'quasar/src/css/index.sass'
 import '@osmova/quasar-design-system/css'
 ```
 
+`./css` is the shared grammar plus the default `win` variant. To use another variant, import its bundle **instead of** `./css` (each one already contains the shared grammar), so an app only ships the variant it uses:
+
+```ts
+import '@osmova/quasar-design-system/css/variants/zen' // instead of './css'
+```
+
+Variants: `ink`, `one`, `term`, `shadcn`, `zen`, `glass` (`win` is `./css` itself). Gzipped, `./css` is about 25 KB and a variant bundle is 26–43 KB, against about 70 KB for everything. A variant file **replaces** `./css`: importing both applies the default rules twice and lets them override the variant.
+
+An app that switches variants at runtime either imports every variant at once:
+
+```ts
+import '@osmova/quasar-design-system/css/all' // SCSS source, every variant; instead of './css'
+```
+
+or keeps exactly one variant stylesheet loaded and swaps it before calling `setVariant` (Vite `?url` imports shown):
+
+```ts
+import winUrl from '@osmova/quasar-design-system/css?url'
+import zenUrl from '@osmova/quasar-design-system/css/variants/zen?url'
+
+const urls = { win: winUrl, zen: zenUrl } // one entry per variant the app offers
+
+async function switchVariant(name: keyof typeof urls) {
+  const previous = document.getElementById('qds-css')! // <link id="qds-css" rel="stylesheet" href="…">
+  const next = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: urls[name] })
+  previous.after(next)
+  await new Promise((resolve, reject) => { next.onload = resolve; next.onerror = reject })
+  previous.remove()
+  next.id = 'qds-css'
+  designSystem.setVariant(name)
+}
+```
+
+The initial `<link id="qds-css">` must come after Quasar's CSS. In development the runtime warns once when the active variant's stylesheet is not loaded.
+
 The default `./css` bundle is **unlayered** and must be imported **after** Quasar's CSS — Quasar ships unlayered CSS, so the overrides win on cascade order plus specificity, not on `@layer`. If your app deliberately places Quasar's CSS in a lower `@layer`, use the advanced `@osmova/quasar-design-system/css/layered` bundle instead. Mixing the layered bundle with unlayered Quasar CSS is unsupported (a layer cannot beat unlayered rules).
 
 For the layered path, declare the order **before** importing either framework or skin. Normal rules prefer the later `qds` layer; important rules reverse that order, so the same QDS important declarations live in the earliest `qds-important` layer:
@@ -61,6 +96,7 @@ For the layered path, declare the order **before** importing either framework or
 ```ts
 import './quasar-layered.css'
 import '@osmova/quasar-design-system/css/layered'
+// or, for another variant instead of the layered core: '@osmova/quasar-design-system/css/layered/variants/zen'
 ```
 
 Choose one adoption path; do not combine the default and layered exports in the same Sass compilation. Inline author important declarations still win over stylesheet declarations.
@@ -80,7 +116,7 @@ import { configureDesignSystem } from '@osmova/quasar-design-system'
 
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'fluent',
+  variant: 'win',
   persist: true,
 })
 ```
@@ -191,11 +227,12 @@ Tokens: `--qds-material-{thin,regular,thick}-{bg,blur,filter}`, `--qds-material-
 
 The package is structured around `src/themes/`. For now there is one real theme, `default`, plus small runtime variants layered over it:
 
-- `fluent`: default Fluent 2-inspired direction with a Mica app backdrop, acrylic overlays, solid reading surfaces, and low-border content. Absorbs the legacy Air translucency behavior.
-- `ink`: paper-neutral editorial surfaces with charcoal type and coordinated pastel role washes.
+- `win`: default Windows 11 (WinUI 3) direction, formerly named `fluent`, with a Mica app backdrop, acrylic overlays, solid reading surfaces, and low-border content. Absorbs the legacy Air translucency behavior.
+- `ink`: a single-ink e-ink interface. One ink on flat paper (charcoal by default, or black or navy), dark is the same ink inverted, roles read as solid ink, outline, double stroke or fill patterns, selection inverts, one red marks errors and destructive actions, and media renders greyscale.
 - `one`: Samsung One UI-inspired neutral grey or true-black pages, rounded blocks, pill controls, a calm blue accent, and touch-friendly rhythm.
 - `term`: opaque amber developer UI on warm cream or near-black panes, with crisp hairline rules, amber fills carrying dark ink, and a monospace-forward feel.
 - `zen`: linen paper with sage controls and a quiet reading rhythm — warm linen surfaces, a muted sage primary, 12px control and 20px block radii, gentle diffuse depth, and an essential 1px edge on every control so nothing depends on a shadow alone. The opt-in `.qds-reading` class strips decorative depth and motion while every boundary survives.
+- `glass`: inspired by Apple's design language. Controls and bars float on a translucent functional layer above opaque content: bars carry no fill of their own and gain a soft scroll edge once content scrolls under them, the sidebar and sheets float inset, and menus open with a short spring. Prominent controls are capsules, dense ones rounded rectangles, and nested shapes are concentric with their container. Tint is reserved for role fills and selection. It uses the native system font stack and ships no Apple font, symbol or artwork. Translucency is decoration only: without `backdrop-filter`, under reduced transparency, forced colours or increased contrast it resolves to opaque surfaces, and increased contrast restores a 3:1 edge on every control. Fields, selection controls, slider tracks, outline buttons and the selected tab or segment keep a 3:1 boundary; labelled buttons, chips and bars use a hairline. Toolbars inside content stay plain; add `qds-glass-bar` to a `QToolbar` to float its buttons on glass.
 - `shadcn`: opaque New York-inspired native Quasar controls with Neutral (default), Gray, Zinc, Stone, and Slate base palettes, compact 36px regular controls, 8px control radii, and 14px card radii. No Tailwind or Reka dependency is required by the package.
 
 They are not separate brands — deliberate overlays over the same token system.
@@ -205,11 +242,11 @@ Choose the variant once at app startup and let the runtime keep the matching bod
 ```ts
 configureDesignSystem(app, {
   mode: 'system',
-  variant: 'ink', // fluent | ink | one | term | shadcn | zen
+  variant: 'ink', // win | ink | one | term | shadcn | zen | glass
 })
 ```
 
-Legacy inputs `air`, `glass`, and `studio` resolve to `fluent`; `feather` resolves to `ink`; `mobile` resolves to `one`; `terminal` resolves to `term`. The runtime accepts these legacy names for options, `setVariant` and persisted state, but writes only the canonical body classes; new apps should use the canonical names above.
+Legacy inputs `fluent`, `air` and `studio` resolve to `win` (`glass` did too before 0.10.0 and is now its own variant); `feather` resolves to `ink`; `mobile` resolves to `one`; `terminal` resolves to `term`. The runtime accepts these legacy names for options, `setVariant` and persisted state, but writes only the canonical body classes; new apps should use the canonical names above.
 
 ### Shadcn adoption and compatibility
 
@@ -232,6 +269,17 @@ theme.setShadcnBaseColor(nextPalette)
 
 Mode, variant, and `shadcnBaseColor` persist together under the existing storage key (`bastvi.quasar-design-system.theme` by default). A valid stored palette wins over configuration; an older stored record without that field keeps the configured palette, or Neutral. Invalid JavaScript/storage palette values normalize to Neutral. Switching to another variant retains the palette selection but removes `data-qds-shadcn-base-color`; returning to shadcn restores it. `destroy()` removes owned attributes/classes and the system-theme listener. The controller can be created without a DOM for SSR; select deterministic server markup and initialize on the client to apply system preference and persistence.
 
+The ink variant has its own ink colour (`charcoal`, `black` or `navy`; charcoal by default), with the same model:
+
+```ts
+import { configureDesignSystem, INK_COLORS, type InkColor } from '@osmova/quasar-design-system'
+
+const theme = configureDesignSystem(app, { variant: 'ink', inkColor: 'navy' })
+theme.setInkColor('black')
+```
+
+It persists with the mode and variant, and the runtime writes `data-qds-ink` only while ink is active (CSS-only: put `data-qds-ink="navy"` next to `qds-variant-ink`; missing or invalid values use charcoal). Ink renders media greyscale; add `qds-media-color` (always in colour), `qds-media-color-hover` (colour on hover or focus) or `qds-media-color-reveal` (fades to colour once it appears, static under reduced motion) to the media or any ancestor. Handwriting is opt-in through `.qds-hand` / `.text-hand`, display titles and `<em>`/`<i>`; load the faces with `@osmova/quasar-design-system/fonts/ink.css`.
+
 Use the default **body target** for Quasar's teleported dialogs, menus, tooltips, notifications, and loading plugins. A custom `target` scopes descendant controls only: portals mounted elsewhere do not inherit it, and body typography/backdrop rules are not relocated to that subtree. Supported visual scoping is a single body root or an isolated custom root; sibling roots can be themed independently when their scopes do not overlap. Put the variant, palette, and mode on the **same element**.
 
 **Known limitation — nested theme roots:** arbitrary independently themed roots nested inside another theme root are not supported as nearest-palette boundaries for component grammar or local-dark paint. For example, a native local-dark card inside an inner Neutral root can still take the outer Slate palette. Use non-overlapping isolated render roots or separate documents/iframes when independently themed component trees need isolation; do not rely on a nested palette attribute to reset all component styling.
@@ -248,6 +296,8 @@ CSS-only usage needs no controller:
 Use `qds-theme-dark` for dark mode, or a consistent `data-qds-resolved="light|dark"`; an explicit resolved light value takes precedence over stale dark classes. Within a supported body or isolated root, missing/invalid palette attributes use Neutral. CSS-only mode does not synchronize Quasar's Dark plugin, follow system preference, or persist choices: those remain the consumer's responsibility.
 
 Keep QDS after Quasar for the default export. For the layered export, layer Quasar deliberately; **important declarations reverse layer order**, so audit consumer important overrides separately from normal declarations. The theme already bridges the seven Quasar role variables (`--q-primary`, `--q-secondary`, `--q-accent`, `--q-positive`, `--q-negative`, `--q-warning`, `--q-info`) within shadcn and local scheme boundaries; it does not mutate global Quasar colors or `--q-dark`. Unlayered consumer overrides after QDS are supported. Primitive overrides inside a component must also rebind the semantic aliases that consume them, because inherited custom properties can already be resolved at their parent scope.
+
+To rebrand, override `--qds-color-*` on the body (or the variant class, e.g. `.qds-variant-win`), not only on `:root`: `win`, `zen` and `glass` set their palettes on the variant class, which wins over `:root`.
 
 Unlike Fluent, an ordinary uncolored filled shadcn button is a primary action; contextual picker, pagination, toggle, and editor controls retain their native grammar. Flat, outline, push, dense, rounded/square, loading, literal palette colors, and explicit sizes remain distinct. Semantic solid fills own their on-fill foreground even with `text-color="white"` or normal inline text color; inline **important** author color wins. Literal combinations such as `color="red-7" text-color="white"` stay native. Use `.qds-tonal` for a soft button/badge and `.qds-solid` for a solid chip. `.qds-button--link` supplies a link-like visual treatment but does not change button semantics. Shadcn fields use perimeter strokes/focus halos rather than Fluent's focus bar, and surfaces remain opaque rather than acrylic.
 

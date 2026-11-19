@@ -54,7 +54,7 @@ async function mount(browser, bodyClass) {
   await page.addScriptTag({ content: assets.quasar })
   await page.evaluate(() => {
     const { createApp, h, reactive, nextTick } = Vue
-    const { QBtn, QInput, QTabs, QTab, QMenu, QList, QItem, QItemSection, QSeparator } = Quasar
+    const { QBtn, QInput, QTabs, QTab, QMenu, QList, QItem, QItemSection, QSeparator, QToggle, QCheckbox, QSlider } = Quasar
     const state = reactive({ value: 'Zen', tab: 'a', menu: false, error: false })
     const app = createApp({ setup: () => () => [
       h('div', { style: 'display:flex;gap:16px;flex-wrap:wrap' }, [
@@ -73,6 +73,13 @@ async function mount(browser, bodyClass) {
         h(QItem, { id: 'item', clickable: true, active: true }, () => h(QItemSection, {}, () => 'Zen item')),
         h(QSeparator, { id: 'separator' }),
       ]))),
+      h('div', { style: 'display:flex;gap:16px;align-items:center;padding-top:32px' }, [
+        h(QToggle, { id: 'toggle-on', modelValue: true, label: 'On' }),
+        h(QToggle, { id: 'toggle-off', modelValue: false, label: 'Off' }),
+        h(QCheckbox, { id: 'check-off', modelValue: false, label: 'Unchecked' }),
+        h(QCheckbox, { id: 'check-on', modelValue: true, label: 'Checked' }),
+        h(QSlider, { id: 'slider', modelValue: 40, labelAlways: true, style: 'width:160px' }),
+      ]),
     ] })
     app.use(Quasar)
     app.mount('#app')
@@ -102,7 +109,14 @@ async function observe(page) {
   ]) samples[name] = await read(page, selector, PAINT)
   samples.activeLabel = await read(page, '.q-tab--active .q-tab__label', ['font-weight'])
   samples.idleLabel = await read(page, '.q-tab:not(.q-tab--active) .q-tab__label', ['font-weight'])
-  samples.indicator = await read(page, '.q-tab--active .q-tab__indicator', ['display'])
+  samples.indicator = await read(page, '.q-tab--active .q-tab__indicator', ['display', 'height', 'width', 'background-color', 'opacity'])
+  samples.activeTabWidth = await page.evaluate(() => document.querySelector('.q-tab--active').getBoundingClientRect().width)
+  for (const [name, selector] of [['toggleOn', '#toggle-on .q-toggle__track'], ['toggleOff', '#toggle-off .q-toggle__track'],
+    ['checkOff', '#check-off .q-checkbox__bg'], ['checkOn', '#check-on .q-checkbox__bg'], ['bubble', '.q-slider__text-container'], ['bubbleText', '.q-slider__text']]) {
+    samples[name] = await read(page, selector, PAINT)
+  }
+  samples.glyphOn = await page.evaluate(() => getComputedStyle(document.querySelector('#toggle-on .q-toggle__track'), '::before').borderInlineStartColor)
+  samples.glyphOff = await page.evaluate(() => getComputedStyle(document.querySelector('#toggle-off .q-toggle__track'), '::after').borderTopColor)
   samples.fieldAfter = await page.evaluate(() => getComputedStyle(document.querySelector('.q-field__control'), '::after').content)
   samples.page = await read(page, 'body', ['background-color', 'color'])
   await page.evaluate(() => window.zen.set({ menu: false }))
@@ -126,7 +140,7 @@ try {
       for (const [label, sample, backdrop] of [
         ['button label', paint.button, paint.button],
         ['field text', paint.field, paint.field],
-        ['active tab label', paint.tabActive, paint.tabActive],
+        ['active tab label', paint.tabActive, paint.tabsTrack],
         ['idle tab label', paint.tabIdle, paint.tabsTrack],
         ['menu item', paint.menuItem, paint.menuItem],
       ]) {
@@ -154,11 +168,21 @@ try {
         await page.mouse.up()
         assert.notEqual(pressed['background-color'], rest['background-color'], `${scheme} ${role} must repaint when pressed`)
         record(scheme, `${role} fill pressed`, contrast(rgb(pressed.color), opaque(pressed['background-color'], `${scheme} ${role} pressed`)), 4.5)
+        assert.match(pressed['box-shadow'], /inset/, `${scheme} ${role} pressed recedes into an inset`)
       }
+      // Pressed recedes for the neutral face too: an inset, never more lift.
+      const neutral = await page.locator('#button').boundingBox()
+      await page.mouse.move(neutral.x + neutral.width / 2, neutral.y + neutral.height / 2)
+      await page.mouse.down()
+      const neutralPressed = await read(page, '#button', ['box-shadow', 'transform'])
+      await page.mouse.up()
+      assert.match(neutralPressed['box-shadow'], /inset/, `${scheme} neutral pressed recedes into an inset`)
+      const lift = neutralPressed.transform === 'none' ? 0 : Number(neutralPressed.transform.match(/matrix\(([^)]+)\)/)[1].split(',')[5])
+      assert.ok(lift >= 0, `${scheme} neutral pressed never lifts (translateY ${lift})`)
       await page.mouse.move(0, 0)
 
       // Selected states carry text contrast too, not just a tint.
-      record(scheme, 'selected tab label', contrast(rgb(paint.tabActive.color), opaque(paint.tabActive['background-color'], `${scheme} selected tab`)), 4.5)
+      record(scheme, 'selected tab label', contrast(rgb(paint.tabActive.color), opaque(paint.tabsTrack['background-color'], `${scheme} selected tab`)), 4.5)
       record(scheme, 'selected menu item', contrast(rgb(paint.menuItem.color), opaque(paint.menuItem['background-color'], `${scheme} selected item`)), 4.5)
 
       // Disabled text is exempt from WCAG 1.4.3, so it is measured and reported
@@ -170,9 +194,10 @@ try {
       for (const [label, sample, behind] of [
         ['button boundary', paint.button, paint.page],
         ['field boundary', paint.field, paint.page],
-        ['tabs track boundary', paint.tabsTrack, paint.page],
-        ['active tab boundary', paint.tabActive, paint.tabsTrack],
+        ['tabs tray boundary', paint.tabsTrack, paint.page],
         ['menu boundary', paint.menu, paint.page],
+        ['switch off track boundary', paint.toggleOff, paint.page],
+        ['checkbox well boundary', paint.checkOff, paint.page],
         ['active menu item boundary', paint.menuItem, paint.menu],
       ]) {
         assert.ok(parseFloat(sample['border-top-width']) >= 1, `${scheme} ${label}: no boundary, width ${sample['border-top-width']}`)
@@ -180,12 +205,23 @@ try {
         record(scheme, label, contrast(rgb(sample['border-top-color']), opaque(behind['background-color'], `${scheme} ${label}`)), 3)
       }
 
-      // Gentle raised/recessed depth is present, and the active tab is enclosed
-      // and heavier so it never depends on the shadow to read.
+      // State indicators that are not text clear the 3:1 non-text minimum on what they sit on.
+      record(scheme, 'switch on track vs page', contrast(opaque(paint.toggleOn['background-color'], `${scheme} switch on`), opaque(paint.page['background-color'], `${scheme} page`)), 3)
+      record(scheme, 'switch on glyph', contrast(rgb(paint.glyphOn), opaque(paint.toggleOn['background-color'], `${scheme} switch on`)), 3)
+      record(scheme, 'switch off glyph', contrast(rgb(paint.glyphOff), opaque(paint.toggleOff['background-color'], `${scheme} switch off`)), 3)
+      record(scheme, 'checkbox checked vs page', contrast(opaque(paint.checkOn['background-color'], `${scheme} checked`), opaque(paint.page['background-color'], `${scheme} page`)), 3)
+      record(scheme, 'slider value bubble', contrast(rgb(paint.bubbleText.color), opaque(paint.bubble['background-color'], `${scheme} bubble`)), 4.5)
+      record(scheme, 'active tab underline', contrast(rgb(paint.indicator['background-color']), opaque(paint.tabsTrack['background-color'], `${scheme} tabs tray`)), 3)
+
+      // Tactile depth: raised faces lift, wells recess, and the active tab is a short drawn
+      // underline plus weight, never a full-width rail.
       assert.notEqual(paint.button['box-shadow'], 'none', `${scheme} button keeps gentle raised depth`)
       assert.match(paint.field['box-shadow'], /inset/, `${scheme} field keeps a recessed well`)
-      assert.match(paint.tabsTrack['box-shadow'], /inset/, `${scheme} tabs track keeps a recessed well`)
-      assert.equal(paint.indicator.display, 'none', `${scheme} Zen uses no tab rail`)
+      assert.match(paint.toggleOff['box-shadow'], /inset/, `${scheme} switch track is a recessed well`)
+      assert.match(paint.checkOff['box-shadow'], /inset/, `${scheme} checkbox is a recessed well`)
+      assert.doesNotMatch(paint.tabsTrack['box-shadow'], /^inset/, `${scheme} tabs tray is raised`)
+      assert.equal(paint.indicator.opacity, '1', `${scheme} active tab shows its underline`)
+      assert.ok(parseFloat(paint.indicator.height) >= 2 && parseFloat(paint.indicator.width) < paint.activeTabWidth / 2, `${scheme} underline is a short dash (${paint.indicator.width} of ${paint.activeTabWidth}px)`)
       assert.equal(paint.fieldAfter, 'none', `${scheme} Zen paints no field focus bar`)
       assert.ok(Number(paint.activeLabel['font-weight']) > Number(paint.idleLabel['font-weight']), `${scheme} active tab carries a non-colour weight cue (${paint.activeLabel['font-weight']} vs ${paint.idleLabel['font-weight']})`)
 
@@ -208,7 +244,7 @@ try {
     const page = await mount(browser, bodyClass)
     try {
       const paint = await observe(page)
-      for (const [label, sample] of [['button', paint.button], ['field', paint.field], ['tabs track', paint.tabsTrack], ['active tab', paint.tabActive], ['menu', paint.menu]]) {
+      for (const [label, sample] of [['button', paint.button], ['field', paint.field], ['tabs tray', paint.tabsTrack], ['menu', paint.menu], ['switch track', paint.toggleOff], ['checkbox well', paint.checkOff]]) {
         assert.equal(sample['box-shadow'], 'none', `reading ${scheme} ${label} must drop decorative depth`)
         assert.ok(parseFloat(sample['border-top-width']) >= 1, `reading ${scheme} ${label} must keep its boundary`)
         opaque(sample['background-color'], `reading ${scheme} ${label}`)

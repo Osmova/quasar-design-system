@@ -34,7 +34,7 @@ import StoryShell from './_shared/StoryShell.vue'
 const $q = useQuasar()
 const modeOptions: DesignSystemMode[] = ['light', 'dark', 'system']
 const variantOptions = Object.keys(DESIGN_SYSTEM_VARIANTS) as Array<Extract<DesignSystemVariantName, string>>
-const initState = () => ({ mode: 'light' as DesignSystemMode, variant: 'fluent' as DesignSystemVariantName })
+const initState = () => ({ mode: 'light' as DesignSystemMode, variant: 'win' as DesignSystemVariantName })
 
 const workspace = ref('Northwind Ops')
 const slideStatus = ref('idle')

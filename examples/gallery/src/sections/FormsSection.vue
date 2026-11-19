@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
 import type { QInput } from 'quasar'
+import { useDesignSystem } from '@osmova/quasar-design-system'
 import {
   PhAt,
   PhBookOpen,
@@ -112,6 +113,7 @@ const settingsNav = [
 const appearanceMode = ref('Dark')
 const appearanceModes = ['Light', 'Dark', 'Custom']
 const transparency = ref(true)
+const ds = useDesignSystem()
 const accentOpen = ref(true)
 const accent = ref('primary')
 const swatches = [
@@ -519,7 +521,7 @@ function onPinBackspace(index: number) {
                   type="button"
                   role="radio"
                   class="forms-swatch"
-                  :class="{ 'forms-swatch--selected': accent === swatch.value }"
+                  :class="{ 'forms-swatch--selected': accent === swatch.value, [`bg-${swatch.value}`]: ds.variant.value === 'ink' }"
                   :style="{ background: swatch.color }"
                   :aria-checked="accent === swatch.value"
                   :aria-label="swatch.label"
